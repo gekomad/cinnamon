@@ -417,50 +417,50 @@ bool Search::probeRootTB(_Tmove *res) {
 
     const u64 oldKey = chessboard[ZOBRISTKEY_IDX];
     uchar oldEnpassant = enPassant;
-//    if (tot == 3 && (chessboard[PAWN_WHITE] || chessboard[PAWN_BLACK])) {
-//        _Tmove *bestMove = nullptr;
-//        u64 friends = sideToMove == WHITE ? white : black;
-//        u64 enemies = sideToMove == BLACK ? white : black;
-//
-//        incListId();
-//        generateCaptures(sideToMove, enemies, friends);
-//        generateMoves(sideToMove, friends | enemies);
-//
-//        for (int i = 0; i < getListSize(); i++) {
-//            if (bestMove)break;
-//            _Tmove *move = &genList[listId].moveList[i];
-//            if (!makemove(move, false, true)) {
-//                takeback(move, oldKey, oldEnpassant, false);
-//                continue;
-//            }
-//
-//            const int kw = BITScanForward(chessboard[KING_WHITE]);
-//            const int kb = BITScanForward(chessboard[KING_BLACK]);
-//            const int winSide = chessboard[PAWN_BLACK] ? BLACK : WHITE;
-//            const int pawnPos = (winSide == BLACK) ? BITScanForward(chessboard[PAWN_BLACK]) : BITScanForward(
-//                    chessboard[PAWN_WHITE]);
-//
-//            const bool p = (winSide != sideToMove) ?  // looking for draw
-//                           isDrawKPK(winSide, X(sideToMove), kw, kb, pawnPos)
-//                                                   :  //looking for win
-//                           !isDrawKPK(winSide, X(sideToMove), kw, kb, pawnPos);
-//
-//            if (p &&
-//                (bestMove == nullptr || move->capturedPiece != SQUARE_EMPTY ||
-//                 move->promotionPiece != NO_PROMOTION)) {
-//                bestMove = move;
-//            }
-//            takeback(move, oldKey, oldEnpassant, false);
-//        }
-//
-//        decListId();
-//        if (bestMove) {
-//            memcpy(res, bestMove, sizeof(_Tmove));
-//            if (res->pieceFrom == PAWN_WHITE && res->to > 55)res->promotionPiece = 'q';
-//            else if (res->pieceFrom == PAWN_BLACK && res->to < 8)res->promotionPiece = 'q';
-//            return true;
-//        }
-//    }
+    if (tot == 3 && (chessboard[WHITE] || chessboard[BLACK])) {
+        _Tmove *bestMove = nullptr;
+        u64 friends = sideToMove == WHITE ? white : black;
+        u64 enemies = sideToMove == BLACK ? white : black;
+
+        incListId();
+        generateCaptures(sideToMove, enemies, friends);
+        generateMoves(sideToMove, friends | enemies);
+
+        for (int i = 0; i < getListSize(); i++) {
+            if (bestMove)break;
+            _Tmove *move = &genList[listId].moveList[i];
+            if (!makemove(move, false, true)) {
+                takeback(move, oldKey, oldEnpassant, false);
+                continue;
+            }
+
+            const int kw = BITScanForward(chessboard[KING_WHITE]);
+            const int kb = BITScanForward(chessboard[KING_BLACK]);
+            const int pawnQueenPos = BITScanForward(chessboard[PAWN_BLACK]) | BITScanForward(chessboard[PAWN_WHITE]) |
+                                     BITScanForward(chessboard[QUEEN_BLACK]) | BITScanForward(chessboard[QUEEN_WHITE]);//TODO
+            const int winSide = chessboard[PAWN_BLACK] | chessboard[QUEEN_BLACK] ? BLACK : WHITE;
+
+            const bool p = (winSide != sideToMove) ?  // looking for draw
+                           isDrawTB(winSide, X(sideToMove), kw, kb, pawnQueenPos)
+                                                   :  //looking for win
+                           !isDrawTB(winSide, X(sideToMove), kw, kb, pawnQueenPos);
+
+            if (p &&
+                (bestMove == nullptr || move->capturedPiece != SQUARE_EMPTY ||
+                 move->promotionPiece != NO_PROMOTION)) {
+                bestMove = move;
+            }
+            takeback(move, oldKey, oldEnpassant, false);
+        }
+
+        decListId();
+        if (bestMove) {
+            memcpy(res, bestMove, sizeof(_Tmove));
+            if (res->pieceFrom == PAWN_WHITE && res->to > 55)res->promotionPiece = 'q';
+            else if (res->pieceFrom == PAWN_BLACK && res->to < 8)res->promotionPiece = 'q';
+            return true;
+        }
+    }
 #ifndef JS_MODE
     //gaviota
     if (GTB::getInstance().isInstalledPieces(tot)) {
