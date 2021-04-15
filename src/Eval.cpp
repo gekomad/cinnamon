@@ -748,7 +748,7 @@ short Eval::getScore(const _Tchessboard &chessboard, const u64 key, const uchar 
              (double) (SCORE_DEBUG.PAWN_NEAR_KING[WHITE]) / 100.0 << setw(10) <<
              (double) (SCORE_DEBUG.PAWN_NEAR_KING[BLACK]) / 100.0 << "\n";
         cout << endl;
-        cout << "\n|Total (white)..........   " << (side ? result / 100.0 : -result / 100.0) << endl;
+        cout << "\n|Total (white)..........   " << (side ? -result / 100.0 : result / 100.0) << endl;
         cout << flush;
     }
 #endif
