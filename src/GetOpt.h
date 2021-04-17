@@ -170,10 +170,7 @@ private:
             cout << "error GTB not found" << endl;
             return;
         }
-        if (searchManager.loadFen(fen) == 2) {
-            fatal("Bad FEN position format ", fen)
-            exit(1);
-        }
+        searchManager.loadFen(fen);
         searchManager.printDtmGtb(dtm);
     }
 
@@ -186,10 +183,7 @@ private:
         while ((opt = getopt1(argc, argv, "f:p:s:i:")) != -1) {
             if (opt == 'f') {    //fen
                 fen = optarg;
-                if (searchManager.loadFen(fen) == 2) {
-                    fatal("Bad FEN position format ", fen)
-                    exit(1);
-                }
+                searchManager.loadFen(fen);
             } else if (opt == 'p') { //path
                 token = optarg;
                 SYZYGY::getInstance().createSYZYGY(token);

@@ -36,6 +36,8 @@ public:
 
     [[gnu::pure]] static int getFile(const char cc);
 
+    static bool checkInsufficientMaterial(const int nPieces, const _Tchessboard &chessboard);
+
     static u64 performRankFileCaptureAndShift(const int position, const u64 enemies, const u64 allpieces);
 
     template<uchar side>

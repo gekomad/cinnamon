@@ -16,15 +16,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include "Search.h"
-#include "SearchManager.h"
-#include "db/bitbase/kpk.h"
-#include "db/Endgame.h"
 
 bool volatile Search::runningThread;
 high_resolution_clock::time_point Search::startTime;
-using namespace _bitbase;
+
 DEBUG(unsigned Search::cumulativeMovesCount)
 
 void Search::run() {
@@ -261,12 +257,12 @@ Search::~Search() {
 }
 
 template<uchar side>
-int Search::qsearch(int alpha, const int beta, const uchar promotionPiece, const int depth, const int N_PIECES) {
+int Search::qsearch(int alpha, const int beta, const uchar promotionPiece, const int depth) {
     const u64 zobristKeyR = chessboard[ZOBRISTKEY_IDX] ^_random::RANDSIDE[side];
     if (!getRunning()) return 0;
 
     ++numMovesq;
-    int score = eval.getScore(chessboard, zobristKeyR, side, alpha, beta, N_PIECES, false);
+    int score = eval.getScore(chessboard, zobristKeyR, side, alpha, beta);
     if (score > alpha) {
         if (score >= beta) return score;
         alpha = score;
@@ -317,7 +313,7 @@ int Search::qsearch(int alpha, const int beta, const uchar promotionPiece, const
             continue;
         }
         /// ************ end Delta Pruning *************
-        int val = -qsearch<X(side)>(-beta, -alpha, move->promotionPiece, depth - 1, N_PIECES - 1);
+        int val = -qsearch<X(side)>(-beta, -alpha, move->promotionPiece, depth - 1);
         score = max(score, val);
         takeback(move, oldKey, oldEnpassant, false);
         if (score > alpha) {
@@ -417,50 +413,7 @@ bool Search::probeRootTB(_Tmove *res) {
 
     const u64 oldKey = chessboard[ZOBRISTKEY_IDX];
     uchar oldEnpassant = enPassant;
-    if (tot == 3 && (chessboard[WHITE] || chessboard[BLACK])) {
-        _Tmove *bestMove = nullptr;
-        u64 friends = sideToMove == WHITE ? white : black;
-        u64 enemies = sideToMove == BLACK ? white : black;
 
-        incListId();
-        generateCaptures(sideToMove, enemies, friends);
-        generateMoves(sideToMove, friends | enemies);
-
-        for (int i = 0; i < getListSize(); i++) {
-            if (bestMove)break;
-            _Tmove *move = &genList[listId].moveList[i];
-            if (!makemove(move, false, true)) {
-                takeback(move, oldKey, oldEnpassant, false);
-                continue;
-            }
-
-            const int kw = BITScanForward(chessboard[KING_WHITE]);
-            const int kb = BITScanForward(chessboard[KING_BLACK]);
-            const int pawnQueenPos = BITScanForward(chessboard[PAWN_BLACK]) | BITScanForward(chessboard[PAWN_WHITE]) |
-                                     BITScanForward(chessboard[QUEEN_BLACK]) | BITScanForward(chessboard[QUEEN_WHITE]);//TODO
-            const int winSide = chessboard[PAWN_BLACK] | chessboard[QUEEN_BLACK] ? BLACK : WHITE;
-
-            const bool p = (winSide != sideToMove) ?  // looking for draw
-                           isDrawTB(winSide, X(sideToMove), kw, kb, pawnQueenPos)
-                                                   :  //looking for win
-                           !isDrawTB(winSide, X(sideToMove), kw, kb, pawnQueenPos);
-
-            if (p &&
-                (bestMove == nullptr || move->capturedPiece != SQUARE_EMPTY ||
-                 move->promotionPiece != NO_PROMOTION)) {
-                bestMove = move;
-            }
-            takeback(move, oldKey, oldEnpassant, false);
-        }
-
-        decListId();
-        if (bestMove) {
-            memcpy(res, bestMove, sizeof(_Tmove));
-            if (res->pieceFrom == PAWN_WHITE && res->to > 55)res->promotionPiece = 'q';
-            else if (res->pieceFrom == PAWN_BLACK && res->to < 8)res->promotionPiece = 'q';
-            return true;
-        }
-    }
 #ifndef JS_MODE
     //gaviota
     if (GTB::getInstance().isInstalledPieces(tot)) {
@@ -716,7 +669,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     u64 oldKey = chessboard[ZOBRISTKEY_IDX];
     uchar oldEnpassant = enPassant;
     if (depth >= MAX_PLY - 1) {
-        return eval.getScore(chessboard, oldKey, side, alpha, beta, N_PIECE, false);
+        return eval.getScore(chessboard, oldKey, side, alpha, beta);
     }
     INC(cumulativeMovesCount);
 #ifndef JS_MODE
@@ -732,7 +685,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
 
     const bool isIncheckSide = board::inCheck1<side>(chessboard);
     if (!isIncheckSide && depth != mainDepth) {
-        if (Endgame::isDraw(N_PIECE, chessboard) || checkDraw(chessboard[ZOBRISTKEY_IDX])) {
+        if (board::checkInsufficientMaterial(N_PIECE, chessboard) || checkDraw(chessboard[ZOBRISTKEY_IDX])) {
             if (board::inCheck1<X(side)>(chessboard)) {
                 return _INFINITE - (mainDepth - depth + 1);
             }
@@ -741,7 +694,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     }
     int extension = isIncheckSide; // TODO pawn in 7th
     if (depth + extension == 0) {
-        return qsearch<side>(alpha, beta, NO_PROMOTION, 0, N_PIECE);
+        return qsearch<side>(alpha, beta, NO_PROMOTION, 0);
     }
 
     /// ************* hash ****************
@@ -784,7 +737,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
                     currentPly--;
                 }
             } else {
-                nullScore = -qsearch<X(side)>(-beta, -beta + 1, -1, 0, N_PIECE);
+                nullScore = -qsearch<X(side)>(-beta, -beta + 1, -1, 0);
             }
             nullSearch = false;
             if (nullScore >= beta) {
@@ -867,8 +820,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
         checkInCheck = true;
         int val = INT_MAX;
         if (move->capturedPiece == SQUARE_EMPTY && move->promotionPiece == NO_PROMOTION) {
-            if (futilPrune && futilScore + PIECES_VALUE[move->capturedPiece] <= alpha &&
-                !board::inCheck1<side>(chessboard)) {
+            if (futilPrune && futilScore + PIECES_VALUE[move->capturedPiece] <= alpha && !board::inCheck1<side>(chessboard)) {
                 INC(nCutFp);
                 takeback(move, oldKey, oldEnpassant, true);
                 continue;
@@ -991,83 +943,6 @@ void Search::unsetSearchMoves() {
 void Search::setSearchMoves(const vector<int> &s) {
     searchMovesVector = s;
 }
-
-#ifdef TUNING
-
-int Search::getParameter(const string &p) {
-    if (p == "ATTACK_KING")return eval.ATTACK_KING;
-    if (p == "BISHOP_ON_QUEEN")return eval.BISHOP_ON_QUEEN;
-    if (p == "BACKWARD_PAWN")return eval.BACKWARD_PAWN;
-    if (p == "DOUBLED_ISOLATED_PAWNS")return eval.DOUBLED_ISOLATED_PAWNS;
-//    if (p == "DOUBLED_PAWNS")return eval.DOUBLED_PAWNS;
-    if (p == "PAWN_IN_7TH")return eval.PAWN_IN_7TH;
-//    if (p == "PAWN_CENTER")return eval.PAWN_CENTER;
-    if (p == "PAWN_IN_PROMOTION")return eval.PAWN_IN_PROMOTION;
-//    if (p == "PAWN_ISOLATED")return eval.PAWN_ISOLATED;
-    if (p == "PAWN_NEAR_KING")return eval.PAWN_NEAR_KING;
-    if (p == "PAWN_BLOCKED")return eval.PAWN_BLOCKED;
-    if (p == "UNPROTECTED_PAWNS")return eval.UNPROTECTED_PAWNS;
-//    if (p == "ENEMY_NEAR_KING")return eval.ENEMY_NEAR_KING;
-    if (p == "FRIEND_NEAR_KING")return eval.FRIEND_NEAR_KING;
-//    if (p == "HALF_OPEN_FILE_Q")return eval.HALF_OPEN_FILE_Q;
-    if (p == "BONUS2BISHOP")return eval.BONUS2BISHOP;
-    if (p == "BISHOP_PAWN_ON_SAME_COLOR")return eval.BISHOP_PAWN_ON_SAME_COLOR;
-//    if (p == "CONNECTED_ROOKS")return eval.CONNECTED_ROOKS;
-//    if (p == "OPEN_FILE")return eval.OPEN_FILE;
-    if (p == "OPEN_FILE_Q")return eval.OPEN_FILE_Q;
-    if (p == "ROOK_7TH_RANK")return eval.ROOK_7TH_RANK;
-//    if (p == "ROOK_BLOCKED")return eval.ROOK_BLOCKED;
-//    if (p == "ROOK_TRAPPED")return eval.ROOK_TRAPPED;
-//    if (p == "UNDEVELOPED_KNIGHT")return eval.UNDEVELOPED_KNIGHT;
-//    if (p == "UNDEVELOPED_BISHOP")return eval.UNDEVELOPED_BISHOP;
-    if (p == "KNIGHT_PINNED")return eval.KNIGHT_PINNED;
-    if (p == "ROOK_PINNED")return eval.ROOK_PINNED;
-    if (p == "BISHOP_PINNED")return eval.BISHOP_PINNED;
-    if (p == "QUEEN_PINNED")return eval.QUEEN_PINNED;
-//    if (p == "PAWN_PINNED")return eval.PAWN_PINNED;
-    fatal("Not found ", p)
-    exit(1);
-}
-
-void Search::setParameter(const string &p, const int value) {
-    //cout << "setParameter " << param << " " << value << endl;
-    if (p == "ATTACK_KING")eval.ATTACK_KING = value;
-    else if (p == "BISHOP_ON_QUEEN")eval.BISHOP_ON_QUEEN = value;
-    else if (p == "BACKWARD_PAWN")eval.BACKWARD_PAWN = value;
-    else if (p == "DOUBLED_ISOLATED_PAWNS")eval.DOUBLED_ISOLATED_PAWNS = value;
-//    else if (p == "DOUBLED_PAWNS")eval.DOUBLED_PAWNS = value;
-    else if (p == "PAWN_IN_7TH")eval.PAWN_IN_7TH = value;
-//    else if (p == "PAWN_CENTER")eval.PAWN_CENTER = value;
-    else if (p == "PAWN_IN_PROMOTION")eval.PAWN_IN_PROMOTION = value;
-//    else if (p == "PAWN_ISOLATED")eval.PAWN_ISOLATED = value;
-    else if (p == "PAWN_NEAR_KING")eval.PAWN_NEAR_KING = value;
-    else if (p == "PAWN_BLOCKED")eval.PAWN_BLOCKED = value;
-    else if (p == "UNPROTECTED_PAWNS")eval.UNPROTECTED_PAWNS = value;
-//    else if (p == "ENEMY_NEAR_KING")eval.ENEMY_NEAR_KING = value;
-    else if (p == "FRIEND_NEAR_KING")eval.FRIEND_NEAR_KING = value;
-//    else if (p == "HALF_OPEN_FILE_Q")eval.HALF_OPEN_FILE_Q = value;
-    else if (p == "BONUS2BISHOP")eval.BONUS2BISHOP = value;
-    else if (p == "BISHOP_PAWN_ON_SAME_COLOR")eval.BISHOP_PAWN_ON_SAME_COLOR = value;
-//    else if (p == "CONNECTED_ROOKS")eval.CONNECTED_ROOKS = value;
-//    else if (p == "OPEN_FILE")eval.OPEN_FILE = value;
-    else if (p == "OPEN_FILE_Q")eval.OPEN_FILE_Q = value;
-    else if (p == "ROOK_7TH_RANK")eval.ROOK_7TH_RANK = value;
-//    else if (p == "ROOK_BLOCKED")eval.ROOK_BLOCKED = value;
-//    else if (p == "ROOK_TRAPPED")eval.ROOK_TRAPPED = value;
-//    else if (p == "UNDEVELOPED_KNIGHT")eval.UNDEVELOPED_KNIGHT = value;
-//    else if (p == "UNDEVELOPED_BISHOP")eval.UNDEVELOPED_BISHOP = value;
-    else if (p == "KNIGHT_PINNED")eval.KNIGHT_PINNED = value;
-    else if (p == "ROOK_PINNED")eval.ROOK_PINNED = value;
-    else if (p == "BISHOP_PINNED")eval.BISHOP_PINNED = value;
-    else if (p == "QUEEN_PINNED")eval.QUEEN_PINNED = value;
-//    else if (p == "PAWN_PINNED")eval.PAWN_PINNED = value;
-    else {
-        fatal("Not found ", p)
-        exit(1);
-    }
-}
-
-#endif
 
 template<uchar side>
 bool Search::badCapure(const _Tmove &move, const u64 allpieces) {

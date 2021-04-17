@@ -235,10 +235,8 @@ void Uci::listner(IterativeDeeping *it) {
                     fen.append(" ");
                 }
                 searchManager.init();
-                if (searchManager.loadFen(fen) == 2) {
-                    fatal("Bad FEN position format ", fen)
-                    exit(1);
-                }
+                int x = searchManager.loadFen(fen);
+                searchManager.setSide(x);
                 searchManager.pushStackMove();
             }
             if (String::toLower(token) == "moves") {

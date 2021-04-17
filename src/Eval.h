@@ -41,7 +41,7 @@ public:
 
     ~Eval();
 
-    short getScore(const _Tchessboard &chessboard, const u64 key, const uchar side, const int alpha, const int beta,const int N_PIECE,
+    short getScore(const _Tchessboard &chessboard, const u64 key, const uchar side, const int alpha, const int beta,
                    const bool trace = false);
 
     template<uchar side>

@@ -49,8 +49,7 @@ public:
     Search();
 
     short getScore(const uchar side) {
-        const int n = bitCount(board::getBitmap<WHITE>(chessboard) | board::getBitmap<BLACK>(chessboard));
-        return eval.getScore(chessboard, 0xffffffffffffffffULL, side, -_INFINITE, _INFINITE, n, true);
+        return eval.getScore(chessboard, 0xffffffffffffffffULL, side, -_INFINITE, _INFINITE, true);
     }
 
     Search(const Search *s) { clone(s); }
@@ -150,7 +149,6 @@ public:
     void setSearchMoves(const vector<int> &v);
 
 private:
-
     Eval eval;
     Hash &hash = Hash::getInstance();
 #ifndef JS_MODE
@@ -185,7 +183,7 @@ private:
     bool checkSearchMoves(const _Tmove *move) const;
 
     template<uchar side>
-    int qsearch(int alpha, const int beta, const uchar promotionPiece, const int depth, const int N_PIECES);
+    int qsearch(int alpha, const int beta, const uchar promotionPiece, const int depth);
 
     void updatePv(_TpvLine *pline, const _TpvLine *line, const _Tmove *move);
 

@@ -17,7 +17,6 @@
 */
 
 #include "Eval.h"
-#include "db/Endgame.h"
 
 using namespace _eval;
 u64 *Eval::evalHash;
@@ -496,14 +495,8 @@ short Eval::getHashValue(const u64 key) {
 }
 
 short Eval::getScore(const _Tchessboard &chessboard, const u64 key, const uchar side, const int alpha, const int beta,
-                     const int N_PIECE,
                      const bool trace) {
-#ifndef TUNING
-    const short hashValue = getHashValue(key);
-    if (hashValue != noHashValue && !trace) {
-        return side ? -hashValue : hashValue;
-    }
-#endif
+
     /// endgame
 //    const auto win = Endgame::win(N_PIECE, chessboard);
 //    if (win != -1) {
@@ -519,6 +512,12 @@ short Eval::getScore(const _Tchessboard &chessboard, const u64 key, const uchar 
 //            return side ? -result : result;
 //        }
 //    }
+#ifndef TUNING
+    const short hashValue = getHashValue(key);
+    if (hashValue != noHashValue && !trace) {
+        return side ? -hashValue : hashValue;
+    }
+#endif
     int lazyscore_white = lazyEvalSide<WHITE>(chessboard);
     int lazyscore_black = lazyEvalSide<BLACK>(chessboard);
 
