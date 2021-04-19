@@ -26,64 +26,45 @@
 
 #endif
 
-class Endgame  { //TODO
+class Endgame { //TODO
 
 public:
 
-    /*
-     * returns WHITE, BLACK or -1
-     */
-    static int win(const int nPieces, const _Tchessboard &chessboard) {
+    static bool win(const uchar side, const int nPieces, const _Tchessboard &chessboard) {
         switch (nPieces) {
             case 3 :
-                if (chessboard[QUEEN_WHITE])return WHITE;
-                if (chessboard[QUEEN_BLACK])return BLACK;
-                if (chessboard[ROOK_WHITE])return WHITE;
-                if (chessboard[ROOK_BLACK])return WHITE;
+                if (chessboard[QUEEN_BLACK + side])return true;
+                if (chessboard[ROOK_BLACK + side])return true;
             case 4:
                 // KBBK
-                if (bitCount(chessboard[BISHOP_WHITE]) == 2)return WHITE;
-                if (bitCount(chessboard[BISHOP_BLACK]) == 2)return BLACK;
+                if (bitCount(chessboard[BISHOP_BLACK + side]) == 2)return true;
                 // KBNK
-                if (chessboard[BISHOP_WHITE] && chessboard[KNIGHT_WHITE])return WHITE;
-                if (chessboard[BISHOP_BLACK] && chessboard[KNIGHT_BLACK])return BLACK;
+                if (chessboard[BISHOP_BLACK + side] && chessboard[KNIGHT_BLACK + side])return true;
                 // KBKP TODO
                 // KBPK TODO
                 // KNKP TODO
                 // KNPK TODO
                 // KQBK
-                if (chessboard[QUEEN_WHITE] && chessboard[BISHOP_WHITE])return WHITE;
-                if (chessboard[QUEEN_BLACK] && chessboard[BISHOP_BLACK])return BLACK;
-                // KQKB
-                if (chessboard[QUEEN_WHITE] && chessboard[BISHOP_BLACK])return WHITE;
-                if (chessboard[QUEEN_BLACK] && chessboard[BISHOP_WHITE])return BLACK;
-                // KQKN
-                if (chessboard[QUEEN_WHITE] && chessboard[KNIGHT_BLACK])return WHITE;
-                if (chessboard[QUEEN_BLACK] && chessboard[KNIGHT_WHITE])return BLACK;
+                if (chessboard[QUEEN_BLACK + side] && chessboard[BISHOP_BLACK + side])return true;
+                // KQKB TODO
+                // KQKN TODO
                 // KQNK
-                if (chessboard[QUEEN_WHITE] && chessboard[KNIGHT_WHITE])return WHITE;
-                if (chessboard[QUEEN_BLACK] && chessboard[KNIGHT_BLACK])return BLACK;
+                if (chessboard[QUEEN_BLACK + side] && chessboard[KNIGHT_BLACK + side])return true;
                 // KQPK TODO
                 // KQQK
-                if (bitCount(chessboard[QUEEN_WHITE]) == 2)return WHITE;
-                if (bitCount(chessboard[QUEEN_BLACK]) == 2)return BLACK;
+                if (bitCount(chessboard[QUEEN_BLACK + side]) == 2)return true;
                 // KQRK
-                if (chessboard[QUEEN_WHITE] && chessboard[ROOK_WHITE])return WHITE;
-                if (chessboard[QUEEN_BLACK] && chessboard[ROOK_BLACK])return BLACK;
+                if (chessboard[QUEEN_BLACK + side] && chessboard[ROOK_BLACK + side])return true;
                 // KRBK
-                if (chessboard[QUEEN_WHITE] && chessboard[BISHOP_WHITE])return WHITE;
-                if (chessboard[QUEEN_BLACK] && chessboard[BISHOP_BLACK])return BLACK;
-
+                if (chessboard[QUEEN_BLACK + side] && chessboard[BISHOP_BLACK + side])return true;
                 // KRNK
-                if (chessboard[ROOK_WHITE] && chessboard[KNIGHT_WHITE])return WHITE;
-                if (chessboard[ROOK_BLACK] && chessboard[KNIGHT_BLACK])return BLACK;
+                if (chessboard[ROOK_BLACK + side] && chessboard[KNIGHT_BLACK + side])return true;
                 // KRPK TODO
                 // KRRK
-                if (bitCount(chessboard[ROOK_WHITE]) == 2)return WHITE;
-                if (bitCount(chessboard[ROOK_BLACK]) == 2)return BLACK;
+                if (bitCount(chessboard[ROOK_BLACK + side]) == 2)return true;
 
             default:
-                return -1;
+                return false;
         }
     }
 
@@ -115,7 +96,7 @@ public:
         }
         return false;
     }
-
+/*
     static int getEndgameValue(int side, const _Tchessboard &chessboard, const int nPieces) {
         assert(nPieces != 999);
         ASSERT_RANGE(side, 0, 1);
@@ -384,7 +365,7 @@ private:
         static int result = DistanceBonus[DISTANCE[winnerKingPos][loserKingPos]];
         if ((DISTANCE[loserKingPos][pawnPos] != 1) || (RANK_AT[pawnPos] != (loserSide == WHITE ? 6
                                                                                                : 1))
-            /*|| (0x5a5a5a5a5a5a5a5aULL & POW2(pawnPos))*/) {// 0x5a5a5a5a5a5a5a5aULL = FILE B D E F G
+            ) {// 0x5a5a5a5a5a5a5a5aULL = FILE B D E F G
             result += VALUEQUEEN - VALUEPAWN;
         }
         return result;
@@ -420,6 +401,6 @@ private:
         //result += Value((8 - popcount<Max15>(pos.attacks_from<KNIGHT>(nsq))) * 8);
     }
 
-
+*/
 };
 

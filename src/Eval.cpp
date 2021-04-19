@@ -494,14 +494,19 @@ short Eval::getHashValue(const u64 key) {
     return noHashValue;
 }
 
-short Eval::getScore(const _Tchessboard &chessboard, const u64 key, const uchar side, const int alpha, const int beta,
-                     const bool trace) {
-
+short
+Eval::getScore(const _Tchessboard &chessboard, const u64 key, const uchar side, const int alpha, const int beta DEBUG2(,
+        const bool trace)
+) {
     /// endgame
-//    const auto win = Endgame::win(N_PIECE, chessboard);
-//    if (win != -1) {
-//        if (win == side)return _INFINITE - (mainDepth - depth + 1);
-//        else return -_INFINITE + (mainDepth - depth + 1);
+//    if (Endgame::win(side, N_PIECE, chessboard)) {
+//        return _INFINITE / 2;
+//    }
+//    if (Endgame::win(X(side), N_PIECE, chessboard)) {
+//        return -(_INFINITE / 2);
+//    }
+//    if (Endgame::isDraw(N_PIECE, chessboard)) {
+//        return 0;
 //    }
 //    if (N_PIECE == 5 || N_PIECE == 4) {
 //        const auto result = Endgame::getEndgameValue(side, chessboard, N_PIECE);
@@ -514,9 +519,8 @@ short Eval::getScore(const _Tchessboard &chessboard, const u64 key, const uchar 
 //    }
 #ifndef TUNING
     const short hashValue = getHashValue(key);
-    if (hashValue != noHashValue && !trace) {
-        return side ? -hashValue : hashValue;
-    }
+    DEBUG2(if (!trace)) if (hashValue != noHashValue) return side ? -hashValue : hashValue;
+
 #endif
     int lazyscore_white = lazyEvalSide<WHITE>(chessboard);
     int lazyscore_black = lazyEvalSide<BLACK>(chessboard);
