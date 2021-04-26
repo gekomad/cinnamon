@@ -259,6 +259,8 @@ int Eval::evaluateQueen(const _Tchessboard &chessboard, const u64 enemies) {
         ADD(SCORE_DEBUG.KING_SECURITY_QUEEN[side],
             FRIEND_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[side]] & queen));
 
+        if (RANK_2_7[xside] & queen && POW2(structureEval.posKing[xside]) & RANK_1_8[xside]) result += TODO2;
+
 //        structureEval.kingSecurity[side] -=
 //                ENEMY_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[xside]] & queen);
 //        ADD(SCORE_DEBUG.KING_SECURITY_QUEEN[xside],
@@ -387,8 +389,8 @@ int Eval::evaluateRook(const _Tchessboard &chessboard, const u64 enemies, const 
     constexpr int xside = X(side);
     // 3. in 7th
     if (phase == MIDDLE) {
-        result += ROOK_7TH_RANK * bitCount(rook & RANK_1_7[side]);
-        ADD(SCORE_DEBUG.ROOK_7TH_RANK[side], ROOK_7TH_RANK * bitCount(rook & RANK_1_7[side]));
+        result += ROOK_7TH_RANK * bitCount(rook & RANK_2_7[xside]);
+        ADD(SCORE_DEBUG.ROOK_7TH_RANK[side], ROOK_7TH_RANK * bitCount(rook & RANK_2_7[xside]));
     }
 
     // 4. king security
@@ -400,6 +402,7 @@ int Eval::evaluateRook(const _Tchessboard &chessboard, const u64 enemies, const 
         ADD(SCORE_DEBUG.KING_SECURITY_ROOK[side],
             FRIEND_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[side]] & rook));
 
+        if (RANK_2_7[xside] & rook && POW2(structureEval.posKing[xside]) & RANK_1_8[xside]) result += TODO2;
 //        structureEval.kingSecurity[side] -=
 //                ENEMY_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[xside]] & rook);
 //        ADD(SCORE_DEBUG.KING_SECURITY_ROOK[xside],
