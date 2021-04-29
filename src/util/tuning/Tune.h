@@ -26,7 +26,7 @@
 class Tune {
 
 protected:
-    constexpr static int N_PARAM = 18;
+    constexpr static int N_PARAM = 20;
     SearchManager &searchManager = Singleton<SearchManager>::getInstance();
     const string iniFile = "tuning.ini";
 
@@ -102,7 +102,9 @@ protected:
                 PARAMS("KNIGHT_PINNED", searchManager),
                 PARAMS("ROOK_PINNED", searchManager),
                 PARAMS("BISHOP_PINNED", searchManager),
-                PARAMS("QUEEN_PINNED", searchManager)
+                PARAMS("QUEEN_PINNED", searchManager),
+                PARAMS("TODO1", searchManager),
+                PARAMS("TODO2", searchManager)
         };
         bool fullImproved;
         int cycle = 1;
