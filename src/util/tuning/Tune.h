@@ -103,8 +103,8 @@ protected:
                 PARAMS("ROOK_PINNED", searchManager),
                 PARAMS("BISHOP_PINNED", searchManager),
                 PARAMS("QUEEN_PINNED", searchManager),
-                PARAMS("TODO1", searchManager),
-                PARAMS("TODO2", searchManager)
+                PARAMS("ROOK_IN_7", searchManager),
+                PARAMS("QUEEN_IN_7", searchManager)
         };
         bool fullImproved;
         int cycle = 1;

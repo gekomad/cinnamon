@@ -976,8 +976,8 @@ int Search::getParameter(const string &p) {
     if (p == "ROOK_PINNED")return eval.ROOK_PINNED;
     if (p == "BISHOP_PINNED")return eval.BISHOP_PINNED;
     if (p == "QUEEN_PINNED")return eval.QUEEN_PINNED;
-    if (p == "TODO1")return eval.TODO1;
-    if (p == "TODO2")return eval.TODO2;
+    if (p == "QUEEN_IN_7")return eval.QUEEN_IN_7;
+    if (p == "ROOK_IN_7")return eval.ROOK_IN_7;
 //    if (p == "PAWN_PINNED")return eval.PAWN_PINNED;
     fatal("Not found ", p)
     exit(1);
@@ -1014,8 +1014,8 @@ void Search::setParameter(const string &p, const int value) {
     else if (p == "ROOK_PINNED")eval.ROOK_PINNED = value;
     else if (p == "BISHOP_PINNED")eval.BISHOP_PINNED = value;
     else if (p == "QUEEN_PINNED")eval.QUEEN_PINNED = value;
-    else if (p == "TODO1")eval.TODO1 = value;
-    else if (p == "TODO2")eval.TODO2 = value;
+    else if (p == "QUEEN_IN_7")eval.QUEEN_IN_7 = value;
+    else if (p == "ROOK_IN_7")eval.ROOK_IN_7 = value;
 //    else if (p == "PAWN_PINNED")eval.PAWN_PINNED = value;
     else {
         fatal("Not found ", p)

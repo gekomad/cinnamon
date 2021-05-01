@@ -8,7 +8,8 @@
 #export second_param=option.Threads=4
 #export first="/home/geko/cinnamon_test/test/clop/cinnamon/src/cinnamon name=clop142 option.REVERSE_FUTIL_MARGIN=142"
 #export first="/home/geko/nokiller_nohist"
-#export tc="0/5:1+0.0"
-export TOT_MATCH=20000
+#export tc64="0/0:15+0.5"
+#export tc32="0/0:30+0.9"
+#export TOT_MATCH=20000
 #export variant="-variant fischerandom"
 

@@ -259,7 +259,7 @@ int Eval::evaluateQueen(const _Tchessboard &chessboard, const u64 enemies) {
         ADD(SCORE_DEBUG.KING_SECURITY_QUEEN[side],
             FRIEND_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[side]] & queen));
 
-        if (RANK_2_7[xside] & queen && POW2(structureEval.posKing[xside]) & RANK_1_8[xside]) result += TODO2;
+//        if (RANK_2_7[xside] & queen && POW2(structureEval.posKing[xside]) & RANK_1_8[xside]) result += QUEEN_IN_7;
 
 //        structureEval.kingSecurity[side] -=
 //                ENEMY_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[xside]] & queen);
@@ -402,7 +402,7 @@ int Eval::evaluateRook(const _Tchessboard &chessboard, const u64 enemies, const 
         ADD(SCORE_DEBUG.KING_SECURITY_ROOK[side],
             FRIEND_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[side]] & rook));
 
-        if (RANK_2_7[xside] & rook && POW2(structureEval.posKing[xside]) & RANK_1_8[xside]) result += TODO2;
+        if (RANK_2_7[xside] & rook && POW2(structureEval.posKing[xside]) & RANK_1_8[xside]) result += ROOK_IN_7;
 //        structureEval.kingSecurity[side] -=
 //                ENEMY_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[xside]] & rook);
 //        ADD(SCORE_DEBUG.KING_SECURITY_ROOK[xside],
