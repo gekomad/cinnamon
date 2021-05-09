@@ -820,7 +820,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
         checkInCheck = true;
         int val = INT_MAX;
         if (move->capturedPiece == SQUARE_EMPTY && move->promotionPiece == NO_PROMOTION) {
-            if (futilPrune && futilScore + PIECES_VALUE[move->capturedPiece] <= alpha && !board::inCheck1<side>(chessboard)) {
+            if (futilPrune && futilScore <= alpha && !board::inCheck1<side>(chessboard)) {
                 INC(nCutFp);
                 takeback(move, oldKey, oldEnpassant, true);
                 continue;
