@@ -819,14 +819,15 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
         }
         checkInCheck = true;
         int val = INT_MAX;
-        if (move->capturedPiece == SQUARE_EMPTY && move->promotionPiece == NO_PROMOTION) {
-            if (futilPrune && futilScore <= alpha && !board::inCheck1<side>(chessboard)) {
+        if (move->promotionPiece == NO_PROMOTION) {
+            if (futilPrune && futilScore + PIECES_VALUE[move->capturedPiece] <= alpha &&
+                !board::inCheck1<side>(chessboard)) {
                 INC(nCutFp);
                 takeback(move, oldKey, oldEnpassant, true);
                 continue;
             }
             //Late Move Reduction
-            if (countMove > 3 && !isIncheckSide && depth >= 3) {
+            if (countMove > 3 && !isIncheckSide && depth >= 3 && move->capturedPiece == SQUARE_EMPTY) {
                 currentPly++;
                 const int R = countMove > 6 ? 3 : 2;
                 val = -search<X(side), checkMoves>(depth + extension - R, -(alpha + 1), -alpha, &line, N_PIECE,
