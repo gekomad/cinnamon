@@ -12,4 +12,4 @@
 #export tc32="0/0:30+0.9"
 #export TOT_MATCH=20000
 #export variant="-variant fischerandom"
-
+#export write_log=1
