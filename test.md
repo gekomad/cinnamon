@@ -32,8 +32,7 @@ Cinnamon 2.4
 
 **1.20 sec.**
 
-**
-perft**depth 6 8 cpu 2 GB hash
+**perft** depth 6 8 cpu 2 GB hash
 
  ./cinnamon -perft -d6 -c8 -h2000
 -f"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -"
@@ -47,8 +46,7 @@ perft**depth 6 8 cpu 2 GB hash
 
 **1.13 sec.**
 
-**
-perft**depth 6 8 cpu 2 GB hash
+**perft** depth 6 8 cpu 2 GB hash
 
  ./cinnamon -perft -d6 -c8 -h2000
 -f"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -"
