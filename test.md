@@ -280,9 +280,9 @@ Cinnamon 2.0
  ./cinnamon -perft -d6 -c8 -h2000
 -f"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -"
 
-**29 sec.**Intel Xeon W3540 Linux gcc 4.9.2
+**29 sec.** Intel Xeon W3540 Linux gcc 4.9.2
 
-**30 sec.**Intel Xeon W3540 Windows 7 gcc 5.1.0
+**30 sec.** Intel Xeon W3540 Windows 7 gcc 5.1.0
 
 cinnamon 1.2a/1.2b
 ------------------
@@ -327,7 +327,7 @@ cinnamon 1.2a/1.2b
  ./cinnamon -perft -d 5 -f
 "r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -"
 
-**?**Intel Xeon W3540 Linux 3.13.0-37-generic gcc 4.8.2
+**?** Intel Xeon W3540 Linux 3.13.0-37-generic gcc 4.8.2
 
 cinnamon 1.1c
 -------------
