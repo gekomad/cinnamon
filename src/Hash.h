@@ -77,7 +77,8 @@ public:
             const int alpha,
             const int beta,
             const int depth,
-            const u64 zobristKeyR, u64 &checkHashStruct, const bool currentPly) {
+            const u64 zobristKeyR, u64 &checkHashStruct, const bool currentPly) { // TODO remove checkHashStruct
+        //TODO currentPly
         INC(readHashCount);
         const Hash::_Thash *hash = &(hashArray[zobristKeyR % HASH_SIZE]);
         DEBUG(u64 d = 0)
