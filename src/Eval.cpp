@@ -521,9 +521,9 @@ Eval::getScore(const _Tchessboard &chessboard, const u64 key, const uchar side, 
 //    }
 #ifndef TUNING
     const short hashValue = getHashValue(key);
-    if (!trace) if (hashValue != noHashValue) return side ? -hashValue : hashValue;
-
+    if (hashValue != noHashValue && !trace) return side ? -hashValue : hashValue;
 #endif
+    
     int lazyscore_white = lazyEvalSide<WHITE>(chessboard);
     int lazyscore_black = lazyEvalSide<BLACK>(chessboard);
 
