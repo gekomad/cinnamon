@@ -49,7 +49,7 @@ public:
     Search();
 
     short getScore(const uchar side) {
-        return eval.getScore(chessboard, 0xffffffffffffffffULL, side, -_INFINITE, _INFINITE DEBUG2(, true));
+        return eval.getScore(chessboard, 0, side, -_INFINITE, _INFINITE, true);
     }
 
     Search(const Search *s) { clone(s); }
