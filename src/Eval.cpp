@@ -251,21 +251,21 @@ int Eval::evaluateQueen(const _Tchessboard &chessboard, const u64 enemies) {
     int result = 0;
     constexpr int xside = X(side);
     // 2. *king security*
-    if (phase != OPEN) {
-        if (structureEval.pinned[side] & queen) result -= QUEEN_PINNED;
-        ADD(SCORE_DEBUG.QUEEN_PINNED[side], -QUEEN_PINNED);
-        structureEval.kingSecurity[side] +=
-                FRIEND_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[side]] & queen);
-        ADD(SCORE_DEBUG.KING_SECURITY_QUEEN[side],
-            FRIEND_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[side]] & queen));
-
-//        if (RANK_2_7[xside] & queen && POW2(structureEval.posKing[xside]) & RANK_1_8[xside]) result += QUEEN_IN_7;
-
-//        structureEval.kingSecurity[side] -=
-//                ENEMY_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[xside]] & queen);
-//        ADD(SCORE_DEBUG.KING_SECURITY_QUEEN[xside],
-//            -ENEMY_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[xside]] & queen));
-    }
+//    if (phase != OPEN) {
+//        if (structureEval.pinned[side] & queen) result -= QUEEN_PINNED;
+//        ADD(SCORE_DEBUG.QUEEN_PINNED[side], -QUEEN_PINNED);
+//        structureEval.kingSecurity[side] +=
+//                FRIEND_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[side]] & queen);
+//        ADD(SCORE_DEBUG.KING_SECURITY_QUEEN[side],
+//            FRIEND_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[side]] & queen));
+//
+////        if (RANK_2_7[xside] & queen && POW2(structureEval.posKing[xside]) & RANK_1_8[xside]) result += QUEEN_IN_7;
+//
+////        structureEval.kingSecurity[side] -=
+////                ENEMY_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[xside]] & queen);
+////        ADD(SCORE_DEBUG.KING_SECURITY_QUEEN[xside],
+////            -ENEMY_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[xside]] & queen));
+//    }
 
     for (; queen; RESET_LSB(queen)) {
         const int o = BITScanForward(queen);
