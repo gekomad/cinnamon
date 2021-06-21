@@ -100,6 +100,8 @@ bool SearchManager::getRes(_Tmove &resultMove, string &ponderMove, string &pvv) 
                                      threadPool->getThread(0).sideToMove);
         }
         pvv.append(pvvTmp);
+        if (lineWin.argmove[t].promotionPiece != NO_PROMOTION)
+            pvv.push_back(tolower(FEN_PIECE[lineWin.argmove[t].promotionPiece]));
         if (t == 1) {
             ponderMove.assign(pvvTmp);
         }

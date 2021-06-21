@@ -189,6 +189,7 @@ void IterativeDeeping::run() {
             cout << " time " << timeTaken << " nodes " << totMoves;
             if (timeTaken)cout << " nps " << (int) ((double) totMoves / (double) timeTaken * 1000.0);
             cout << " pv " << pvv << endl;
+            assert(verifyPV(pvv));
         }
 
         if (searchManager.getForceCheck()) {
@@ -223,3 +224,4 @@ void IterativeDeeping::run() {
 int IterativeDeeping::loadFen(const string &fen) {
     return searchManager.loadFen(fen);
 }
+

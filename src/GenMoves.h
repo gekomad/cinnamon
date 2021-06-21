@@ -405,6 +405,8 @@ protected:
 
 #ifdef DEBUG_MODE
 
+    bool verifyMove(const _Tmove *move);
+
     template<uchar side, uchar type>
     bool
     inCheckSlow(const int from, const int to, const uchar pieceFrom, const uchar pieceTo, const uchar promotionPiece) {

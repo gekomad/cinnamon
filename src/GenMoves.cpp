@@ -305,8 +305,10 @@ bool GenMoves::makemove(const _Tmove *move, const bool rep, const bool checkInCh
     BENCH_AUTO_CLOSE("makemove")
     assert(move);
     assert(bitCount(chessboard[KING_WHITE]) == 1 && bitCount(chessboard[KING_BLACK]) == 1);
+    assert(verifyMove(move));
     const uchar rightCastleOld = rightCastle;
     if (!(move->type & 0xc)) { //no castle
+
         ASSERT_RANGE(move->from, 0, 63)
         ASSERT_RANGE(move->to, 0, 63)
         if ((move->type & 0x3) == PROMOTION_MOVE_MASK) {
@@ -384,7 +386,7 @@ bool GenMoves::makemove(const _Tmove *move, const bool rep, const bool checkInCh
         if (move->side == WHITE) rightCastle &= 0xcf; else rightCastle &= 0x3f;
     }
 
-    for (u64 x2 = rightCastleOld ^rightCastle; x2; RESET_LSB(x2)) {
+    for (u64 x2 = rightCastleOld ^ rightCastle; x2; RESET_LSB(x2)) {
         const int position = BITScanForward(x2);
         updateZobristKey(14, position);
     }
@@ -573,3 +575,36 @@ bool GenMoves::generatePuzzle(const string type) {
     }
     return true;
 }
+
+#ifdef DEBUG_MODE
+
+bool GenMoves::verifyMove(const _Tmove *move) {
+    const int side = move->side;
+    if (!(move->type & 0xc)) { // no castle
+        const bool from = move->pieceFrom == (PAWN_BLACK + side) || move->pieceFrom == (KNIGHT_BLACK + side) ||
+                          move->pieceFrom == (QUEEN_BLACK + side) || move->pieceFrom == (BISHOP_BLACK + side) ||
+                          move->pieceFrom == (ROOK_BLACK + side) || move->pieceFrom == (KING_BLACK + side);
+        if (!from) {
+            cout << "ERROR *************************" << endl;
+            print(move);
+            cout << endl << "ERROR *************************" << endl;
+            return false;
+        }
+        if (move->capturedPiece != SQUARE_EMPTY) {
+            const int xside = X(side);
+            const bool cap =
+                    move->capturedPiece == (PAWN_BLACK + xside) || move->capturedPiece == (KNIGHT_BLACK + xside) ||
+                    move->capturedPiece == (QUEEN_BLACK + xside) || move->capturedPiece == (BISHOP_BLACK + xside) ||
+                    move->capturedPiece == (ROOK_BLACK + xside) || move->capturedPiece == (KING_BLACK + xside);
+            if (!cap) {
+                cout << "ERROR *************************" << endl;
+                print(move);
+                cout << endl << "ERROR *************************" << endl;
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+#endif
