@@ -63,15 +63,15 @@ int Eval::evaluatePawn(const _Tchessboard &chessboard) {
 //    }
 
     // 7.
-    if (phase != OPEN) {
-//        if (structureEval.pinned[side] & ped_friends) result -= PAWN_PINNED;
-//        ADD(SCORE_DEBUG.PAWN_PINNED[side], -PAWN_PINNED);
-        structureEval.kingSecurity[side] +=
-                FRIEND_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[side]] & ped_friends);
-
-//        structureEval.kingSecurity[side] -=
-//                ENEMY_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[xside]] & ped_friends);
-    }
+//    if (phase != OPEN) {
+////        if (structureEval.pinned[side] & ped_friends) result -= PAWN_PINNED;
+////        ADD(SCORE_DEBUG.PAWN_PINNED[side], -PAWN_PINNED);
+//        structureEval.kingSecurity[side] +=
+//                FRIEND_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[side]] & ped_friends);
+//
+////        structureEval.kingSecurity[side] -=
+////                ENEMY_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[xside]] & ped_friends);
+//    }
 
     // 8.  pawn in 8th
     if (phase != OPEN) {
@@ -220,18 +220,18 @@ int Eval::evaluateBishop(const _Tchessboard &chessboard, const u64 enemies) {
 //        }
 
         // 7. outposts
-        auto p = BISHOP_OUTPOST[side][o];
-
-        //enemy pawn doesn't attack bishop
-        if (p && !(PAWN_FORK_MASK[xside][o] & chessboard[xside])) {
-            //friend paws defends bishop
-            if (PAWN_FORK_MASK[X(side)][o] & chessboard[side]) {
-                result += p;
-                if (!(chessboard[KNIGHT_BLACK + xside]) && !(chessboard[BISHOP_BLACK + xside] & board::colors(o))) {
-                    result += p;
-                }
-            }
-        }
+//        auto p = BISHOP_OUTPOST[side][o];
+//
+//        //enemy pawn doesn't attack bishop
+//        if (p && !(PAWN_FORK_MASK[xside][o] & chessboard[xside])) {
+//            //friend paws defends bishop
+//            if (PAWN_FORK_MASK[X(side)][o] & chessboard[side]) {
+//                result += p;
+//                if (!(chessboard[KNIGHT_BLACK + xside]) && !(chessboard[BISHOP_BLACK + xside] & board::colors(o))) {
+//                    result += p;
+//                }
+//            }
+//        }
     }
     return result;
 }
@@ -290,10 +290,10 @@ int Eval::evaluateQueen(const _Tchessboard &chessboard, const u64 enemies) {
         }
 
         // 6. bishop on queen
-        if (DIAGONAL_ANTIDIAGONAL[o] & chessboard[BISHOP_BLACK + side]) {
-            ADD(SCORE_DEBUG.BISHOP_ON_QUEEN[side], BISHOP_ON_QUEEN);
-            result += BISHOP_ON_QUEEN;
-        }
+//        if (DIAGONAL_ANTIDIAGONAL[o] & chessboard[BISHOP_BLACK + side]) {
+//            ADD(SCORE_DEBUG.BISHOP_ON_QUEEN[side], BISHOP_ON_QUEEN);
+//            result += BISHOP_ON_QUEEN;
+//        }
     }
     return result;
 }
@@ -327,10 +327,10 @@ int Eval::evaluateKnight(const _Tchessboard &chessboard, const u64 notMyBits) {
     if (phase != OPEN) {
         if (structureEval.pinned[side] & knight) result -= KNIGHT_PINNED;
         ADD(SCORE_DEBUG.KNIGHT_PINNED[side], -KNIGHT_PINNED);
-        structureEval.kingSecurity[side] +=
-                FRIEND_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[side]] & knight);
-        ADD(SCORE_DEBUG.KING_SECURITY_KNIGHT[side],
-            FRIEND_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[side]] & knight));
+//        structureEval.kingSecurity[side] +=
+//                FRIEND_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[side]] & knight);
+//        ADD(SCORE_DEBUG.KING_SECURITY_KNIGHT[side],
+//            FRIEND_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[side]] & knight));
 
 //        structureEval.kingSecurity[side] -=
 //                ENEMY_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[xside]] & knight);
@@ -348,19 +348,19 @@ int Eval::evaluateKnight(const _Tchessboard &chessboard, const u64 notMyBits) {
         ADD(SCORE_DEBUG.MOB_KNIGHT[side], MOB_KNIGHT[bitCount(mob)]);
 
         // 6. outposts
-        auto p = KNIGHT_OUTPOST[side][pos];
-
-        //enemy pawn doesn't attack knight
-        if (p && !(PAWN_FORK_MASK[xside][pos] & chessboard[xside])) {
-            //friend paws defends knight
-            if (PAWN_FORK_MASK[xside][pos] & chessboard[side]) {
-                result += p;
-                if (!(chessboard[KNIGHT_BLACK + xside]) &&
-                    !(chessboard[BISHOP_BLACK + xside] & board::colors(pos))) {
-                    result += p;
-                }
-            }
-        }
+//        auto p = KNIGHT_OUTPOST[side][pos];
+//
+//        //enemy pawn doesn't attack knight
+//        if (p && !(PAWN_FORK_MASK[xside][pos] & chessboard[xside])) {
+//            //friend paws defends knight
+//            if (PAWN_FORK_MASK[xside][pos] & chessboard[side]) {
+//                result += p;
+//                if (!(chessboard[KNIGHT_BLACK + xside]) &&
+//                    !(chessboard[BISHOP_BLACK + xside] & board::colors(pos))) {
+//                    result += p;
+//                }
+//            }
+//        }
     }
     return result;
 }
@@ -397,10 +397,10 @@ int Eval::evaluateRook(const _Tchessboard &chessboard, const u64 enemies, const 
     if (phase != OPEN) {
         if (structureEval.pinned[side] & rook) result -= ROOK_PINNED;
         ADD(SCORE_DEBUG.ROOK_PINNED[side], -ROOK_PINNED);
-        structureEval.kingSecurity[side] +=
-                FRIEND_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[side]] & rook);
-        ADD(SCORE_DEBUG.KING_SECURITY_ROOK[side],
-            FRIEND_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[side]] & rook));
+//        structureEval.kingSecurity[side] +=
+//                FRIEND_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[side]] & rook);
+//        ADD(SCORE_DEBUG.KING_SECURITY_ROOK[side],
+//            FRIEND_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[side]] & rook));
 
         if (RANK_2_7[xside] & rook && POW2(structureEval.posKing[xside]) & RANK_1_8[xside]) result += ROOK_IN_7;
 //        structureEval.kingSecurity[side] -=
@@ -480,7 +480,7 @@ int Eval::evaluateKing(const _Tchessboard &chessboard, const uchar side, const u
         ADD(SCORE_DEBUG.PAWN_NEAR_KING[side], -PAWN_NEAR_KING);
         result -= PAWN_NEAR_KING;
     }
-    result += structureEval.kingSecurity[side];
+//    result += structureEval.kingSecurity[side];
     return result;
 }
 
@@ -536,7 +536,7 @@ Eval::getScore(const _Tchessboard &chessboard, const u64 key, const uchar side, 
     DEBUG(evaluationCount[WHITE] = evaluationCount[BLACK] = 0)
     DEBUG(memset(&SCORE_DEBUG, 0, sizeof(_TSCORE_DEBUG)))
 
-    structureEval.kingSecurity[WHITE] = structureEval.kingSecurity[BLACK] = 0;
+//    structureEval.kingSecurity[WHITE] = structureEval.kingSecurity[BLACK] = 0;
     const auto w = board::getBitmapNoPawnsNoKing<WHITE>(chessboard);
     const auto b = board::getBitmapNoPawnsNoKing<BLACK>(chessboard);
     const int npieces = bitCount(w | b);

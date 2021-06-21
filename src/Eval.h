@@ -114,9 +114,9 @@ public:
         int ENEMIES_PAWNS_ALL[2];
         int NO_PAWNS[2];
 //        int KING_SECURITY_BISHOP[2];
-        int KING_SECURITY_QUEEN[2];
-        int KING_SECURITY_KNIGHT[2];
-        int KING_SECURITY_ROOK[2];
+//        int KING_SECURITY_QUEEN[2];
+//        int KING_SECURITY_KNIGHT[2];
+//        int KING_SECURITY_ROOK[2];
         int DISTANCE_KING[2];
         int PAWN_NEAR_KING[2];
         int MOB_KING[2];
@@ -145,7 +145,7 @@ private:
         u64 allPiecesSide[2];
         u64 allPiecesNoPawns[2];
         u64 posKingBit[2];
-        int kingSecurity[2];
+//        int kingSecurity[2];
         uchar posKing[2];
         u64 pinned[2];
     } _Tboard;
@@ -455,24 +455,24 @@ namespace _eval {
             };
 
     static constexpr short PAWN_PASSED[2][64] = {{0, 0, 0, 0, 0, 0, 0, 0,
-                                                         90, 90, 90, 90, 90, 90, 90,
-                                                                                    90,
-                                                         70, 70, 70, 70, 70, 70, 70,
-                                                                                    70,
-                                                         45, 45, 45, 45, 45, 45, 45,
-                                                                                     45,
-                                                         12, 12, 12, 12, 12, 12, 12,
-                                                                                     12,
+                                                         95, 95, 95, 96, 96, 95, 95,
+                                                                                    95,
+                                                         80, 80, 80, 85, 85, 80, 80,
+                                                                                    80,
+                                                         55, 55, 55, 56, 56, 55, 55,
+                                                                                     55,
+                                                         20, 20, 20, 20, 20, 20, 20,
+                                                                                     20,
                                                          5,  5,  5,  5,  5,  5,  5,  5,
                                                          0,  0,  0,  0,  0,  0,  0,  0,
                                                          0, 0, 0, 0, 0, 0, 0, 0},
                                                  {0, 0, 0, 0, 0, 0, 0, 0,
                                                          0,  0,  0,  0,  0,  0,  0, 0,
                                                          5,  5,  5,  5,  5,  5,  5, 5,
-                                                         12, 12, 12, 12, 12, 12, 12, 12,
-                                                         45, 45, 45, 45, 45, 45, 45, 45,
-                                                         70, 70, 70, 70, 70, 70, 70, 70,
-                                                         90, 90, 90, 90, 90, 90, 90, 90,
+                                                         20, 20, 20, 20, 20, 20, 20, 20,
+                                                         55, 55, 55, 56, 56, 55, 55, 55,
+                                                         80, 80, 80, 85, 85, 80, 80, 80,
+                                                         95, 95, 95, 96, 96, 95, 95, 95,
                                                          0, 0, 0, 0, 0, 0, 0, 0}
     };
 

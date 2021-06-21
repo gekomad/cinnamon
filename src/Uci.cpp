@@ -261,7 +261,7 @@ void Uci::listner(IterativeDeeping *it) {
             bool setMovetime = false;
             while (!uip.eof()) {
                 getToken(uip, token);
-                if (String::toLower(token) == "wtime") {
+                 if (String::toLower(token) == "wtime") {
                     uip >> wtime;
                 } else if (String::toLower(token) == "btime") {
                     uip >> btime;
@@ -302,21 +302,15 @@ void Uci::listner(IterativeDeeping *it) {
             }
             if (!forceTime) {
                 if (searchManager.getSide() == WHITE) {
-                    winc -= (int) (winc * 0.1);
-                    searchManager.setMaxTimeMillsec(winc + wtime / 36);
-                    if (btime > wtime) {
-                        searchManager.setMaxTimeMillsec(searchManager.getMaxTimeMillsec() -
-                                                        (int) (searchManager.getMaxTimeMillsec() *
-                                                               ((135.0 - wtime * 100.0 / btime) / 100.0)));
-                    }
+                    int timeForThisMove = wtime / 40 + (winc / 2);
+                    if (timeForThisMove >= wtime) timeForThisMove = wtime - 500;
+                    if (timeForThisMove < 0) timeForThisMove = 100;
+                    searchManager.setMaxTimeMillsec(timeForThisMove);
                 } else {
-                    binc -= (int) (binc * 0.1);
-                    searchManager.setMaxTimeMillsec(binc + btime / 36);
-                    if (wtime > btime) {
-                        searchManager.setMaxTimeMillsec(searchManager.getMaxTimeMillsec() -
-                                                        (int) (searchManager.getMaxTimeMillsec() *
-                                                               ((135.0 - btime * 100.0 / wtime) / 100.0)));
-                    }
+                    int timeForThisMove = btime / 40 + (binc / 2);
+                    if (timeForThisMove >= btime) timeForThisMove = btime - 500;
+                    if (timeForThisMove < 0) timeForThisMove = 100;
+                    searchManager.setMaxTimeMillsec(timeForThisMove);
                 }
                 lastTime = searchManager.getMaxTimeMillsec();
             }
