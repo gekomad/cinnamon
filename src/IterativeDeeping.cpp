@@ -52,7 +52,6 @@ void IterativeDeeping::run() {
 
 #ifndef JS_MODE
     //Tablebase
-    _Tmove bestMove;
 
     string tb = TB::probeRootTB1(searchManager.getSearch());
     if (!tb.empty()) {

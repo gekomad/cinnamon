@@ -27,13 +27,6 @@
 #include "threadPool/Thread.h"
 #include "db/TB.h"
 
-#ifndef JS_MODE
-
-#include "db/gaviota/GTB.h"
-#include "db/syzygy/SYZYGY.h"
-
-#endif
-
 typedef struct {
     int cmove;
     _Tmove argmove[MAX_PLY];

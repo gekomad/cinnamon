@@ -1,14 +1,16 @@
 #pragma once
 
 #ifndef JS_MODE
+
 #include "syzygy/SYZYGY.h"
 #include "../util/Singleton.h"
 #include "../Search.h"
 #include "gaviota/GTB.h"
 
-namespace TB {
-
-
+class TB {
+private:
+    TB() {};
+public:
     static int probeWdl(const int depth, const uchar side, const int N_PIECE, const int mainDepth,
                         uchar rightCastle, const _Tchessboard &chessboard) {
         SYZYGY *syzygy = &SYZYGY::getInstance();
@@ -57,7 +59,7 @@ namespace TB {
     }
 
     static bool probeRootTB(_Tmove *res, GenMoves &genMoves) {
-        const uchar sideToMove = genMoves.sideToMove;
+
         const _Tchessboard &chessboard = genMoves.chessboard;
         SYZYGY *syzygy = &SYZYGY::getInstance();
         const u64 white = board::getBitmap<WHITE>(chessboard);
@@ -402,7 +404,8 @@ namespace TB {
         genMoves.display();
         cout << "current: ";
         unsigned pliestomate;
-        const int res = GTB::getInstance().getDtmWdl(GTB_STM (genMoves.sideToMove), 2, genMoves.chessboard, &pliestomate, dtm,
+        const int res = GTB::getInstance().getDtmWdl(GTB_STM (genMoves.sideToMove), 2, genMoves.chessboard,
+                                                     &pliestomate, dtm,
                                                      genMoves.rightCastle);
         genMoves.incListId();
         genMoves.generateCaptures(genMoves.sideToMove, enemies, friends);
@@ -429,7 +432,7 @@ namespace TB {
         return res;
     }
 
-}
+};
 
 #endif
     

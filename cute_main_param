@@ -3,13 +3,13 @@
 #export concurrency=1
 #export opening_epd=/home/geko/chess960.epd
 #export second_param=option.GaviotaTbPath=/gtb4
-#export second_param=option.SyzygyPath=/syzygy
+export second_param=option.SyzygyPath=/home/geko/syzygy
 #export second_param=option.UCI_Chess960=true
 #export second_param=option.Threads=4
 #export first="/home/geko/cinnamon_test/test/clop/cinnamon/src/cinnamon name=clop142 option.REVERSE_FUTIL_MARGIN=142"
 #export first="/home/geko/nokiller_nohist"
-#export tc64="0/0:15+0.5"
-#export tc32="0/0:30+0.9"
+export tc64="0/0:30+0.9"
+export tc32="0/0:30+0.9"
 #export TOT_MATCH=20000
 #export variant="-variant fischerandom"
 #export write_log=1

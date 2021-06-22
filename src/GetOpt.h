@@ -139,6 +139,7 @@ private:
         perft->join();
     }
 
+#ifndef JS_MODE
     static void dtmWdlGtb(int argc, char **argv, const bool dtm) {
         SearchManager &searchManager = Singleton<SearchManager>::getInstance();
 
@@ -171,9 +172,7 @@ private:
             return;
         }
         searchManager.loadFen(fen);
-#ifndef JS_MODE
         searchManager.printDtmGtb(dtm);
-#endif
     }
 
     static void createSyzygy(int argc, char **argv) {
@@ -194,21 +193,21 @@ private:
     }
 
     static void wdlSyzygy(int argc, char **argv) {
-#ifndef JS_MODE
+
         createSyzygy(argc, argv);
         SearchManager &searchManager = Singleton<SearchManager>::getInstance();
         searchManager.printWdlSyzygy();
-#endif
+
     }
 
     static void dtmSyzygy(int argc, char **argv) {
-#ifndef JS_MODE
+
         createSyzygy(argc, argv);
         SearchManager &searchManager = Singleton<SearchManager>::getInstance();
         searchManager.printDtmSyzygy();
-#endif
-    }
 
+    }
+#endif
 public:
 
     static void parse(int argc, char **argv) {
@@ -259,7 +258,9 @@ public:
                     }
                 }
                 return;
-            } else {
+            }
+#ifndef JS_MODE
+            else {
                 if (opt == 'e') {
                     help(argv);
                     return;
@@ -282,8 +283,11 @@ public:
                     }
                     return;
                 }
+
             }
+#endif
         }
         Uci::getInstance();
     }
+
 };
