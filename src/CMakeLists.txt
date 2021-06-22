@@ -99,7 +99,7 @@ set(SOURCE_FILES
         Uci.cpp
         Uci.h
         unistd.h
-        )
+        db/TB.h)
 
 set(CMAKE_CXX_COMPILER "clang++")
 add_executable(cinnamon_debug ${SOURCE_FILES})

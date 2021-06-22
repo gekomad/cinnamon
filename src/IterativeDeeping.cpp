@@ -50,8 +50,11 @@ void IterativeDeeping::run() {
     searchManager.setRunning(2);
     searchManager.setRunningThread(true);
 
+#ifndef JS_MODE
     //Tablebase
-    string tb = searchManager.probeRootTB();
+    _Tmove bestMove;
+
+    string tb = TB::probeRootTB1(searchManager.getSearch());
     if (!tb.empty()) {
         debug("info string returned move from TB\n")
         _Tmove move;
@@ -63,7 +66,7 @@ void IterativeDeeping::run() {
         LOCK_RELEASE(running);
         return;
     }
-
+#endif
     unsigned totMoves;
 
     int mply = 0;

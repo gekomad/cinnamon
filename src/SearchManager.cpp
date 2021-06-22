@@ -33,21 +33,6 @@ unsigned SearchManager::SZtbProbeWDL() const {
 }
 #endif
 
-string SearchManager::probeRootTB() {
-    _Tmove bestMove;
-    Search &search = threadPool->getThread(0);
-    if (search.probeRootTB(&bestMove)) {
-        string best = string(search.decodeBoardinv(bestMove.type, bestMove.from, getSide())) +
-                      string(search.decodeBoardinv(bestMove.type, bestMove.to, getSide()));
-
-        if (bestMove.promotionPiece != NO_PROMOTION)
-            best += tolower(bestMove.promotionPiece);
-
-        return best;
-    } else
-        return "";
-}
-
 int SearchManager::search(const int ply, const int mply) {
 
     constexpr int SkipStep[64] =
@@ -141,8 +126,8 @@ void SearchManager::setMainPly(const int ply, const int mply) {
 }
 
 int SearchManager::getPieceAt(const uchar side, const u64 i) {
-    return side == WHITE ? board::getPieceAt<WHITE>(i, threadPool->getThread(0).getChessboard())
-                         : board::getPieceAt<BLACK>(i, threadPool->getThread(0).getChessboard());
+    return side == WHITE ? board::getPieceAt<WHITE>(i, threadPool->getThread(0).chessboard)
+                         : board::getPieceAt<BLACK>(i, threadPool->getThread(0).chessboard);
 }
 
 u64 SearchManager::getTotMoves() {
@@ -289,15 +274,15 @@ void SearchManager::setSide(const bool i) {
 #ifndef JS_MODE
 
 int SearchManager::printDtmGtb(const bool dtm) {
-    return threadPool->getThread(0).printDtmWdlGtb(dtm);
+    return TB::printDtmWdlGtb(threadPool->getThread(0),dtm);
 }
 
 void SearchManager::printDtmSyzygy() {
-    threadPool->getThread(0).printDtzSyzygy();
+    TB::printDtzSyzygy(threadPool->getThread(0));
 }
 
 void SearchManager::printWdlSyzygy() {
-    threadPool->getThread(0).printWdlSyzygy();
+    TB::printWdlSyzygy(threadPool->getThread(0));
 }
 
 #endif

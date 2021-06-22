@@ -25,6 +25,7 @@
 #include "namespaces/board.h"
 #include <climits>
 #include "threadPool/Thread.h"
+#include "db/TB.h"
 
 #ifndef JS_MODE
 
@@ -45,7 +46,9 @@ public:
     static constexpr int NULL_DIVISOR = 7;
     static constexpr int NULL_DEPTH = 3;
     static constexpr int VAL_WINDOW = 50;
-
+#ifndef JS_MODE
+    SYZYGY *syzygy = &SYZYGY::getInstance();
+#endif
     Search();
 
     short getScore(const uchar side) {
@@ -102,27 +105,11 @@ public:
 
     void endRun() {}
 
-#ifndef JS_MODE
-
-    int probeWdl(const int depth, const uchar side, const int N_PIECE);
-
-    int printDtmWdlGtb(const bool dtm);
-
-    void printDtzSyzygy();
-
-    void printWdlSyzygy();
-
-#endif
-
     void setMainPly(const int, const int);
 
     static void setRunningThread(const bool t) {
         runningThread = t;
     }
-
-    bool probeRootTB(_Tmove *);
-
-    int SZtbProbeWDL() const;
 
     int getValWindow() const {
         return valWindow;
@@ -151,9 +138,7 @@ public:
 private:
     Eval eval;
     Hash &hash = Hash::getInstance();
-#ifndef JS_MODE
-    SYZYGY *syzygy = &SYZYGY::getInstance();
-#endif
+
     vector<int> searchMovesVector;
     int valWindow = INT_MAX;
     static volatile bool runningThread;

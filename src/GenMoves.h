@@ -346,6 +346,7 @@ public:
         assert(historyHeuristic[from][to] <= historyHeuristic[from][to] + value);
         historyHeuristic[from][to] += value;
     }
+    bool perftMode;
 
 
 #ifdef DEBUG_MODE
@@ -353,22 +354,19 @@ public:
     double betaEfficiency = 0.0;
     unsigned betaEfficiencyCount = 0;
 #endif
-
+    static constexpr uchar STANDARD_MOVE_MASK = 0x3;
 protected:
     typedef struct {
         _Tmove *moveList;
         int size;
     } _TmoveP;
     u64 pinned;
-    bool perftMode;
-    int listId;
-    _TmoveP *genList;
 
     static constexpr u64 RANK_2 = 0xff00ULL;
     static constexpr u64 RANK_3 = 0xff000000ULL;
     static constexpr u64 RANK_5 = 0xff00000000ULL;
     static constexpr u64 RANK_7 = 0xff000000000000ULL;
-    static constexpr uchar STANDARD_MOVE_MASK = 0x3;
+
     static constexpr uchar ENPASSANT_MOVE_MASK = 0x1;
     static constexpr uchar PROMOTION_MOVE_MASK = 0x2;
     static constexpr int MAX_REP_COUNT = 1024;
@@ -383,7 +381,7 @@ protected:
 
     _Tmove *getNextMoveQ(_TmoveP *list, const int first);
 
-    _Tmove *getNextMove(decltype(genList), const int depth, const u64 &, const int first);
+    _Tmove *getNextMove(_TmoveP *list, const int depth, const u64 &, const int first);
 
     template<uchar side>
     int getMobilityCastle(const u64 allpieces) const {
@@ -785,6 +783,10 @@ protected:
     }
 
     bool forceCheck;
+public:
+    _TmoveP *genList;
+    int listId;
+
 private:
 
     int running;

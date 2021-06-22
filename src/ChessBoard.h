@@ -54,10 +54,6 @@ public:
 
     void clearChessboard();
 
-    const _Tchessboard &getChessboard() const {
-        return chessboard;
-    }
-
     void setSide(const bool b) {
         sideToMove = b;
     }
@@ -71,11 +67,15 @@ public:
     void display() const;
 
     string boardToFen() const;
+    uchar rightCastle;
 
+    uchar enPassant;
     uchar sideToMove;
+    void print(const _Tmove *move);
+    _Tchessboard chessboard;
 protected:
 
-    _Tchessboard chessboard;
+
     uchar startPosWhiteKing;
     uchar startPosWhiteRookKingSide;
     uchar startPosWhiteRookQueenSide;
@@ -84,9 +84,7 @@ protected:
     uchar startPosBlackRookKingSide;
     uchar startPosBlackRookQueenSide;
 
-    uchar rightCastle;
 
-    uchar enPassant;
     string MATCH_QUEENSIDE;
     string MATCH_QUEENSIDE_WHITE;
     string MATCH_KINGSIDE_WHITE;
@@ -98,7 +96,6 @@ protected:
 
     void makeZobristKey();
 
-    void print(const _Tmove *move);
 
 #ifdef DEBUG_MODE
 

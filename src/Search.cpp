@@ -77,156 +77,6 @@ void Search::clone(const Search *s) {
     memcpy(chessboard, s->chessboard, sizeof(_Tchessboard));
 }
 
-#ifndef JS_MODE
-
-int Search::SZtbProbeWDL() const {
-    const auto tot = bitCount(board::getBitmap<WHITE>(chessboard) | board::getBitmap<BLACK>(chessboard));
-    return syzygy->SZtbProbeWDL(chessboard, sideToMove, tot);
-}
-
-void Search::printWdlSyzygy() {
-    perftMode = true;
-    u64 friends = sideToMove == WHITE ? board::getBitmap<WHITE>(chessboard) : board::getBitmap<BLACK>(chessboard);
-    u64 enemies = sideToMove == BLACK ? board::getBitmap<WHITE>(chessboard) : board::getBitmap<BLACK>(chessboard);
-
-    incListId();
-    generateCaptures(sideToMove, enemies, friends);
-    generateMoves(sideToMove, friends | enemies);
-    _Tmove *move;
-    u64 oldKey = chessboard[ZOBRISTKEY_IDX];
-    uchar oldEnpassant = enPassant;
-    display();
-
-    unsigned res = syzygy->SZtbProbeWDL(chessboard, sideToMove);
-    cout << "current: ";
-    if (res != TB_RESULT_FAILED) {
-        res = TB_GET_WDL(res);
-        if (res == TB_DRAW)cout << " draw" << endl;
-        else if (res == TB_LOSS || res == TB_BLESSED_LOSS)
-            cout << " loss" << endl;
-        else
-            cout << " win" << endl;
-
-    } else
-        cout << " none" << endl;
-
-    for (int i = 0; i < getListSize(); i++) {
-        move = &genList[listId].moveList[i];
-        if (!makemove(move, false, true)) {
-            takeback(move, oldKey, oldEnpassant, false);
-            continue;
-        }
-        print(move);
-
-        unsigned res = syzygy->SZtbProbeWDL(chessboard, X(sideToMove));
-
-        if (res != TB_RESULT_FAILED) {
-            res = TB_GET_WDL(res);
-            if (res == TB_DRAW)cout << " draw" << endl;
-            else if (res == TB_LOSS || res == TB_BLESSED_LOSS)
-                cout << " win" << endl;
-            else
-                cout << " loss" << endl;
-
-        } else
-            cout << " none" << endl;
-        takeback(move, oldKey, oldEnpassant, false);
-    }
-    cout << endl;
-    decListId();
-}
-
-void Search::printDtzSyzygy() {
-    perftMode = true;
-
-    if ((sideToMove == BLACK) ? board::inCheck1<WHITE>(chessboard) : board::inCheck1<BLACK>(chessboard)) {
-        cout << "invalid position" << endl;
-        return;
-    }
-
-    unsigned results[TB_MAX_MOVES];
-
-    const u64 white = board::getBitmap<WHITE>(chessboard);
-    const u64 black = board::getBitmap<BLACK>(chessboard);
-
-    unsigned res = syzygy->SZtbProbeWDL(chessboard, sideToMove);
-    display();
-    cout << "current: ";
-    if (res != TB_RESULT_FAILED) {
-        res = TB_GET_WDL(res);
-        if (res == TB_DRAW)cout << " draw" << endl;
-        else if (res == TB_LOSS || res == TB_BLESSED_LOSS)
-            cout << " loss" << endl;
-        else
-            cout << " win" << endl;
-
-    } else
-        cout << " none" << endl;
-
-    const unsigned res1 = syzygy->SZtbProbeRoot(white, black, chessboard, sideToMove, results);
-    if (res1 != TB_RESULT_FAILED) {
-        for (unsigned i = 0; results[i] != TB_RESULT_FAILED; i++) {
-
-            string from = BOARD[_decodeSquare[TB_GET_FROM(results[i])]];
-            string to = BOARD[_decodeSquare[TB_GET_TO(results[i])]];
-
-            cout << from << to;
-            auto a = TB_GET_PROMOTES(results[i]);
-            if (a)cout << SYZYGY::getPromotion(a);
-
-            cout << " ";
-            unsigned dtz = TB_GET_DTZ(results[i]);
-            unsigned res = TB_GET_WDL(results[i]);
-            if (res == TB_DRAW) cout << " draw" << endl;
-            else if (res == TB_LOSS)
-                cout << " loss dtz: " << dtz << endl;
-            else if (res == TB_BLESSED_LOSS)
-                cout << " loss but 50-move draw dtz: " << dtz << endl;
-            else if (res == TB_WIN)
-                cout << " win dtz: " << dtz << endl;
-            else if (res == TB_CURSED_WIN)
-                cout << " win but 50-move draw dtz: " << dtz << endl;
-
-        }
-        cout << endl;
-    }
-}
-
-
-int Search::printDtmWdlGtb(const bool dtm) {
-    perftMode = true;
-
-    u64 friends = sideToMove == WHITE ? board::getBitmap<WHITE>(chessboard) : board::getBitmap<BLACK>(chessboard);
-    u64 enemies = sideToMove == BLACK ? board::getBitmap<WHITE>(chessboard) : board::getBitmap<BLACK>(chessboard);
-    display();
-    cout << "current: ";
-    unsigned pliestomate;
-    const int res = GTB::getInstance().getDtmWdl(GTB_STM(sideToMove), 2, chessboard, &pliestomate, dtm, rightCastle);
-    incListId();
-    generateCaptures(sideToMove, enemies, friends);
-    generateMoves(sideToMove, friends | enemies);
-    _Tmove *move;
-    u64 oldKey = chessboard[ZOBRISTKEY_IDX];
-    uchar oldEnpassant = enPassant;
-    for (int i = 0; i < getListSize(); i++) {
-        move = &genList[listId].moveList[i];
-        if (!makemove(move, false, true)) {
-            takeback(move, oldKey, oldEnpassant, false);
-            continue;
-        }
-        print(move);
-
-        GTB::getInstance().getDtmWdl(GTB_STM(X(sideToMove)), 1, chessboard, &pliestomate, dtm, rightCastle);
-
-        takeback(move, oldKey, oldEnpassant, false);
-
-    }
-    cout << endl;
-    decListId();
-    return res;
-}
-
-#endif
 
 void Search::setNullMove(const bool b) {
     nullSearch = !b;
@@ -258,7 +108,7 @@ Search::~Search() {
 
 template<uchar side>
 int Search::qsearch(int alpha, const int beta, const uchar promotionPiece, const int depth) {
-    const u64 zobristKeyR = chessboard[ZOBRISTKEY_IDX] ^_random::RANDSIDE[side];
+    const u64 zobristKeyR = chessboard[ZOBRISTKEY_IDX] ^ _random::RANDSIDE[side];
     if (!getRunning()) return 0;
 
     ++numMovesq;
@@ -406,200 +256,6 @@ int Search::searchRoot(const int depth, const int alpha, const int beta) {
                                                    n_root_moves);
 }
 
-bool Search::probeRootTB(_Tmove *res) {
-    const u64 white = board::getBitmap<WHITE>(chessboard);
-    const u64 black = board::getBitmap<BLACK>(chessboard);
-    const auto tot = bitCount(white | black);
-
-    const u64 oldKey = chessboard[ZOBRISTKEY_IDX];
-    uchar oldEnpassant = enPassant;
-
-#ifndef JS_MODE
-    //gaviota
-    if (GTB::getInstance().isInstalledPieces(tot)) {
-        u64 friends = sideToMove == WHITE ? white : black;
-        u64 enemies = sideToMove == BLACK ? white : black;
-        _Tmove *bestMove = nullptr;
-        incListId();
-        generateCaptures(sideToMove, enemies, friends);
-        generateMoves(sideToMove, friends | enemies);
-
-        _Tmove *drawMove = nullptr;
-        _Tmove *worstMove = nullptr;
-
-        int minDtz = -1;
-        unsigned maxDtzWorst = 1000;
-
-        const u64 allPieces = white | black;
-
-        unsigned dtz;
-
-        for (int i = 0; i < getListSize(); i++) {
-            _Tmove *move = &genList[listId].moveList[i];
-            if (!makemove(move, false, true)) {
-                takeback(move, oldKey, oldEnpassant, false);
-                continue;
-            }
-            BENCH_START("gtbTime")
-            const auto res = GTB::getInstance().getDtmWdl(GTB_STM(X(sideToMove)), 0, chessboard, &dtz, true,
-                                                          rightCastle);
-            BENCH_STOP("gtbTime")
-            if (res == TB_WIN && !worstMove && !drawMove) {
-                if ((int) dtz > minDtz) {
-                    bestMove = move;
-                    minDtz = dtz;
-                    if (move->promotionPiece != NO_PROMOTION || board::isOccupied(move->to, allPieces))
-                        minDtz++;
-                }
-            } else if (res == TB_DRAW) {
-                if (!drawMove || (move->promotionPiece != NO_PROMOTION || board::isOccupied(move->to, allPieces))) {
-                    drawMove = move;
-                }
-            } else if (res == TB_LOSS) {
-                if ((int) dtz < (int) maxDtzWorst) {
-                    worstMove = move;
-                    maxDtzWorst = dtz;
-                    if (move->promotionPiece != NO_PROMOTION || board::isOccupied(move->to, allPieces))
-                        maxDtzWorst--;
-                }
-            }
-            takeback(move, oldKey, oldEnpassant, false);
-        }
-
-        if (worstMove) {
-            debug("worstMove ***********\n")
-            memcpy(res, worstMove, sizeof(_Tmove));
-            if (res->promotionPiece != NO_PROMOTION)
-                res->promotionPiece = FEN_PIECE[res->promotionPiece];
-            decListId();
-            return true;
-        }
-
-        if (drawMove) {
-            debug("drawMove ***********\n")
-            memcpy(res, drawMove, sizeof(_Tmove));
-            if (res->promotionPiece != NO_PROMOTION)res->promotionPiece = FEN_PIECE[res->promotionPiece];
-            decListId();
-            return true;
-        }
-        if (bestMove) {
-            debug("best ***********\n")
-            memcpy(res, bestMove, sizeof(_Tmove));
-            if (res->promotionPiece != NO_PROMOTION)
-                res->promotionPiece = FEN_PIECE[res->promotionPiece];
-            decListId();
-            return true;
-        }
-
-        decListId();
-        return false;
-    }
-
-    if (syzygy->getInstalledPieces() >= tot) {
-
-        unsigned bestMove = 0;
-        unsigned bestMove50 = 0;
-        unsigned worstMove = 0;
-        unsigned worstMove50 = 0;
-        unsigned drawMove = 0;
-        unsigned minDtz = 1000;
-        unsigned minDtz50 = 1000;
-        int maxDtzWorst = -1;
-        int maxDtzWorst50 = -1;
-        unsigned results[TB_MAX_MOVES];
-
-        const u64 allPieces = white | black;
-        BENCH_START("syzygyTime")
-        const auto sz = syzygy->SZtbProbeRoot(white, black, chessboard, sideToMove, results);
-        BENCH_STOP("syzygyTime")
-        if (sz == TB_RESULT_FAILED) return false;
-
-        for (unsigned i = 0; results[i] != TB_RESULT_FAILED; i++) {
-
-            const unsigned dtz = TB_GET_DTZ(results[i]) * 10;
-            const unsigned res = TB_GET_WDL(results[i]);
-
-            if (res == TB_WIN) {
-                if (dtz < minDtz) {
-                    bestMove = results[i];
-                    minDtz = dtz;
-                    if (TB_GET_PROMOTES(bestMove) || board::isOccupied(_decodeSquare[TB_GET_TO(bestMove)], allPieces))
-                        minDtz--;
-                }
-            } else if (res == TB_CURSED_WIN && !bestMove) {
-                if (dtz < minDtz50) {
-                    bestMove50 = results[i];
-                    minDtz50 = dtz;
-                    if (TB_GET_PROMOTES(bestMove50) ||
-                        board::isOccupied(_decodeSquare[TB_GET_TO(bestMove50)], allPieces))
-                        minDtz50--;
-                }
-            } else if (res == TB_DRAW) {
-                if (!drawMove ||
-                    (TB_GET_PROMOTES(results[i]) ||
-                     board::isOccupied(_decodeSquare[TB_GET_TO(results[i])], allPieces))) {
-                    drawMove = results[i];
-                }
-            } else if (res == TB_BLESSED_LOSS && !bestMove && !drawMove && !bestMove50) {
-                if ((int) dtz > maxDtzWorst50) {
-                    worstMove50 = results[i];
-                    maxDtzWorst50 = dtz;
-                    if (TB_GET_PROMOTES(worstMove50) ||
-                        board::isOccupied(_decodeSquare[TB_GET_TO(worstMove50)], allPieces))
-                        maxDtzWorst50++;
-                }
-            } else if (res == TB_LOSS && !bestMove && !drawMove && !bestMove50 && !worstMove50) {
-                if ((int) dtz > maxDtzWorst) {
-                    worstMove = results[i];
-                    maxDtzWorst = dtz;
-                    if (TB_GET_PROMOTES(worstMove) || board::isOccupied(_decodeSquare[TB_GET_TO(worstMove)], allPieces))
-                        maxDtzWorst++;
-                }
-            }
-        }
-
-        res->type = STANDARD_MOVE_MASK;
-
-        if (bestMove) {
-            debug("best ***********\n")
-            res->from = _decodeSquare[TB_GET_FROM(bestMove)];
-            res->to = _decodeSquare[TB_GET_TO(bestMove)];
-            res->promotionPiece = SYZYGY::getPromotion(TB_GET_PROMOTES(bestMove));
-            return true;
-        }
-        if (bestMove50) {
-            debug("bestMove50 ***********\n")
-            res->from = _decodeSquare[TB_GET_FROM(bestMove50)];
-            res->to = _decodeSquare[TB_GET_TO(bestMove50)];
-            res->promotionPiece = SYZYGY::getPromotion(TB_GET_PROMOTES(bestMove50));
-            return true;
-        }
-        if (drawMove) {
-            debug("drawMove ***********\n")
-            res->from = _decodeSquare[TB_GET_FROM(drawMove)];
-            res->to = _decodeSquare[TB_GET_TO(drawMove)];
-            res->promotionPiece = SYZYGY::getPromotion(TB_GET_PROMOTES(drawMove));
-            return true;
-        }
-        if (worstMove50) {
-            debug("worstMove50 ***********\n")
-            res->from = _decodeSquare[TB_GET_FROM(worstMove50)];
-            res->to = _decodeSquare[TB_GET_TO(worstMove50)];
-            res->promotionPiece = SYZYGY::getPromotion(TB_GET_PROMOTES(worstMove50));
-            return true;
-        }
-        if (worstMove) {
-            debug("worstMove ***********\n")
-            res->from = _decodeSquare[TB_GET_FROM(worstMove)];
-            res->to = _decodeSquare[TB_GET_TO(worstMove)];
-            res->promotionPiece = SYZYGY::getPromotion(TB_GET_PROMOTES(worstMove));
-            return true;
-        }
-        return false;
-    }
-#endif
-    return false;
-}
 
 template<bool checkMoves>
 bool Search::checkSearchMoves(const _Tmove *move) const {
@@ -611,54 +267,6 @@ bool Search::checkSearchMoves(const _Tmove *move) const {
     return false;
 }
 
-#ifndef JS_MODE
-
-int Search::probeWdl(const int depth, const uchar side, const int N_PIECE) {
-
-//    if (N_PIECE == 3 &&  depth > 2 && depth != mainDepth && (board[WHITE] || board[BLACK])) {
-//        const int kw = BITScanForward(board[KING_WHITE]);
-//        const int kb = BITScanForward(board[KING_BLACK]);
-//        const int pawnPos = BITScanForward(board[PAWN_BLACK]) | BITScanForward(board[PAWN_WHITE]);
-//
-//        const int winSide = board[PAWN_BLACK] ? BLACK : WHITE;
-//
-//        if (isDraw(winSide, side, kw, kb, pawnPos)) {
-//            if (winSide == side) return -_INFINITE + depth;
-//            else return _INFINITE - depth;
-//        } else {
-//            if (winSide == side) return _INFINITE - depth;
-//            else return -_INFINITE + depth;
-//        }
-//    }
-    if (N_PIECE < 8 && depth > 2 && depth != mainDepth) {
-        int tbResult = INT_MAX;
-        //syzygy
-        const unsigned res = syzygy->SZtbProbeWDL(chessboard, side, N_PIECE);
-        if (res != TB_RESULT_FAILED) {
-            tbResult = TB_GET_WDL(res);
-        }
-        unsigned pliestomate;
-        //gaviota
-        if (GTB::getInstance().isInstalledPieces(N_PIECE)) {
-            BENCH_START("gtbTime")
-            tbResult = GTB::getInstance().getDtmWdl(GTB_STM(side), 0, chessboard, &pliestomate, false, rightCastle);
-            BENCH_STOP("gtbTime")
-        }
-        switch (tbResult) {
-            case TB_LOSS :
-                return -_INFINITE + depth;
-            case TB_BLESSED_LOSS :
-                return -_INFINITE + depth + 50;
-            case TB_WIN :
-                return _INFINITE - depth;
-            case TB_CURSED_WIN :
-                return _INFINITE - depth - 50;
-        }
-    }
-    return INT_MAX;
-}
-
-#endif
 
 template<uchar side, bool checkMoves>
 int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, const int N_PIECE,
@@ -673,7 +281,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     }
     INC(cumulativeMovesCount);
 #ifndef JS_MODE
-    int wdl = probeWdl(depth, side, N_PIECE);
+    int wdl = TB::probeWdl(depth, side, N_PIECE, mainDepth, rightCastle, chessboard);
     if (wdl != INT_MAX) return wdl;
 #endif
 
@@ -698,7 +306,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     }
 
     /// ************* hash ****************
-    const u64 zobristKeyR = chessboard[ZOBRISTKEY_IDX] ^_random::RANDSIDE[side];
+    const u64 zobristKeyR = chessboard[ZOBRISTKEY_IDX] ^ _random::RANDSIDE[side];
     u64 hashItem;
     const int hashValue = hash.readHash(alpha, beta, depth, zobristKeyR, hashItem, currentPly);
     if (hashValue != INT_MAX) {

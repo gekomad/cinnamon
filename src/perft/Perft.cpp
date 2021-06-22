@@ -200,8 +200,8 @@ void Perft::run() {
 
     time.resetAndStart();
     p->incListId();
-    u64 friends = side ? board::getBitmap<WHITE>(p->getChessboard()) : board::getBitmap<BLACK>(p->getChessboard());
-    u64 enemies = side ? board::getBitmap<BLACK>(p->getChessboard()) : board::getBitmap<WHITE>(p->getChessboard());
+    u64 friends = side ? board::getBitmap<WHITE>(p->chessboard) : board::getBitmap<BLACK>(p->chessboard);
+    u64 enemies = side ? board::getBitmap<BLACK>(p->chessboard) : board::getBitmap<WHITE>(p->chessboard);
     p->generateCaptures(side, enemies, friends);
     p->generateMoves(side, friends | enemies);
     int listcount = p->getListSize();

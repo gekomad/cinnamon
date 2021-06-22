@@ -22,6 +22,7 @@
 #include "threadPool/ThreadPool.h"
 #include "namespaces/String.h"
 #include "util/IniFile.h"
+#include "db/TB.h"
 
 class SearchManager : private Singleton<SearchManager> {
     friend class Singleton<SearchManager>;
@@ -41,6 +42,11 @@ public:
     static void incHistoryHeuristic(const int from, const int to, const int value);
 
     static void startClock();
+
+    Search &getSearch(int i = 0) {
+        return threadPool->getThread(i);
+    }
+
 
     static string decodeBoardinv(const uchar type, const int a, const uchar side);
 
@@ -79,8 +85,6 @@ public:
     static void setForceCheck(const bool a);
 
     static void setRunningThread(const bool r);
-
-    static string probeRootTB();
 
     static void setRunning(const int i);
 

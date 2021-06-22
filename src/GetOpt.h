@@ -171,7 +171,9 @@ private:
             return;
         }
         searchManager.loadFen(fen);
+#ifndef JS_MODE
         searchManager.printDtmGtb(dtm);
+#endif
     }
 
     static void createSyzygy(int argc, char **argv) {
@@ -192,15 +194,19 @@ private:
     }
 
     static void wdlSyzygy(int argc, char **argv) {
+#ifndef JS_MODE
         createSyzygy(argc, argv);
         SearchManager &searchManager = Singleton<SearchManager>::getInstance();
         searchManager.printWdlSyzygy();
+#endif
     }
 
     static void dtmSyzygy(int argc, char **argv) {
+#ifndef JS_MODE
         createSyzygy(argc, argv);
         SearchManager &searchManager = Singleton<SearchManager>::getInstance();
         searchManager.printDtmSyzygy();
+#endif
     }
 
 public:
