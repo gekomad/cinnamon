@@ -145,7 +145,7 @@ int Search::qsearch(int alpha, const int beta, const uchar promotionPiece, const
     int first = 0;
     if (!(numMoves % 2048)) setRunning(checkTime());
     while ((move = getNextMoveQ(&genList[listId], first++))) {
-        if (!makemove(move, false, true)) {
+        if (!makemove(move, false)) {
             takeback(move, oldKey, oldEnpassant, false);
             continue;
         }
@@ -413,7 +413,6 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
 
     INC(totGen);
     _Tmove *move;
-    bool checkInCheck = false;
     int countMove = 0;
     char hashf = Hash::hashfALPHA;
     int first = 0;
@@ -421,11 +420,10 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
         if (!checkSearchMoves<checkMoves>(move) && depth == mainDepth) continue;
         countMove++;
 
-        if (!makemove(move, true, checkInCheck)) {
+        if (!makemove(move, true)) {
             takeback(move, oldKey, oldEnpassant, true);
             continue;
         }
-        checkInCheck = true;
         int val = INT_MAX;
         if (move->promotionPiece == NO_PROMOTION) {
             if (futilPrune && futilScore + PIECES_VALUE[move->capturedPiece] <= alpha &&

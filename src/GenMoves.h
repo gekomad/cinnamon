@@ -313,7 +313,7 @@ public:
         }
     }
 
-    bool makemove(const _Tmove *move, const bool rep, const bool);
+    bool makemove(const _Tmove *move, const bool rep);
 
     void incListId() {
         listId++;

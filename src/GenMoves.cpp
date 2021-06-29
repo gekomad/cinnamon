@@ -301,7 +301,7 @@ void GenMoves::takeback(const _Tmove *move, const u64 oldkey, const uchar oldEnp
 }
 
 
-bool GenMoves::makemove(const _Tmove *move, const bool rep, const bool checkInCheck) {
+bool GenMoves::makemove(const _Tmove *move, const bool rep) {
     BENCH_AUTO_CLOSE("makemove")
     assert(move);
     assert(bitCount(chessboard[KING_WHITE]) == 1 && bitCount(chessboard[KING_BLACK]) == 1);
@@ -397,7 +397,7 @@ bool GenMoves::makemove(const _Tmove *move, const bool rep, const bool checkInCh
         }
         pushStackMove(chessboard[ZOBRISTKEY_IDX]);
     }
-    if ((forceCheck || (checkInCheck && !perftMode)) &&
+    if ((forceCheck || !perftMode) &&
         ((move->side == WHITE && board::inCheck1<WHITE>(chessboard)) ||
          (move->side == BLACK && board::inCheck1<BLACK>(chessboard)))) {
         return false;

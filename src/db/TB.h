@@ -90,7 +90,7 @@ public:
 
             for (int i = 0; i < genMoves.getListSize(); i++) {
                 _Tmove *move = &genMoves.genList[genMoves.listId].moveList[i];
-                if (!genMoves.makemove(move, false, true)) {
+                if (!genMoves.makemove(move, false)) {
                     genMoves.takeback(move, oldKey, oldEnpassant, false);
                     continue;
                 }
@@ -311,7 +311,7 @@ public:
 
         for (int i = 0; i < genMoves.getListSize(); i++) {
             move = &genMoves.genList[genMoves.listId].moveList[i];
-            if (!genMoves.makemove(move, false, true)) {
+            if (!genMoves.makemove(move, false)) {
                 genMoves.takeback(move, oldKey, oldEnpassant, false);
                 continue;
             }
@@ -415,7 +415,7 @@ public:
         uchar oldEnpassant = genMoves.enPassant;
         for (int i = 0; i < genMoves.getListSize(); i++) {
             move = &genMoves.genList[genMoves.listId].moveList[i];
-            if (!genMoves.makemove(move, false, true)) {
+            if (!genMoves.makemove(move, false)) {
                 genMoves.takeback(move, oldKey, oldEnpassant, false);
                 continue;
             }

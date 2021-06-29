@@ -250,7 +250,7 @@ void SearchManager::setChess960(const bool i) {
 bool SearchManager::makemove(const _Tmove *i) {
     bool b = false;
     for (Search *s:threadPool->getPool()) {
-        b = s->makemove(i, true, false);
+        b = s->makemove(i, true);
     }
     return b;
 }
