@@ -33,7 +33,7 @@ unsigned SearchManager::SZtbProbeWDL() const {
 }
 #endif
 
-int SearchManager::search(const int ply, const int mply) {
+int SearchManager::search(const int plyFromRoot, const int iter_depth) {
 
     constexpr int SkipStep[64] =
             {0, 1, 2, 3, 1, 1, 2, 3, 0, 1, 1, 2, 1, 1, 2, 3, 0, 1, 1, 2, 1, 1, 2, 3, 0, 1, 1, 2, 1, 1, 2, 3, 0, 1, 1, 2,
@@ -41,7 +41,7 @@ int SearchManager::search(const int ply, const int mply) {
              1, 2, 3, 0, 1, 1, 2, 1, 1, 2, 3, 0, 1, 1, 2, 1, 1, 2, 3, 0, 1, 1, 2, 1, 1, 2, 3};
 
     lineWin.cmove = -1;
-    setMainPly(ply, mply);
+    setMainPly(plyFromRoot, iter_depth);
     assert(bitCount(threadPool->getBitCount()) < 2);
 
     for (int ii = 1; ii < threadPool->getNthread(); ii++) {
@@ -49,11 +49,11 @@ int SearchManager::search(const int ply, const int mply) {
         if (helperThread.getId() == 0)continue;
 
         helperThread.setRunning(1);
-        startThread(helperThread, mply + SkipStep[ii]);
+        startThread(helperThread, iter_depth + SkipStep[ii]);
     }
 
     Search &mainThread = threadPool->getThread(0);
-    mainThread.setMainParam(mply);
+    mainThread.setMainParam(iter_depth);
     mainThread.run();
 
     auto res = mainThread.getValWindow();
@@ -119,9 +119,9 @@ void SearchManager::startThread(Search &thread, const int depth) {
     thread.start();
 }
 
-void SearchManager::setMainPly(const int ply, const int mply) {
+void SearchManager::setMainPly(const int ply, const int iter_depth) {
     for (Search *s:threadPool->getPool()) {
-        s->setMainPly(ply, mply);
+        s->setMainPly(ply, iter_depth);
     }
 }
 

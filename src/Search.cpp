@@ -86,8 +86,8 @@ void Search::startClock() {
     startTime = std::chrono::high_resolution_clock::now();
 }
 
-void Search::setMainPly(const int ply, const int mply) {
-    mainDepth = mply;
+void Search::setMainPly(const int ply, const int iter_depth) {
+    mainDepth = iter_depth;
     this->ply = ply;
 }
 
@@ -223,9 +223,9 @@ bool Search::checkDraw(const u64 key) {
     return false;
 }
 
-void Search::setMainParam(const int depth) {
+void Search::setMainParam(const int iter_depth) {
     memset(&pvLine, 0, sizeof(_TpvLine));
-    mainDepth = depth;
+    mainDepth = iter_depth;
 }
 
 template<bool searchMoves>
