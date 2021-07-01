@@ -103,7 +103,7 @@ void Uci::listner(IterativeDeeping *it) {
             searchManager.setRunningThread(false);
         } else if (String::toLower(token) == "ucinewgame") {
             while (it->getRunning());
-            it->ply = 0;
+            it->plyFromRoot = 0;
             searchManager.loadFen();
             knowCommand = true;
         } else if (String::toLower(token) == "setoption") {

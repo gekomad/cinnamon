@@ -222,7 +222,7 @@ public:
 
 #endif
 
-    static int search(const int ply, const int mply);
+    static int search(const int ply, const int iter_depth);
 
 private:
 
