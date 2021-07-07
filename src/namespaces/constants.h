@@ -78,9 +78,9 @@ namespace constants {
     static constexpr uchar QUEEN_WHITE = 11;
     static constexpr uchar ZOBRISTKEY_IDX = 12;
 
-    static constexpr uchar ENPASSANT_IDX = 13;
-    static constexpr uchar SIDETOMOVE_IDX = 14;
-    static constexpr uchar RIGHT_CASTLE_IDX = 15;
+    static constexpr uchar ENPASSANT_RAND = 13;
+
+    static constexpr uchar RIGHT_CASTLE_RAND = 15;
 
     static constexpr uchar SQUARE_EMPTY = 12;
 

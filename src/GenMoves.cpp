@@ -369,13 +369,13 @@ bool GenMoves::makemove(const _Tmove *move, const bool rep) {
             case PAWN_WHITE:
                 if ((RANK_2 & POW2(move->from)) && (RANK_3 & POW2(move->to))) {
                     enPassant = move->to;
-                    updateZobristKey(ENPASSANT_IDX, enPassant);
+                    updateZobristKey(ENPASSANT_RAND, enPassant);
                 }
                 break;
             case PAWN_BLACK:
                 if ((RANK_7 & POW2(move->from)) && (RANK_5 & POW2(move->to))) {
                     enPassant = move->to;
-                    updateZobristKey(ENPASSANT_IDX, enPassant);
+                    updateZobristKey(ENPASSANT_RAND, enPassant);
                 }
                 break;
             default:;

@@ -178,7 +178,7 @@ public:
         BENCH_AUTO_CLOSE("pawnCapture")
         if (!chessboard[side]) {
             if (enPassant != NO_ENPASSANT) {
-                updateZobristKey(ENPASSANT_IDX, enPassant);
+                updateZobristKey(ENPASSANT_RAND, enPassant);
             }
             enPassant = NO_ENPASSANT;
             return false;
@@ -243,7 +243,7 @@ public:
                                                     true);
 
             }
-            updateZobristKey(ENPASSANT_IDX, enPassant);
+            updateZobristKey(ENPASSANT_RAND, enPassant);
             enPassant = NO_ENPASSANT;
         }
         return false;
@@ -618,7 +618,7 @@ protected:
                  board::isPieceAt(ROOK_BLACK, startPosBlackRookQueenSide, chessboard) &&
                  (!board::isOccupied(C8, allpieces) || startPosBlackKing == C8 || startPosBlackRookQueenSide == C8) &&
                  (!board::isOccupied(D8, allpieces) || startPosBlackKing == D8 || startPosBlackRookQueenSide == D8) &&
-                 !(startPosWhiteKing == C8 && startPosWhiteRookQueenSide == D8);
+                 !(startPosBlackKing == C8 && startPosBlackRookQueenSide == D8);
         if (!a)return false;
         const u64 rookPath = LINK_SQUARE[startPosBlackRookQueenSide][D8] & NOTPOW2(startPosBlackKing);
         const u64 path = LINK_SQUARE[startPosBlackKing][C8];
