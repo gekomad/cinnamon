@@ -177,17 +177,10 @@ void PerftThread::run() {
         x = toupper(x);
         if (x == 'P') x = ' ';
 
-        const char y = (move->capturedPiece != SQUARE_EMPTY) ? '*' : '-';
-
         if (fhash)spinlockPrint.lock();
         cout << endl;
-        string h;
-        if ((decodeBoardinv(move->type, move->to, sideToMove)).length() > 2) {
-            h = decodeBoardinv(move->type, move->to, sideToMove);
-        } else {
-            h = h + x + decodeBoardinv(move->type, move->from, sideToMove) + y
-                + decodeBoardinv(move->type, move->to, sideToMove);
-        }
+        string h = decodeBoardinv(move, sideToMove, true);
+
         cout << setw(6) << h;
         cout << setw(20) << n_perft;
         cout << setw(8) << (Perft::count--);

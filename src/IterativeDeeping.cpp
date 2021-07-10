@@ -174,13 +174,7 @@ void IterativeDeeping::run() {
         if (trace) {
 
             resultMove.capturedPiece = searchManager.getPieceAt(X(resultMove.side), POW2(resultMove.to));
-            bestmove = searchManager.decodeBoardinv(resultMove.type, resultMove.from, resultMove.side);
-            if (!(resultMove.type & (KING_SIDE_CASTLE_MOVE_MASK | QUEEN_SIDE_CASTLE_MOVE_MASK))) {
-                bestmove += searchManager.decodeBoardinv(resultMove.type, resultMove.to, resultMove.side);
-                if (resultMove.promotionPiece != NO_PROMOTION) {
-                    bestmove += tolower(FEN_PIECE[resultMove.promotionPiece]);
-                }
-            }
+            bestmove = searchManager.decodeBoardinv(&resultMove, resultMove.side);
 
             if (sc > _INFINITE - MAX_PLY)
                 cout << "info depth " << iter_depth << " score mate " << max(1, (_INFINITE - sc) / 2);

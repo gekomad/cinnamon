@@ -317,8 +317,8 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
 
     if (!(numMoves % 2048)) setRunning(checkTime());
     ++numMoves;
-    _TpvLine line;
-    line.cmove = 0;
+    _TpvLine newLine;
+    newLine.cmove = 0;
 
     /// ********* null move ***********
     if (!nullSearch && !pvNode && !isIncheckSide) {
@@ -333,12 +333,12 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
             const int R = NULL_DEPTH + depth / NULL_DIVISOR;
             int nullScore;
             if (depth - R - 1 > 0) {
-                nullScore = -search<X(side), checkMoves>(depth + extension - R - 1, -beta, -beta + 1, &line, N_PIECE,
+                nullScore = -search<X(side), checkMoves>(depth + extension - R - 1, -beta, -beta + 1, &newLine, N_PIECE,
                                                          nRootMoves);
                 if (!forceCheck && abs(nullScore) > _INFINITE - MAX_PLY) {
                     currentPly++;
                     forceCheck = true;
-                    nullScore = -search<X(side), checkMoves>(depth + extension - R - 1, -beta, -beta + 1, &line,
+                    nullScore = -search<X(side), checkMoves>(depth + extension - R - 1, -beta, -beta + 1, &newLine,
                                                              N_PIECE,
                                                              nRootMoves);
                     forceCheck = false;
@@ -436,13 +436,13 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
             if (countMove > 3 && !isIncheckSide && depth >= 3 && move->capturedPiece == SQUARE_EMPTY) {
                 currentPly++;
                 const int R = countMove > 6 ? 3 : 2;
-                val = -search<X(side), checkMoves>(depth + extension - R, -(alpha + 1), -alpha, &line, N_PIECE,
+                val = -search<X(side), checkMoves>(depth + extension - R, -(alpha + 1), -alpha, &newLine, N_PIECE,
                                                    nRootMoves);
                 currentPly--;
                 if (!forceCheck && abs(val) > _INFINITE - MAX_PLY) {
                     currentPly++;
                     forceCheck = true;
-                    val = -search<X(side), checkMoves>(depth + extension - R, -(alpha + 1), -alpha, &line, N_PIECE,
+                    val = -search<X(side), checkMoves>(depth + extension - R, -(alpha + 1), -alpha, &newLine, N_PIECE,
                                                        nRootMoves);
                     forceCheck = false;
                     currentPly--;
@@ -454,14 +454,14 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
             const int lwb = max(alpha, score);
             const int upb = (doMws ? (lwb + 1) : beta);
             currentPly++;
-            val = -search<X(side), checkMoves>(depth + extension - 1, -upb, -lwb, &line,
+            val = -search<X(side), checkMoves>(depth + extension - 1, -upb, -lwb, &newLine,
                                                move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1,
                                                nRootMoves);
             currentPly--;
             if (!forceCheck && abs(val) > _INFINITE - MAX_PLY) {
                 currentPly++;
                 forceCheck = true;
-                val = -search<X(side), checkMoves>(depth + extension - 1, -upb, -lwb, &line,
+                val = -search<X(side), checkMoves>(depth + extension - 1, -upb, -lwb, &newLine,
                                                    move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1,
                                                    nRootMoves);
                 forceCheck = false;
@@ -470,7 +470,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
             if (doMws && (lwb < val) && (val < beta)) {
                 currentPly++;
                 val = -search<X(side), checkMoves>(depth + extension - 1, -beta, -val + 1,
-                                                   &line,
+                                                   &newLine,
                                                    move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1,
                                                    nRootMoves);
                 currentPly--;
@@ -478,7 +478,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
                     currentPly++;
                     forceCheck = true;
                     val = -search<X(side), checkMoves>(depth + extension - 1, -beta, -val + 1,
-                                                       &line,
+                                                       &newLine,
                                                        move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1,
                                                        nRootMoves);
                     forceCheck = false;
@@ -515,7 +515,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
             alpha = score;
             hashf = Hash::hashfEXACT;
             best = move;
-            updatePv(pline, &line, move);
+            updatePv(pline, &newLine, move);
         }
     }
     if (getRunning()) {
