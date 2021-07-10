@@ -160,18 +160,19 @@ void ChessBoard::display() const {
 }
 
 string ChessBoard::moveToString(const _Tmove *move) {
-    string a = decodeBoardinv(move->type, move->from, move->side);
-    if (move->type & 0xc) return a;
-    string b = decodeBoardinv(move->type, move->to, move->side);
-    if (move->promotionPiece != NO_PROMOTION) (a + b) += (char) tolower(FEN_PIECE[move->promotionPiece]);
-    return a + b;
+    return decodeBoardinv(move, move->side);
 }
 
 void ChessBoard::print(const _Tmove *move) {
     cout << moveToString(move) << " " << flush;
 }
 
-string ChessBoard::decodeBoardinv(const uchar type, const int a, const uchar side) {
+string
+ChessBoard::decodeBoardinv(const _Tmove *move, const uchar side, const bool showCap) {
+    const uchar type = move->type;
+    const int from = move->from;
+    const int to = move->to;
+    const int promotionPiece = move->promotionPiece;
     if (type & QUEEN_SIDE_CASTLE_MOVE_MASK && side == WHITE) {
         return isChess960() ? BOARD[startPosWhiteKing] + BOARD[startPosWhiteRookQueenSide] : "e1c1";
     }
@@ -185,17 +186,24 @@ string ChessBoard::decodeBoardinv(const uchar type, const int a, const uchar sid
         return isChess960() ? BOARD[startPosBlackKing] + BOARD[startPosBlackRookKingSide] : "e8g8";
     }
     assert(!(type & 0xC));
-    if (a >= 0 && a < 64) {
-        return BOARD[a];
+    assert (to >= 0 && to < 64);
+    string cap = "";
+    string res = "";
+    if (showCap) {
+        if (move->capturedPiece != SQUARE_EMPTY) cap = "*"; else cap = "-";
     }
-    _assert(0)
+    res = BOARD[from] + cap + BOARD[to];
+    if (promotionPiece != NO_PROMOTION) {
+        res += tolower(FEN_PIECE[promotionPiece]);
+    }
+    return res;
 }
 
 void ChessBoard::clearChessboard() {
     memset(chessboard, 0, sizeof(_Tchessboard));
     enPassant = NO_ENPASSANT;
     rightCastle = 0;
-    sideToMove=0;
+    sideToMove = 0;
 }
 
 int ChessBoard::loadFen(const string &fen) {
@@ -226,7 +234,7 @@ int ChessBoard::loadFen(const string &fen) {
     iss >> a2;
     a2 += " 1";
     if (String::isNumber(a2))
-    	movesCount = stoi(a2);
+        movesCount = stoi(a2);
 
     int ix = 0;
     array<int, 64> s;

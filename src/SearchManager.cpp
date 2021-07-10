@@ -77,16 +77,9 @@ bool SearchManager::getRes(_Tmove &resultMove, string &ponderMove, string &pvv) 
     assert(lineWin.cmove);
     for (int t = 0; t < lineWin.cmove; t++) {
         pvvTmp.clear();
-        pvvTmp +=
-                decodeBoardinv(lineWin.argmove[t].type, lineWin.argmove[t].from,
-                               threadPool->getThread(0).sideToMove);
-        if (pvvTmp.length() != 4 && pvvTmp[0] != 'O') {
-            pvvTmp += decodeBoardinv(lineWin.argmove[t].type, lineWin.argmove[t].to,
-                                     threadPool->getThread(0).sideToMove);
-        }
+        pvvTmp += decodeBoardinv(&lineWin.argmove[t], threadPool->getThread(0).sideToMove);
         pvv.append(pvvTmp);
-        if (lineWin.argmove[t].promotionPiece != NO_PROMOTION)
-            pvv.push_back(tolower(FEN_PIECE[lineWin.argmove[t].promotionPiece]));
+
         if (t == 1) {
             ponderMove.assign(pvvTmp);
         }
@@ -255,8 +248,8 @@ bool SearchManager::makemove(const _Tmove *i) {
     return b;
 }
 
-string SearchManager::decodeBoardinv(const uchar type, const int a, const uchar side) {
-    return threadPool->getThread(0).decodeBoardinv(type, a, side);
+string SearchManager::decodeBoardinv(const _Tmove *move, const uchar side) {
+    return threadPool->getThread(0).decodeBoardinv(move, side);
 }
 
 void SearchManager::takeback(const _Tmove *move, const u64 oldkey, const uchar oldEnpassant, const bool rep) {
@@ -274,7 +267,7 @@ void SearchManager::setSide(const bool i) {
 #ifndef JS_MODE
 
 int SearchManager::printDtmGtb(const bool dtm) {
-    return TB::printDtmWdlGtb(threadPool->getThread(0),dtm);
+    return TB::printDtmWdlGtb(threadPool->getThread(0), dtm);
 }
 
 void SearchManager::printDtmSyzygy() {
