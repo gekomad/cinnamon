@@ -317,8 +317,8 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
 
     if (!(numMoves % 2048)) setRunning(checkTime());
     ++numMoves;
-    _TpvLine newLine;
-    newLine.cmove = 0;
+    _TpvLine newLine1;
+    newLine1.cmove = 0;
 
     /// ********* null move ***********
     if (!nullSearch && !pvNode && !isIncheckSide) {
@@ -333,12 +333,12 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
             const int R = NULL_DEPTH + depth / NULL_DIVISOR;
             int nullScore;
             if (depth - R - 1 > 0) {
-                nullScore = -search<X(side), checkMoves>(depth + extension - R - 1, -beta, -beta + 1, &newLine, N_PIECE,
+                nullScore = -search<X(side), checkMoves>(depth + extension - R - 1, -beta, -beta + 1, &newLine1, N_PIECE,
                                                          nRootMoves);
                 if (!forceCheck && abs(nullScore) > _INFINITE - MAX_PLY) {
                     currentPly++;
                     forceCheck = true;
-                    nullScore = -search<X(side), checkMoves>(depth + extension - R - 1, -beta, -beta + 1, &newLine,
+                    nullScore = -search<X(side), checkMoves>(depth + extension - R - 1, -beta, -beta + 1, &newLine1,
                                                              N_PIECE,
                                                              nRootMoves);
                     forceCheck = false;
@@ -425,6 +425,8 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
             continue;
         }
         int val = INT_MAX;
+        _TpvLine newLine;
+        newLine.cmove = 0;
         if (move->promotionPiece == NO_PROMOTION) {
             if (futilPrune && futilScore + PIECES_VALUE[move->capturedPiece] <= alpha &&
                 !board::inCheck1<side>(chessboard)) {
