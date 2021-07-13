@@ -25,39 +25,49 @@ DEBUG(unsigned Search::cumulativeMovesCount)
 
 void Search::run() {
     if (getRunning()) {
-        if (searchMovesVector.size())
-            aspirationWindow<true>(mainDepth, valWindow);
-        else
-            aspirationWindow<false>(mainDepth, valWindow);
+        if (searchMovesVector.size()) {
+            if (sideToMove == WHITE)
+                aspirationWindow<WHITE, true>(mainDepth, valWindow);
+            else
+                aspirationWindow<BLACK, true>(mainDepth, valWindow);
+        } else {
+            if (sideToMove == WHITE)
+                aspirationWindow<WHITE, false>(mainDepth, valWindow);
+            else
+                aspirationWindow<BLACK, false>(mainDepth, valWindow);
+        }
     }
 }
 
-template<bool searchMoves>
+template<uchar side, bool searchMoves>
 void Search::aspirationWindow(const int depth, const int valWin) {
     valWindow = valWin;
     init();
+    const auto nPieces = bitCount(board::getBitmap<WHITE>(chessboard) | board::getBitmap<BLACK>(chessboard));
+
 
     if (depth == 1) {
-        valWindow = searchRoot<searchMoves>(depth, -_INFINITE - 1, _INFINITE + 1);
+        valWindow = search<side, searchMoves>(depth, -_INFINITE - 1, _INFINITE + 1, &pvLine, nPieces);
     } else {
-        int tmp = searchRoot<searchMoves>(mainDepth, valWindow - VAL_WINDOW, valWindow + VAL_WINDOW);
-
+        int tmp = search<side, searchMoves>(depth, valWindow - VAL_WINDOW, valWindow + VAL_WINDOW, &pvLine, nPieces);
         if (tmp <= valWindow - VAL_WINDOW || tmp >= valWindow + VAL_WINDOW) {
             if (tmp <= valWindow - VAL_WINDOW) {
-                tmp = searchRoot<searchMoves>(mainDepth, valWindow - VAL_WINDOW * 2, valWindow + VAL_WINDOW);
+                tmp = search<side, searchMoves>(depth, valWindow - VAL_WINDOW * 2, valWindow + VAL_WINDOW, &pvLine,
+                                                nPieces);
             } else {
-                tmp = searchRoot<searchMoves>(mainDepth, valWindow - VAL_WINDOW, valWindow + VAL_WINDOW * 2);
+                tmp = search<side, searchMoves>(depth, valWindow - VAL_WINDOW, valWindow + VAL_WINDOW * 2, &pvLine,
+                                                nPieces);
             }
-
             if (tmp <= valWindow - VAL_WINDOW || tmp >= valWindow + VAL_WINDOW) {
                 if (tmp <= valWindow - VAL_WINDOW) {
-                    tmp = searchRoot<searchMoves>(mainDepth, valWindow - VAL_WINDOW * 4, valWindow + VAL_WINDOW);
+                    tmp = search<side, searchMoves>(depth, valWindow - VAL_WINDOW * 4, valWindow + VAL_WINDOW, &pvLine,
+                                                    nPieces);
                 } else {
-                    tmp = searchRoot<searchMoves>(mainDepth, valWindow - VAL_WINDOW, valWindow + VAL_WINDOW * 4);
+                    tmp = search<side, searchMoves>(depth, valWindow - VAL_WINDOW, valWindow + VAL_WINDOW * 4, &pvLine,
+                                                    nPieces);
                 }
-
                 if (tmp <= valWindow - VAL_WINDOW || tmp >= valWindow + VAL_WINDOW) {
-                    tmp = searchRoot<searchMoves>(mainDepth, -_INFINITE - 1, _INFINITE + 1);
+                    tmp = search<side, searchMoves>(depth, -_INFINITE - 1, _INFINITE + 1, &pvLine, nPieces);
                 }
             }
         }
@@ -228,35 +238,6 @@ void Search::setMainParam(const int iter_depth) {
     mainDepth = iter_depth;
 }
 
-template<bool searchMoves>
-int Search::searchRoot(const int depth, const int alpha, const int beta) {
-    ASSERT_RANGE(depth, 0, MAX_PLY)
-    auto ep = enPassant;
-    incListId();
-
-    const u64 friends = (sideToMove == WHITE) ? board::getBitmap<WHITE>(chessboard) : board::getBitmap<BLACK>(
-            chessboard);
-    const u64 enemies = (sideToMove == WHITE) ? board::getBitmap<BLACK>(chessboard) : board::getBitmap<WHITE>(
-            chessboard);
-    generateCaptures(sideToMove, enemies, friends);
-    generateMoves(sideToMove, friends | enemies);
-    int n_root_moves = getListSize();
-    decListId();
-    enPassant = ep;
-    return sideToMove ? search<WHITE, searchMoves>(depth,
-                                                   alpha,
-                                                   beta,
-                                                   &pvLine,
-                                                   bitCount(board::getBitmap<WHITE>(chessboard) |
-                                                            board::getBitmap<BLACK>(chessboard)),
-                                                   n_root_moves)
-                      : search<BLACK, searchMoves>(depth, alpha, beta, &pvLine,
-                                                   bitCount(board::getBitmap<WHITE>(chessboard) |
-                                                            board::getBitmap<BLACK>(chessboard)),
-                                                   n_root_moves);
-}
-
-
 template<bool checkMoves>
 bool Search::checkSearchMoves(const _Tmove *move) const {
     if (!checkMoves)return true;
@@ -269,8 +250,7 @@ bool Search::checkSearchMoves(const _Tmove *move) const {
 
 
 template<uchar side, bool checkMoves>
-int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, const int N_PIECE,
-                   const int nRootMoves) {
+int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, const int N_PIECE) {
 
     ASSERT_RANGE(side, 0, 1)
     if (!getRunning()) return 0;
@@ -322,7 +302,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
 
     /// ********* null move ***********
     if (!nullSearch && !pvNode && !isIncheckSide) {
-        int nDepth = (nRootMoves > 17 || depth > 3) ? 1 : 3;
+        int nDepth = (depth > 3) ? 1 : 3;
         if (nDepth == 3) {
             const u64 pieces = board::getPiecesNoKing<side>(chessboard);
             if (pieces != chessboard[PAWN_BLACK + side] || bitCount(pieces) > 9)
@@ -333,14 +313,14 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
             const int R = NULL_DEPTH + depth / NULL_DIVISOR;
             int nullScore;
             if (depth - R - 1 > 0) {
-                nullScore = -search<X(side), checkMoves>(depth + extension - R - 1, -beta, -beta + 1, &newLine1, N_PIECE,
-                                                         nRootMoves);
+                nullScore = -search<X(side), checkMoves>(depth + extension - R - 1, -beta, -beta + 1, &newLine1, N_PIECE
+                );
                 if (!forceCheck && abs(nullScore) > _INFINITE - MAX_PLY) {
                     currentPly++;
                     forceCheck = true;
                     nullScore = -search<X(side), checkMoves>(depth + extension - R - 1, -beta, -beta + 1, &newLine1,
-                                                             N_PIECE,
-                                                             nRootMoves);
+                                                             N_PIECE
+                    );
                     forceCheck = false;
                     currentPly--;
                 }
@@ -438,14 +418,14 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
             if (countMove > 3 && !isIncheckSide && depth >= 3 && move->capturedPiece == SQUARE_EMPTY) {
                 currentPly++;
                 const int R = countMove > 6 ? 3 : 2;
-                val = -search<X(side), checkMoves>(depth + extension - R, -(alpha + 1), -alpha, &newLine, N_PIECE,
-                                                   nRootMoves);
+                val = -search<X(side), checkMoves>(depth + extension - R, -(alpha + 1), -alpha, &newLine, N_PIECE
+                );
                 currentPly--;
                 if (!forceCheck && abs(val) > _INFINITE - MAX_PLY) {
                     currentPly++;
                     forceCheck = true;
-                    val = -search<X(side), checkMoves>(depth + extension - R, -(alpha + 1), -alpha, &newLine, N_PIECE,
-                                                       nRootMoves);
+                    val = -search<X(side), checkMoves>(depth + extension - R, -(alpha + 1), -alpha, &newLine, N_PIECE
+                    );
                     forceCheck = false;
                     currentPly--;
                 }
@@ -457,15 +437,15 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
             const int upb = (doMws ? (lwb + 1) : beta);
             currentPly++;
             val = -search<X(side), checkMoves>(depth + extension - 1, -upb, -lwb, &newLine,
-                                               move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1,
-                                               nRootMoves);
+                                               move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1
+            );
             currentPly--;
             if (!forceCheck && abs(val) > _INFINITE - MAX_PLY) {
                 currentPly++;
                 forceCheck = true;
                 val = -search<X(side), checkMoves>(depth + extension - 1, -upb, -lwb, &newLine,
-                                                   move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1,
-                                                   nRootMoves);
+                                                   move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1
+                );
                 forceCheck = false;
                 currentPly--;
             }
@@ -473,16 +453,16 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
                 currentPly++;
                 val = -search<X(side), checkMoves>(depth + extension - 1, -beta, -val + 1,
                                                    &newLine,
-                                                   move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1,
-                                                   nRootMoves);
+                                                   move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1
+                );
                 currentPly--;
                 if (!forceCheck && abs(val) > _INFINITE - MAX_PLY) {
                     currentPly++;
                     forceCheck = true;
                     val = -search<X(side), checkMoves>(depth + extension - 1, -beta, -val + 1,
                                                        &newLine,
-                                                       move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1,
-                                                       nRootMoves);
+                                                       move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1
+                    );
                     forceCheck = false;
                     currentPly--;
                 }

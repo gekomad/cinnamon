@@ -91,9 +91,6 @@ public:
 
     void setMainParam(const int depth);
 
-    template<bool searchMoves>
-    int searchRoot(const int depth, const int alpha, const int beta);
-
     void run();
 
     void endRun() {}
@@ -143,7 +140,7 @@ private:
     Times *times = &Times::getInstance();
 #endif
 
-    template<bool searchMoves>
+    template<uchar side,bool searchMoves>
     void aspirationWindow(const int depth, const int valWindow);
 
     int checkTime() const;
@@ -155,7 +152,7 @@ private:
     bool checkDraw(u64);
 
     template<uchar side, bool checkMoves>
-    int search(const int depth, int alpha, const int beta, _TpvLine *pline, const int N_PIECE, const int nRootMoves);
+    int search(const int depth, int alpha, const int beta, _TpvLine *pline, const int N_PIECE);
 
     template<bool checkMoves>
     bool checkSearchMoves(const _Tmove *move) const;
