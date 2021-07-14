@@ -251,8 +251,22 @@ bool Search::checkSearchMoves(const _Tmove *move) const {
 
 template<uchar side, bool checkMoves>
 int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, const int N_PIECE) {
-
     ASSERT_RANGE(side, 0, 1)
+
+    const auto searchLambda = [&](_TpvLine *newLine, const int depth, const int alpha, const int beta,
+                                  const _Tmove *move = nullptr) {
+        const auto nPieces = move ? (move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1) : N_PIECE;
+        currentPly++;
+        int val = -search<X(side), checkMoves>(depth, alpha, beta, newLine, nPieces);
+        if (!forceCheck && abs(val) > _INFINITE - MAX_PLY) {
+            forceCheck = true;
+            val = -search<X(side), checkMoves>(depth, alpha, beta, newLine, nPieces);
+            forceCheck = false;
+        }
+        currentPly--;
+        return val;
+    };
+
     if (!getRunning()) return 0;
     u64 oldKey = chessboard[ZOBRISTKEY_IDX];
     uchar oldEnpassant = enPassant;
@@ -313,17 +327,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
             const int R = NULL_DEPTH + depth / NULL_DIVISOR;
             int nullScore;
             if (depth - R - 1 > 0) {
-                nullScore = -search<X(side), checkMoves>(depth + extension - R - 1, -beta, -beta + 1, &newLine1, N_PIECE
-                );
-                if (!forceCheck && abs(nullScore) > _INFINITE - MAX_PLY) {
-                    currentPly++;
-                    forceCheck = true;
-                    nullScore = -search<X(side), checkMoves>(depth + extension - R - 1, -beta, -beta + 1, &newLine1,
-                                                             N_PIECE
-                    );
-                    forceCheck = false;
-                    currentPly--;
-                }
+                nullScore = searchLambda(&newLine1, depth + extension - R - 1, -beta, -beta + 1);
             } else {
                 nullScore = -qsearch<X(side)>(-beta, -beta + 1, -1, 0);
             }
@@ -396,6 +400,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     int countMove = 0;
     char hashf = Hash::hashfALPHA;
     int first = 0;
+
     while ((move = getNextMove(&genList[listId], depth, hashItem, first++))) {
         if (!checkSearchMoves<checkMoves>(move) && depth == mainDepth) continue;
         countMove++;
@@ -407,6 +412,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
         int val = INT_MAX;
         _TpvLine newLine;
         newLine.cmove = 0;
+
         if (move->promotionPiece == NO_PROMOTION) {
             if (futilPrune && futilScore + PIECES_VALUE[move->capturedPiece] <= alpha &&
                 !board::inCheck1<side>(chessboard)) {
@@ -416,56 +422,17 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
             }
             //Late Move Reduction
             if (countMove > 3 && !isIncheckSide && depth >= 3 && move->capturedPiece == SQUARE_EMPTY) {
-                currentPly++;
-                const int R = countMove > 6 ? 3 : 2;
-                val = -search<X(side), checkMoves>(depth + extension - R, -(alpha + 1), -alpha, &newLine, N_PIECE
-                );
-                currentPly--;
-                if (!forceCheck && abs(val) > _INFINITE - MAX_PLY) {
-                    currentPly++;
-                    forceCheck = true;
-                    val = -search<X(side), checkMoves>(depth + extension - R, -(alpha + 1), -alpha, &newLine, N_PIECE
-                    );
-                    forceCheck = false;
-                    currentPly--;
-                }
+                val = searchLambda(&newLine, depth + extension - (countMove > 6 ? 3 : 2), -(alpha + 1), -alpha);
             }
         }
+
         if (val > alpha) {
             const int doMws = (score > -_INFINITE + MAX_PLY);
             const int lwb = max(alpha, score);
             const int upb = (doMws ? (lwb + 1) : beta);
-            currentPly++;
-            val = -search<X(side), checkMoves>(depth + extension - 1, -upb, -lwb, &newLine,
-                                               move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1
-            );
-            currentPly--;
-            if (!forceCheck && abs(val) > _INFINITE - MAX_PLY) {
-                currentPly++;
-                forceCheck = true;
-                val = -search<X(side), checkMoves>(depth + extension - 1, -upb, -lwb, &newLine,
-                                                   move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1
-                );
-                forceCheck = false;
-                currentPly--;
-            }
+            val = searchLambda(&newLine, depth + extension - 1, -upb, -lwb, move);
             if (doMws && (lwb < val) && (val < beta)) {
-                currentPly++;
-                val = -search<X(side), checkMoves>(depth + extension - 1, -beta, -val + 1,
-                                                   &newLine,
-                                                   move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1
-                );
-                currentPly--;
-                if (!forceCheck && abs(val) > _INFINITE - MAX_PLY) {
-                    currentPly++;
-                    forceCheck = true;
-                    val = -search<X(side), checkMoves>(depth + extension - 1, -beta, -val + 1,
-                                                       &newLine,
-                                                       move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1
-                    );
-                    forceCheck = false;
-                    currentPly--;
-                }
+                val = searchLambda(&newLine, depth + extension - 1, -beta, -val + 1, move);
             }
         }
         score = max(score, val);
