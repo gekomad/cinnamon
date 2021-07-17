@@ -48,7 +48,7 @@ public:
     }
 
 
-    static string decodeBoardinv(const _Tmove*,const uchar side);
+    static string decodeBoardinv(const _Tmove*);
 
 #ifdef TUNING
 
@@ -141,17 +141,17 @@ public:
     unsigned SZtbProbeWDL() const;
 
     u64 getBitmap(const int n, const uchar side) const {
-        return side ? board::getBitmap<WHITE>(threadPool->getPool()[n]->getChessboard())
-                    : board::getBitmap<BLACK>(threadPool->getPool()[n]->getChessboard());
+        return side ? board::getBitmap<WHITE>(threadPool->getPool()[n]->chessboard)
+                    : board::getBitmap<BLACK>(threadPool->getPool()[n]->chessboard);
     }
 
     const _Tchessboard &getChessboard(const int n = 0) const {
-        return threadPool->getPool()[n]->getChessboard();
+        return threadPool->getPool()[n]->chessboard;
     }
 
     template<uchar side>
     u64 getPinned(const u64 allpieces, const u64 friends, const int kingPosition) const {
-        return board::getPinned<side>(allpieces, friends, kingPosition, threadPool->getPool()[0]->getChessboard());
+        return board::getPinned<side>(allpieces, friends, kingPosition, threadPool->getPool()[0]->chessboard);
     }
 
 #endif

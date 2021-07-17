@@ -261,9 +261,7 @@ public:
         _Tmove bestMove;
 
         if (probeRootTB(&bestMove, genMoves)) {
-            string best = string(
-                    genMoves.decodeBoardinv(&bestMove, genMoves.sideToMove));
-
+            string best = string(genMoves.moveToString(&bestMove));
             return best;
         } else
             return "";

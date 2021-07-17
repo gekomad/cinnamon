@@ -28,9 +28,11 @@ SearchManager::SearchManager() {
 }
 
 #if defined(FULL_TEST)
+
 unsigned SearchManager::SZtbProbeWDL() const {
-    return threadPool->getThread(0).SZtbProbeWDL();
+    return SYZYGY::getInstance().SZtbProbeWDL(threadPool->getThread(0).chessboard, threadPool->getThread(0).sideToMove);
 }
+
 #endif
 
 int SearchManager::search(const int plyFromRoot, const int iter_depth) {
@@ -77,7 +79,7 @@ bool SearchManager::getRes(_Tmove &resultMove, string &ponderMove, string &pvv) 
     assert(lineWin.cmove);
     for (int t = 0; t < lineWin.cmove; t++) {
         pvvTmp.clear();
-        pvvTmp += decodeBoardinv(&lineWin.argmove[t], threadPool->getThread(0).sideToMove);
+        pvvTmp += decodeBoardinv(&lineWin.argmove[t]);
         pvv.append(pvvTmp);
 
         if (t == 1) {
@@ -248,8 +250,8 @@ bool SearchManager::makemove(const _Tmove *i) {
     return b;
 }
 
-string SearchManager::decodeBoardinv(const _Tmove *move, const uchar side) {
-    return threadPool->getThread(0).decodeBoardinv(move, side);
+string SearchManager::decodeBoardinv(const _Tmove *move) {
+    return threadPool->getThread(0).moveToString(move);
 }
 
 void SearchManager::takeback(const _Tmove *move, const u64 oldkey, const uchar oldEnpassant, const bool rep) {

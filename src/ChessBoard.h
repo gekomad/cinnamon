@@ -44,7 +44,7 @@ class ChessBoard {
 public:
     ChessBoard();
 
-    string decodeBoardinv(const _Tmove *move, const uchar side, const bool showCap = false);
+    string moveToString(const _Tmove *move, const bool verbose = false);
 
     virtual ~ChessBoard();
 
@@ -118,8 +118,6 @@ private:
     char whiteRookQueenSideCastle;
     char blackRookKingSideCastle;
     char blackRookQueenSideCastle;
-
-    string moveToString(const _Tmove *move);
 
     int loadFen();
 };
