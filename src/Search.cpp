@@ -135,7 +135,6 @@ int Search::qsearch(int alpha, const int beta, const uchar promotionPiece, const
         fprune = true;
     }
     /// ************ end Delta Pruning *************
-    if (score > alpha) alpha = score;
 
     incListId();
 
