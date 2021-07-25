@@ -213,7 +213,7 @@ void SearchManager::setPonder(const bool i) {
 }
 
 int SearchManager::getSide() {
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
     int t = threadPool->getThread(0).sideToMove;
     for (Search *s:threadPool->getPool()) {
         assert(s->sideToMove == t);
@@ -283,7 +283,7 @@ void SearchManager::printWdlSyzygy() {
 #endif
 
 int SearchManager::getMoveFromSan(const string &string, _Tmove *ptr) {
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
     int t = threadPool->getThread(0).getMoveFromSan(string, ptr);
     for (Search *s:threadPool->getPool()) {
         assert(s->getMoveFromSan(string, ptr) == t);

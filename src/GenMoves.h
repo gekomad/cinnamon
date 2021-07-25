@@ -349,7 +349,7 @@ public:
     bool perftMode;
 
 
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
     unsigned nCutAB, nNullMoveCut, nCutFp, nCutRazor, nCutBadCaputure;
     double betaEfficiency = 0.0;
     unsigned betaEfficiencyCount = 0;
@@ -401,7 +401,7 @@ protected:
     int historyHeuristic[64][64];
     unsigned short killer[2][MAX_PLY];
 
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
 
     bool verifyMove(const _Tmove *move);
 
@@ -485,7 +485,7 @@ protected:
     template<int type, uchar side>
     bool inCheck(const uchar from, const uchar to, const uchar pieceFrom, const uchar pieceTo, uchar promotionPiece) {
         BENCH_AUTO_CLOSE("inCheck")
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
         _Tchessboard a;
         memcpy(&a, chessboard, sizeof(_Tchessboard));
         ASSERT_RANGE(from, 0, 63)

@@ -20,7 +20,7 @@
 
 #include "../ChessBoard.h"
 
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
 
 #include <unordered_map>
 
@@ -199,7 +199,7 @@ private:
 
     template<int loserSide>
     static int KRKP(int tempo, int winnerKingPos, int loserKingPos, int rookPos, int pawnPos) {
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
         std::unordered_map<int, int> pieces1;
         std::unordered_map<int, int> pieces2;
 
@@ -248,7 +248,7 @@ private:
 
     static int KQKR(int winnerKingPos, int loserKingPos) {
 
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
         std::unordered_map<int, int> pieces1;
         std::unordered_map<int, int> pieces2;
 
@@ -273,7 +273,7 @@ private:
 
 //    int KBNK(int winnerKingPos, int loserKingPos) {
 //
-//#ifdef DEBUG_MODE
+//#ifndef NDEBUG
 //        std::unordered_map<int, int> pieces1;
 //        std::unordered_map<int, int> pieces2;
 //
@@ -299,7 +299,7 @@ private:
 
     static int KRKB(int loserKingPos) {
 
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
         std::unordered_map<int, int> pieces1;
         std::unordered_map<int, int> pieces2;
 
@@ -322,7 +322,7 @@ private:
 
     static int KRKN(int loserKingPos, int knightPos) {
 
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
         std::unordered_map<int, int> pieces1;
         std::unordered_map<int, int> pieces2;
 
@@ -345,7 +345,7 @@ private:
 
 
     static int KQKP(int loserSide, int winnerKingPos, int loserKingPos, int pawnPos) {
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
         std::unordered_map<int, int> pieces1;
         std::unordered_map<int, int> pieces2;
 
@@ -373,7 +373,7 @@ private:
 
     static int KBBKN(int winnerKingPos, int loserKingPos, int knightPos) { //TODO 1B1B3K/8/4n3/1k6/8/8/8/8 b - - 0 1
 
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
 
         std::unordered_map<int, int> pieces1;
         std::unordered_map<int, int> pieces2;

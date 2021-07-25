@@ -211,7 +211,7 @@ private:
 public:
 
     static void parse(int argc, char **argv) {
-#ifndef DEBUG_MODE
+#ifdef NDEBUG
         assert(0);
 #endif
 #ifdef TUNING

@@ -56,7 +56,7 @@ public:
         hashfALPHA = 0, hashfEXACT = 1, hashfBETA = 2
     };
 
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
     static unsigned nRecordHashA, nRecordHashB, nRecordHashE, collisions, readCollisions, n_cut_hashA, n_cut_hashB, n_cut_hashE, readHashCount;
 #endif
 
@@ -120,7 +120,7 @@ public:
     }
 
     static void recordHash(const _Thash &toStore, const int ply) {
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
         assert(toStore.key);
         if (GET_FLAGS(toStore.data) == hashfALPHA) nRecordHashA++;
         else if (GET_FLAGS(toStore.data) == hashfBETA) nRecordHashB++;

@@ -76,7 +76,7 @@ private:
     Hash &hash = Hash::getInstance();
     long running;
     bool ponderEnabled;
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
 
     bool verifyPV(string pv) {
 

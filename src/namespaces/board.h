@@ -55,7 +55,7 @@ public:
         for (; attacked; RESET_LSB(attacked)) {
             const int pos = BITScanForward(attacked);
             const u64 b = *(s + pos) & allpieces;
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
             u64 x = *(s + pos) & (allpieces & NOTPOW2(kingPosition));
             assert(b == x);
 #endif
@@ -106,7 +106,7 @@ public:
         return SQUARE_EMPTY;
     }
 
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
 
     static u64 getBitmap(const uchar side, const _Tchessboard &chessboard);
 

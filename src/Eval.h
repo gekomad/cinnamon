@@ -86,7 +86,7 @@ public:
     STATIC_CONST int ROOK_IN_7 = 7;
 //    STATIC_CONST int PAWN_PINNED = 0;
 
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
     unsigned lazyEvalCuts;
     typedef struct {
         int BAD_BISHOP[2];

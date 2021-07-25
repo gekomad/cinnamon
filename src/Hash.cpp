@@ -20,7 +20,7 @@
 
 unsigned Hash::HASH_SIZE;
 Hash::_Thash *Hash::hashArray;
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
 unsigned Hash::nRecordHashA, Hash::nRecordHashB, Hash::nRecordHashE, Hash::collisions, Hash::readCollisions,
         Hash::n_cut_hashA, Hash::n_cut_hashB, Hash::n_cut_hashE, Hash::readHashCount;
 #endif

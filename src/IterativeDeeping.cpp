@@ -106,7 +106,7 @@ void IterativeDeeping::run() {
         timeTaken = Time::diffTime(end1, start1) + 1;
         totMoves += searchManager.getTotMoves();
 
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
         const int totStoreHash = hash.nRecordHashA + hash.nRecordHashB + hash.nRecordHashE + 1;
         const int percStoreHashA = hash.nRecordHashA * 100 / totStoreHash;
         const int percStoreHashB = hash.nRecordHashB * 100 / totStoreHash;

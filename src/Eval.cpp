@@ -596,7 +596,7 @@ Eval::getScore(const _Tchessboard &chessboard, const u64 key, const uchar side, 
              Tresult.knights[WHITE] + Tresult.bishop[WHITE] + Tresult.rooks[WHITE] + Tresult.queens[WHITE] +
              Tresult.kings[WHITE]);
 
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
     if (trace) {
         const string HEADER = "\n|\t\t\t\t\tTOT (white)\t\t  WHITE\t\tBLACK\n";
         cout << "|PHASE: ";

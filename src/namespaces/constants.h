@@ -43,7 +43,7 @@ namespace constants {
 
 #define X(side) ((side)^1)
 
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
 #define DEBUG(a) a;
 
 #define ASSERT_RANGE(value, from, to) {if ((value)<(from) || (value)>(to)){cout<<"ASSERT_RANGE: "<<value<<endl;_assert(0)};}

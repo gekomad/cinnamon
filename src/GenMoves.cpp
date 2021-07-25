@@ -576,7 +576,7 @@ bool GenMoves::generatePuzzle(const string type) {
     return true;
 }
 
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
 
 bool GenMoves::verifyMove(const _Tmove *move) {
     const int side = move->side;
