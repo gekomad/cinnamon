@@ -74,7 +74,7 @@ private:
     int maxDepth;
     string bestmove;
     Hash &hash = Hash::getInstance();
-    long running;
+    volatile long running;
     bool ponderEnabled;
 #ifndef NDEBUG
 

@@ -18,7 +18,7 @@
 
 #include "Search.h"
 
-bool Search::runningThread;
+bool volatile Search::runningThread;
 high_resolution_clock::time_point Search::startTime;
 
 DEBUG(unsigned Search::cumulativeMovesCount)
@@ -135,6 +135,7 @@ int Search::qsearch(int alpha, const int beta, const uchar promotionPiece, const
         fprune = true;
     }
     /// ************ end Delta Pruning *************
+    if (score > alpha) alpha = score; //TODO elimnare
 
     incListId();
 
@@ -481,9 +482,9 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
 }
 
 void Search::updatePv(_TpvLine *pline, const _TpvLine *line, const _Tmove *move) {
-    if (!getRunning())return;
+    // TODO if (!getRunning())return;
     assert(line->cmove < MAX_PLY - 1);
-    pline->argmove[0] = *move;
+ memcpy(&(pline->argmove[0]), move, sizeof(_Tmove)); //TODO    pline->argmove[0] = *move;
     memcpy(pline->argmove + 1, line->argmove, line->cmove * sizeof(_Tmove));
     assert(line->cmove >= 0);
     pline->cmove = line->cmove + 1;

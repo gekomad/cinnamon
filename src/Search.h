@@ -131,7 +131,7 @@ private:
 
     vector<int> searchMovesVector;
     int valWindow = INT_MAX;
-    static bool runningThread;
+    static volatile bool runningThread;
     _TpvLine pvLine;
 
     bool ponder;
