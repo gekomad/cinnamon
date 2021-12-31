@@ -76,27 +76,6 @@ private:
     Hash &hash = Hash::getInstance();
     volatile long running;
     bool ponderEnabled;
-#ifndef NDEBUG
 
-    bool verifyPV(string pv) {
-
-        std::string delimiter = " ";
-
-        size_t pos;
-        std::string token;
-        while ((pos = pv.find(delimiter)) != std::string::npos) {
-            token = pv.substr(0, pos);
-            //std::cout << token << std::endl;
-            _Tmove move;
-            int x = !searchManager.getMoveFromSan(token, &move);
-            searchManager.setSide(x);
-            searchManager.makemove(&move);
-            pv.erase(0, pos + delimiter.length());
-        }
-
-        return true;
-    }
-
-#endif
 };
 

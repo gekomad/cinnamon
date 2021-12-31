@@ -118,11 +118,12 @@ Search::~Search() {
 
 template<uchar side>
 int Search::qsearch(int alpha, const int beta, const uchar promotionPiece, const int depth) {
-    const u64 zobristKeyR = chessboard[ZOBRISTKEY_IDX] ^ _random::RANDSIDE[side];
     if (!getRunning()) return 0;
-
     ++numMovesq;
+
+    const u64 zobristKeyR = chessboard[ZOBRISTKEY_IDX] ^ _random::RANDSIDE[side];
     int score = eval.getScore(chessboard, zobristKeyR, side, alpha, beta);
+
     if (score > alpha) {
         if (score >= beta) return score;
         alpha = score;
@@ -252,6 +253,8 @@ bool Search::checkSearchMoves(const _Tmove *move) const {
 template<uchar side, bool checkMoves>
 int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, const int N_PIECE) {
     ASSERT_RANGE(side, 0, 1)
+    if (!getRunning()) return 0;
+
 
     const auto searchLambda = [&](_TpvLine *newLine, const int depth, const int alpha, const int beta,
                                   const _Tmove *move) {
@@ -267,7 +270,6 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
         return val;
     };
 
-    if (!getRunning()) return 0;
     u64 oldKey = chessboard[ZOBRISTKEY_IDX];
     uchar oldEnpassant = enPassant;
     if (depth >= MAX_PLY - 1) {
@@ -469,7 +471,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
         }
     }
     if (getRunning()) {
-        if (best->capturedPiece == SQUARE_EMPTY && best->promotionPiece == NO_PROMOTION) {
+        if (best->capturedPiece == SQUARE_EMPTY && best->promotionPiece == NO_PROMOTION && (depth - extension) >= 0) {
             setHistoryHeuristic(best->from, best->to, depth - extension);
             setKiller(best->from, best->to, depth - extension);
         }
@@ -484,7 +486,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
 void Search::updatePv(_TpvLine *pline, const _TpvLine *line, const _Tmove *move) {
     // TODO if (!getRunning())return;
     assert(line->cmove < MAX_PLY - 1);
- memcpy(&(pline->argmove[0]), move, sizeof(_Tmove)); //TODO    pline->argmove[0] = *move;
+    memcpy(&(pline->argmove[0]), move, sizeof(_Tmove)); //TODO    pline->argmove[0] = *move;
     memcpy(pline->argmove + 1, line->argmove, line->cmove * sizeof(_Tmove));
     assert(line->cmove >= 0);
     pline->cmove = line->cmove + 1;

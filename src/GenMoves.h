@@ -55,6 +55,28 @@ public:
         performKingShiftCapture<side>(~allpieces, false);
     }
 
+#ifndef NDEBUG
+
+    static void verifyPV(string fen, string pv) {
+        cout << flush;
+        std::string delimiter = " ";
+        size_t pos;
+        std::string token;
+        GenMoves g;
+        g.loadFen(fen);
+        while ((pos = pv.find(delimiter)) != std::string::npos) {
+            token = pv.substr(0, pos);
+            //std::cout << token << std::endl;
+            _Tmove move;
+            int x = !g.getMoveFromSan(token, &move);
+            g.setSide(x);
+            g.makemove(&move, false);
+            pv.erase(0, pos + delimiter.length());
+        }
+    }
+
+#endif
+
     static bool isAttacked(const _Tmove &move, const _Tchessboard &chessboard, const u64 allpieces) {
         assert(allpieces == (board::getBitmap<WHITE>(chessboard) | board::getBitmap<BLACK>(chessboard)));
         return board::isAttacked(move.side, move.to, allpieces, chessboard);
@@ -346,6 +368,7 @@ public:
         assert(historyHeuristic[from][to] <= historyHeuristic[from][to] + value);
         historyHeuristic[from][to] += value;
     }
+
     bool perftMode;
 
 
@@ -764,22 +787,25 @@ protected:
     void setHistoryHeuristic(const int from, const int to, const int depth) {
         ASSERT_RANGE(from, 0, 63)
         ASSERT_RANGE(to, 0, 63)
+        if (depth < 0)return;
         const int value = (depth < 30) ? 2 << depth : 0x40000000;
         historyHeuristic[from][to] = value;
     }
 
-    void setKiller(const int from, const int to, const int ply) {
+    void setKiller(const int from, const int to, const int depth) {
         ASSERT_RANGE(from, 0, 63)
         ASSERT_RANGE(to, 0, 63)
-        killer[1][ply] = killer[0][ply];
-        killer[0][ply] = from | (to << 8);
+        ASSERT_RANGE(depth, 0, MAX_PLY - 1)
+        killer[1][depth] = killer[0][depth];
+        killer[0][depth] = from | (to << 8);
     }
 
-    bool isKiller(const int idx, const int from, const int to, const int ply) {
+    bool isKiller(const int idx, const int from, const int to, const int depth) {
         ASSERT_RANGE(from, 0, 63)
         ASSERT_RANGE(to, 0, 63)
+        ASSERT_RANGE(depth, 0, MAX_PLY - 1)
         const unsigned short v = from | (to << 8);
-        return v == killer[idx][ply];
+        return v == killer[idx][depth];
     }
 
     bool forceCheck;
