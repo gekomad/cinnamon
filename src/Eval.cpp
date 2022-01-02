@@ -169,8 +169,10 @@ int Eval::evaluateBishop(const _Tchessboard &chessboard, const u64 enemies) {
         result -= BISHOP_PAWN_ON_SAME_COLOR * bitCount(chessboard[side] & board::colors(BITScanForward(bishop)));
     } else {
         // 2.
-        assert(nBishop > 1);
-        if (phase != OPEN) {
+        if (phase == END) {
+            result += BONUS2BISHOP * 2;
+            ADD(SCORE_DEBUG.BONUS2BISHOP[side], BONUS2BISHOP * 2);
+        } else {
             result += BONUS2BISHOP;
             ADD(SCORE_DEBUG.BONUS2BISHOP[side], BONUS2BISHOP);
         }
@@ -523,7 +525,7 @@ Eval::getScore(const _Tchessboard &chessboard, const u64 key, const uchar side, 
     const short hashValue = getHashValue(key);
     if (hashValue != noHashValue && !trace) return side ? -hashValue : hashValue;
 #endif
-    
+
     int lazyscore_white = lazyEvalSide<WHITE>(chessboard);
     int lazyscore_black = lazyEvalSide<BLACK>(chessboard);
 
@@ -753,7 +755,7 @@ Eval::getScore(const _Tchessboard &chessboard, const u64 key, const uchar side, 
              (double) (SCORE_DEBUG.PAWN_NEAR_KING[WHITE]) / 100.0 << setw(10) <<
              (double) (SCORE_DEBUG.PAWN_NEAR_KING[BLACK]) / 100.0 << "\n";
         cout << endl;
-        cout << "\n|Total (white)..........   " << (side ? -result / 100.0 : result / 100.0) << endl;
+        cout << "\n|Total (white)..........   " << -result << endl;
         cout << flush;
     }
 #endif
