@@ -18,7 +18,7 @@ COMP=g++
 ifndef SystemRoot
 	# *nix
 	ifeq ($(shell uname -s),Darwin)
-		LIBS= -static-libstdc++ -lpthread
+		LIBS= -static-libstdc++ -lpthread # -mdynamic-no-pic TODO
 		OS=OSX
 	else
 	    LIBS=-s -Wl,--whole-archive -lpthread -Wl,--no-whole-archive # TODO -static
@@ -39,7 +39,13 @@ else
 	STRIP=strip.exe
 endif
 
-CFLAGS=" -std=c++11 -Wall -fno-stack-protector -fno-rtti -fno-exceptions -fomit-frame-pointer -O3 -Wpedantic -W -DNDEBUG -fsigned-char -funroll-loops "
+FLAGS := -std=c++11 -Wall -fno-stack-protector -fno-rtti -fno-exceptions -fomit-frame-pointer -O3 -Wpedantic -W -DNDEBUG -fsigned-char -funroll-loops 
+
+ifeq ($(COMP),clang++)
+    CFLAGS := "$(FLAGS)-fexperimental-new-pass-manager"
+else
+    CFLAGS := "$(FLAGS)"
+endif
 
 help:
 
