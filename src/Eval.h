@@ -83,7 +83,7 @@ public:
     STATIC_CONST int BISHOP_PINNED = 26;
     STATIC_CONST int QUEEN_PINNED = 2;
 //    STATIC_CONST int QUEEN_IN_7 = 10;
-    STATIC_CONST int ROOK_IN_7 = 7;
+    STATIC_CONST int ROOK_IN_7_KING_IN_8 = 7;
 //    STATIC_CONST int PAWN_PINNED = 0;
 
 #ifndef NDEBUG
@@ -99,6 +99,7 @@ public:
         int QUEEN_PINNED[2];
         int KNIGHT_PINNED[2];
         int ROOK_PINNED[2];
+        int ROOK_IN_7_KING_IN_8[2];
         int ATTACK_KING_PAWN[2];
 //        int PAWN_CENTER[2];
         int PAWN_7H[2];
@@ -323,10 +324,10 @@ namespace _eval {
                                            {-50, -30, -10, 10, 25, 40, 50, 55, 60}
     };
 
-    static constexpr int MOB_CASTLE[3][3] = {{-50, 30, 50},
-                                             {-1,  10, 10},
-                                             {0,   0,  0}
-    };
+//    static constexpr int MOB_CASTLE[3][3] = {{-50, 30, 50},
+//                                             {-1,  10, 10},
+//                                             {0,   0,  0}
+//    };
 
     static constexpr int BONUS_ATTACK_KING[18] =
             {-1, 2, 8, 64, 128, 512, 512, 512, 512, 512, 512, 512, 512, 512, 512,

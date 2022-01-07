@@ -16,6 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #ifndef JS_MODE
+
 #include "Uci.h"
 
 void Uci::startListner() {
@@ -92,7 +93,7 @@ void Uci::listner(IterativeDeeping *it) {
             uchar side = searchManager.getSide();
             int t = searchManager.getScore(side);
             if (!searchManager.getSide()) t = -t;
-            cout << "Score: " << t << endl;
+            cout << "Total (white)..........   " << (float) t / 100.0 << endl;
             knowCommand = true;
         } else if (String::toLower(token) == "perft") {
             cout << "Can't run perft here, view \"cinnamon.exe -help\"" << endl;
@@ -261,7 +262,7 @@ void Uci::listner(IterativeDeeping *it) {
             bool setMovetime = false;
             while (!uip.eof()) {
                 getToken(uip, token);
-                 if (String::toLower(token) == "wtime") {
+                if (String::toLower(token) == "wtime") {
                     uip >> wtime;
                 } else if (String::toLower(token) == "btime") {
                     uip >> btime;
@@ -327,4 +328,5 @@ void Uci::listner(IterativeDeeping *it) {
         cout << flush;
     }
 }
+
 #endif
