@@ -397,8 +397,10 @@ int Eval::evaluateRook(const _Tchessboard &chessboard, const u64 enemies, const 
 
     // 4. king security
     if (phase != OPEN) {
-        if (structureEval.pinned[side] & rook) result -= ROOK_PINNED;
-        ADD(SCORE_DEBUG.ROOK_PINNED[side], -ROOK_PINNED);
+        if (structureEval.pinned[side] & rook) {
+            result -= ROOK_PINNED;
+            ADD(SCORE_DEBUG.ROOK_PINNED[side], -ROOK_PINNED);
+        }
 //        structureEval.kingSecurity[side] +=
 //                FRIEND_NEAR_KING * bitCount(NEAR_MASK2[structureEval.posKing[side]] & rook);
 //        ADD(SCORE_DEBUG.KING_SECURITY_ROOK[side],
@@ -505,6 +507,7 @@ short Eval::getHashValue(const u64 key) {
 short
 Eval::getScore(const _Tchessboard &chessboard, const u64 key, const uchar side, const int alpha, const int beta,
                const bool trace) {
+    BENCH_START("eval total")
     /// endgame
 //    if (Endgame::win(side, N_PIECE, chessboard)) {
 //        return _INFINITE / 2;
@@ -526,7 +529,11 @@ Eval::getScore(const _Tchessboard &chessboard, const u64 key, const uchar side, 
 //    }
 #ifndef TUNING
     const short hashValue = getHashValue(key);
-    if (hashValue != noHashValue && !trace) return side ? -hashValue : hashValue;
+    if (hashValue != noHashValue && !trace) {
+        auto a = side ? -hashValue : hashValue;
+        BENCH_STOP("eval total")
+        return a;
+    }
 #endif
 
     int lazyscore_white = lazyEvalSide<WHITE>(chessboard);
@@ -535,6 +542,7 @@ Eval::getScore(const _Tchessboard &chessboard, const u64 key, const uchar side, 
     const int lazyscore = side ? lazyscore_white - lazyscore_black : lazyscore_black - lazyscore_white;
     if (lazyscore > (beta + FUTIL_MARGIN) || lazyscore < (alpha - FUTIL_MARGIN)) {
         INC(lazyEvalCuts);
+        BENCH_STOP("eval total")
         return lazyscore;
     }
 
@@ -716,7 +724,7 @@ Eval::getScore(const _Tchessboard &chessboard, const u64 key, const uchar side, 
         cout << "       7th:                      " << setw(10) <<
              (double) (SCORE_DEBUG.ROOK_7TH_RANK[WHITE]) / 100.0 << setw(10) <<
              (double) (SCORE_DEBUG.ROOK_7TH_RANK[BLACK]) / 100.0 << "\n";
-        cout << "       7th king in 8:            " << setw(10) <<
+        cout << "       7th king in 8th:          " << setw(10) <<
              (double) (SCORE_DEBUG.ROOK_IN_7_KING_IN_8[WHITE]) / 100.0 << setw(10) <<
              (double) (SCORE_DEBUG.ROOK_IN_7_KING_IN_8[BLACK]) / 100.0 << "\n";
 //        cout << "       trapped:                  " << setw(10) <<
@@ -767,6 +775,7 @@ Eval::getScore(const _Tchessboard &chessboard, const u64 key, const uchar side, 
 #ifndef TUNING
     storeHashValue(key, result);
 #endif
+    BENCH_STOP("eval total")
     return side ? -result : result;
 }
 
