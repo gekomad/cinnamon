@@ -64,9 +64,9 @@ public:
 
 #ifdef TUNING
 
-    int getParameter(const string &param);
+    int getParameter(const string &param,const int phase);
 
-    void setParameter(const string &param, const int value);
+    void setParameter(const string &param, const int value, const int phase);
 
     int qSearch(const int depth, const int alpha, const int beta) {
         ASSERT_RANGE(depth, 0, MAX_PLY)

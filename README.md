@@ -13,7 +13,7 @@ Version
 News
 ----------
 - Time management
-- Eval improvement
+- Tapered eval
 
 Useful links
 ----------

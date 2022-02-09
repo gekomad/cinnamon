@@ -22,7 +22,6 @@
 #include "perft/Perft.h"
 #include "util/getopt.h"
 #include "util/tuning/Texel.h"
-#include "util/tuning/MseScore.h"
 
 static const string
         PERFT_HELP = "-perft [-d depth] [-c nCpu] [-h hash size (mb) [-F dump file]] [-Chess960] [-f \"fen position\"]";
@@ -140,6 +139,7 @@ private:
     }
 
 #ifndef JS_MODE
+
     static void dtmWdlGtb(int argc, char **argv, const bool dtm) {
         SearchManager &searchManager = Singleton<SearchManager>::getInstance();
 
@@ -207,6 +207,7 @@ private:
         searchManager.printDtmSyzygy();
 
     }
+
 #endif
 public:
 
@@ -215,19 +216,13 @@ public:
         assert(0);
 #endif
 #ifdef TUNING
-        if (argc != 2) {
-        cout << Texel::help << endl;
-        cout << "run " << FileUtil::getFileName(argv[0]) << " path" << endl;
-        return;
-    }
-    new Texel(argv[1]);
-//    cout << MseScore::help << endl; TODO
-//    if (argc == 1 || (string(argv[1]) != "step1" && string(argv[1]) != "step2")) return 1;
-//
-//    if (string(argv[1]) == "step1") MseScore(argv[2], argv[3], argv[4]);
-//    else new MseScore(argv[2]);
-
-    return;
+            if (argc != 2) {
+                cout << Texel::help << endl;
+                cout << "run " << FileUtil::getFileName(argv[0]) << " path" << endl;
+                return;
+            }
+            new Texel(argv[1]);
+	    return;
 #endif
         if (!(argc > 1 && !strcmp("-puzzle_epd", argv[1])))
             printHeader(FileUtil::getFileName(argv[0]));

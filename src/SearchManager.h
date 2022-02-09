@@ -48,22 +48,22 @@ public:
     }
 
 
-    static string decodeBoardinv(const _Tmove*,const uchar side);
+    static string decodeBoardinv(const _Tmove *, const uchar side);
 
 #ifdef TUNING
 
     const _Tchessboard &getChessboard() {
-        return threadPool->getThread(0).getChessboard();
+        return threadPool->getThread(0).chessboard;
     }
 
-    static void setParameter(const string &param, const int value) {
-        for (Search *s:threadPool->getPool()) {
-            s->setParameter(param, value);
+    static void setParameter(const string &param, const int value, const int phase) {
+        for (Search *s: threadPool->getPool()) {
+            s->setParameter(param, value, phase);
         }
     }
 
-    static int getParameter(const string &param) {
-        return threadPool->getThread(0).getParameter(param);
+    static int getParameter(const string &param, const int phase) {
+        return threadPool->getThread(0).getParameter(param, phase);
     }
 
     int getQscore() const {
