@@ -136,7 +136,7 @@ int Search::qsearch(int alpha, const int beta, const uchar promotionPiece, const
         fprune = true;
     }
     /// ************ end Delta Pruning *************
-    if (score > alpha) alpha = score; //TODO elimnare
+    if (score > alpha) alpha = score;
 
     incListId();
 
@@ -296,7 +296,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
             return -eval.lazyEval<side>(chessboard) * 2;
         }
     }
-    int extension = isIncheckSide; // TODO pawn in 7th
+    int extension = isIncheckSide;
     if (depth + extension == 0) {
         return qsearch<side>(alpha, beta, NO_PROMOTION, 0);
     }
@@ -484,9 +484,9 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
 }
 
 void Search::updatePv(_TpvLine *pline, const _TpvLine *line, const _Tmove *move) {
-    // TODO if (!getRunning())return;
+
     assert(line->cmove < MAX_PLY - 1);
-    memcpy(&(pline->argmove[0]), move, sizeof(_Tmove)); //TODO    pline->argmove[0] = *move;
+    memcpy(&(pline->argmove[0]), move, sizeof(_Tmove));
     memcpy(pline->argmove + 1, line->argmove, line->cmove * sizeof(_Tmove));
     assert(line->cmove >= 0);
     pline->cmove = line->cmove + 1;

@@ -32,22 +32,6 @@ Eval::~Eval() {
     evalHash = nullptr;
 }
 
-/**
- * evaluate pawns for color at phase
- * 1. if no pawns returns -NO_PAWNS
- * 3. if other side has all pawns substracts ENEMIES_ALL_PAWNS
- * 4. add ATTACK_KING * number of attacking pawn to other king
- * 5. space - in OPEN phase PAWN_CENTER * CENTER_MASK
- * 7. *king security* - in OPEN phase add at kingSecurity FRIEND_NEAR_KING * each pawn near to king and substracts ENEMY_NEAR_KING * each enemy pawn near to king
- * 8. pawn in promotion - if pawn is in 7' add PAWN_7H. If pawn can go forward add PAWN_IN_PROMOTION for each pawn
- * 9. unprotected - no friends pawn protect it
- * 10. blocked - pawn can't go on
- * 11. isolated - there aren't friend pawns on the two sides - subtracts PAWN_ISOLATED for each pawn
- * 12. doubled - there aren't friend pawns on the two sides - subtracts DOUBLED_PAWNS for each pawn. If it is isolated too substracts DOUBLED_ISOLATED_PAWNS
- * 13. backward - if there isn't friend pawns on sides or on sides in 1 rank below subtracts BACKWARD_PAWN
- * 14. passed - if there isn't friend pawns forward and forward on sides until 8' rank add PAWN_PASSED[side][pos]
-
- */
 template<uchar side>
 pair<int, int> Eval::evaluatePawn(const _Tchessboard &chessboard) {
     INC(evaluationCount[side]);
@@ -160,18 +144,6 @@ pair<int, int> Eval::evaluatePawn(const _Tchessboard &chessboard) {
     return pair<int, int>(result[MG], result[EG]);
 }
 
-/**
- * evaluate bishop for color at phase TODO rivedere doc
- * 1. if no bishops returns 0
- * 2. if two bishops add BONUS2BISHOP
- * 3 *king security* - in OPEN phase substracts at kingSecurity ENEMY_NEAR_KING for each bishop close to enmey king
- * 4. undevelop - substracts UNDEVELOPED_BISHOP for each undeveloped bishop
- * 5. mobility add MOB_BISHOP[phase][???]
- * 6. if only one bishop and pawns on same square color substracts n_pawns * BISHOP_PAWN_ON_SAME_COLOR
- * 7. outposts
- * 8. bishop on big diagonal
- * 9. pinned
- */
 template<uchar side>
 pair<int, int> Eval::evaluateBishop(const _Tchessboard &chessboard, const u64 enemies) {
     INC(evaluationCount[side]);
@@ -263,14 +235,6 @@ pair<int, int> Eval::evaluateBishop(const _Tchessboard &chessboard, const u64 en
     return pair<int, int>(result[MG], result[EG]);
 }
 
-/**
- * evaluate queen for color at phase
- * 2. *king security* - in OPEN phase add at kingSecurity FRIEND_NEAR_KING for each queen near to king and substracts ENEMY_NEAR_KING for each queen near to enemy king
- * 3. mobility - MOB_QUEEN[phase][position]
- * 4. half open file - if there is a enemy pawn on same file add HALF_OPEN_FILE_Q
- * 5. open file - if there is any pieces on same file add OPEN_FILE_Q
- * 6. 5. bishop on queen - if there is a bishop on same diagonal add BISHOP_ON_QUEEN
- */
 template<uchar side>
 pair<int, int> Eval::evaluateQueen(const _Tchessboard &chessboard, const u64 enemies) {
     INC(evaluationCount[side]);
@@ -334,15 +298,6 @@ pair<int, int> Eval::evaluateQueen(const _Tchessboard &chessboard, const u64 ene
     }
     return pair<int, int>(result[MG], result[EG]);
 }
-
-/**
- * evaluate knight for color at phase
- * 1. // pinned
- * 2. undevelop - substracts UNDEVELOPED_KNIGHT for each undeveloped knight
- * 4. *king security* - in OPEN phase add at kingSecurity FRIEND_NEAR_KING for each knight near to king and substracts ENEMY_NEAR_KING for each knight near to enemy king
- * 5. mobility
- * 6. outposts
-*/
 
 template<uchar side>
 pair<int, int> Eval::evaluateKnight(const _Tchessboard &chessboard, const u64 notMyBits) {
@@ -413,16 +368,6 @@ pair<int, int> Eval::evaluateKnight(const _Tchessboard &chessboard, const u64 no
 }
 
 
-/**
- * evaluate rook for color at phase
- * 1. if no rooks returns 0
- * 3. in middle if in 7th - add ROOK_7TH_RANK for each rook in 7th
- * 4. *king security* - in OPEN phase add at kingSecurity FRIEND_NEAR_KING for each rook near to king and substracts ENEMY_NEAR_KING for each rook near to enemy king
- * 5. add OPEN_FILE/HALF_OPEN_FILE if the rook is on open/semiopen file
- * 6. trapped
- * 7. 2 linked towers
- * 8. Penalise if Rook is Blocked Horizontally
-*/
 template<uchar side>
 pair<int, int> Eval::evaluateRook(const _Tchessboard &chessboard, const u64 enemies, const u64 friends) {
     INC(evaluationCount[side]);

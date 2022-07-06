@@ -18,10 +18,10 @@ COMP=g++
 ifndef SystemRoot
 	# *nix
 	ifeq ($(shell uname -s),Darwin)
-		LIBS= -static-libstdc++ -lpthread # -mdynamic-no-pic TODO
+		LIBS= -static-libstdc++ -lpthread
 		OS=OSX
 	else
-	    LIBS=-s -Wl,--whole-archive -lpthread -Wl,--no-whole-archive # TODO -static
+	    LIBS=-s -Wl,--whole-archive -static -lpthread -Wl,--no-whole-archive
 	    OS=Linux
 	endif
 

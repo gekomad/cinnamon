@@ -2,6 +2,50 @@
 Cinnamon chess engine - Tests
 =============================
 
+Cinnamon 2.5
+------------
+
+**Linux - Intel i7-9750H CPU @ 2.60GHz gcc 9.3.0** 
+ 
+
+| Test file (5 sec) | Solved |
+|--|--|
+|  wac.epd        |     290/300
+|  kaufman.epd    |     21/25
+|  zugzwang.epd   |     3/5
+|  bk.epd         |     16/24
+|  mate.epd       |     51/71
+  ------------------- ---------
+
+**perft** depth 6 one cpu no hash
+
+ ./cinnamon -perft -d6 -f"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -"
+
+** 47 sec.**
+
+**perft** depth 5 one cpu no hash
+
+ ./cinnamon -perft -d5 -f"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -"
+
+** 1.08 sec.**
+
+**perft** depth 6 8 cpu 2 GB hash
+
+ ./cinnamon -perft -d6 -c8 -h2000 -f"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -"
+
+**  sec.**
+
+**perft** depth 5 one cpu no hash
+
+ ./cinnamon -perft -d5 -f"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -"
+
+** 1.08 sec.**
+
+**perft** depth 6 8 cpu 2 GB hash
+
+ ./cinnamon -perft -d6 -c8 -h2000 -f"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -"
+
+** 3.49 sec.**
 
 Cinnamon 2.4
 ------------
@@ -12,44 +56,39 @@ Cinnamon 2.4
 | Test file (5 sec) | Solved |
 |--|--|
 |  wac.epd        |     293/300
- | kaufman.epd    |     23/25
-|  zugzwang.epd    |    2/5
-  |bk.epd        |      16/24
+|  kaufman.epd    |     23/25
+|  zugzwang.epd   |     2/5
+|  bk.epd         |     16/24
 |  mate.epd       |     52/71
   ------------------- ---------
 
 **perft** depth 6 one cpu no hash
 
- ./cinnamon -perft -d6
--f"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -"
+ ./cinnamon -perft -d6 -f"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -"
 
 **50 sec.**
 
 **perft** depth 5 one cpu no hash
 
- ./cinnamon -perft -d5
--f"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -"
+ ./cinnamon -perft -d5 -f"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -"
 
 **1.20 sec.**
 
 **perft** depth 6 8 cpu 2 GB hash
 
- ./cinnamon -perft -d6 -c8 -h2000
--f"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -"
+ ./cinnamon -perft -d6 -c8 -h2000 -f"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -"
 
 **3.41 sec.**
 
 **perft** depth 5 one cpu no hash
 
- ./cinnamon -perft -d5
--f"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -"
+ ./cinnamon -perft -d5 -f"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -"
 
 **1.13 sec.**
 
 **perft** depth 6 8 cpu 2 GB hash
 
- ./cinnamon -perft -d6 -c8 -h2000
--f"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -"
+ ./cinnamon -perft -d6 -c8 -h2000 -f"r3k2r/p1ppqpb1/bn2pnp1/3PN3/1p2P3/2N2Q1p/PPPBBPPP/R3K2R w KQkq -"
 
 **3.608 sec.**
 

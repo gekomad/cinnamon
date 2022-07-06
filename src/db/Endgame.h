@@ -26,7 +26,7 @@
 
 #endif
 
-class Endgame { //TODO
+class Endgame {
 
 public:
 
@@ -40,17 +40,17 @@ public:
                 if (bitCount(chessboard[BISHOP_BLACK + side]) == 2)return true;
                 // KBNK
                 if (chessboard[BISHOP_BLACK + side] && chessboard[KNIGHT_BLACK + side])return true;
-                // KBKP TODO
-                // KBPK TODO
-                // KNKP TODO
-                // KNPK TODO
+                // KBKP
+                // KBPK
+                // KNKP
+                // KNPK
                 // KQBK
                 if (chessboard[QUEEN_BLACK + side] && chessboard[BISHOP_BLACK + side])return true;
-                // KQKB TODO
-                // KQKN TODO
+                // KQKB
+                // KQKN
                 // KQNK
                 if (chessboard[QUEEN_BLACK + side] && chessboard[KNIGHT_BLACK + side])return true;
-                // KQPK TODO
+                // KQPK
                 // KQQK
                 if (bitCount(chessboard[QUEEN_BLACK + side]) == 2)return true;
                 // KQRK
@@ -59,7 +59,7 @@ public:
                 if (chessboard[QUEEN_BLACK + side] && chessboard[BISHOP_BLACK + side])return true;
                 // KRNK
                 if (chessboard[ROOK_BLACK + side] && chessboard[KNIGHT_BLACK + side])return true;
-                // KRPK TODO
+                // KRPK
                 // KRRK
                 if (bitCount(chessboard[ROOK_BLACK + side]) == 2)return true;
 
@@ -178,10 +178,10 @@ public:
 private:
     Endgame();
 
-    constexpr static int DistanceBonus[8] = {0, 0, 100, 80, 60, 40, 20, 10};    //TODO stockfish
-    constexpr static int VALUE_KNOWN_WIN = 15000;    //TODO stockfish
-    constexpr static int penaltyKRKN[8] = {0, 10, 14, 20, 30, 42, 58, 80};    //TODO stockfish
-    constexpr static int KBNKMateTable[64] = {    //TODO stockfish
+    constexpr static int DistanceBonus[8] = {0, 0, 100, 80, 60, 40, 20, 10};
+    constexpr static int VALUE_KNOWN_WIN = 15000;
+    constexpr static int penaltyKRKN[8] = {0, 10, 14, 20, 30, 42, 58, 80};
+    constexpr static int KBNKMateTable[64] = {
             200, 190, 180, 170, 170, 180, 190, 200,
             190, 180, 170, 160, 160, 170, 180, 190,
             180, 170, 155, 140, 140, 155, 170, 180,
@@ -191,7 +191,7 @@ private:
             190, 180, 170, 160, 160, 170, 180, 190,
             200, 190, 180, 170, 170, 180, 190, 200};
 
-    constexpr static int MateTable[64] = {    //TODO stockfish
+    constexpr static int MateTable[64] = {
             100, 90, 80, 70, 70, 80, 90, 100, 90, 70, 60, 50, 50, 60, 70, 90, 80, 60, 40, 30, 30, 40, 60, 80, 70, 50,
             30, 20, 20, 30, 50, 70, 70, 50, 30, 20, 20, 30, 50, 70, 80, 60, 40, 30, 30, 40, 60, 80, 90, 70, 60, 50, 50,
             60, 70, 90, 100, 90, 80, 70, 70, 80, 90, 100,};
@@ -371,7 +371,7 @@ private:
         return result;
     }
 
-    static int KBBKN(int winnerKingPos, int loserKingPos, int knightPos) { //TODO 1B1B3K/8/4n3/1k6/8/8/8/8 b - - 0 1
+    static int KBBKN(int winnerKingPos, int loserKingPos, int knightPos) {
 
 #ifndef NDEBUG
 

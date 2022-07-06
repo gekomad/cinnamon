@@ -54,16 +54,16 @@ public:
     static const int EXT_FUTIL_MARGIN = 550;
     static const int RAZOR_MARGIN = 1171;
 
-    STATIC_CONST int MOB_QUEEN_[2] = {100, 296};//TODO cancellare e riportare a codice
-//    STATIC_CONST int MOB_ROOK_[2] = {100, 100};//TODO cancellare e riportare a codice
-//    STATIC_CONST int MOB_BISHOP_[2] = {102, 100};//TODO cancellare e riportare a codice
-    STATIC_CONST int MOB_KNIGHT_[2] = {103, 66};//TODO cancellare e riportare a codice
-//    STATIC_CONST int MOB_KING_[2] = {100, 100};//TODO cancellare e riportare a codice
-//    STATIC_CONST int PAWN_PASSED_ = 98;//TODO cancellare e riportare a codice
-//    STATIC_CONST int DISTANCE_KING_ENDING_ = 100;//TODO cancellare e riportare a codice
-//    STATIC_CONST int DISTANCE_KING_OPENING_ = 100;//TODO cancellare e riportare a codice
+    STATIC_CONST int MOB_QUEEN_[2] = {100, 296};
+//    STATIC_CONST int MOB_ROOK_[2] = {100, 100};
+//    STATIC_CONST int MOB_BISHOP_[2] = {102, 100};
+    STATIC_CONST int MOB_KNIGHT_[2] = {103, 66};
+//    STATIC_CONST int MOB_KING_[2] = {100, 100};
+//    STATIC_CONST int PAWN_PASSED_ = 98;
+//    STATIC_CONST int DISTANCE_KING_ENDING_ = 100;
+//    STATIC_CONST int DISTANCE_KING_OPENING_ = 100;
 
-//    STATIC_CONST int ATTACK_KING[2] = {0, 0};//TODO eliminare
+//    STATIC_CONST int ATTACK_KING[2] = {0, 0};
 //  STATIC_CONST int BISHOP_ON_QUEEN[2] = {8,8};
 
     STATIC_CONST int BACKWARD_PAWN[2] = {4, 6};
@@ -72,7 +72,7 @@ public:
     STATIC_CONST int PAWN_IN_PROMOTION[2] = {122, 27};
     STATIC_CONST int PAWN_NEAR_KING[2] = {46, 5};
     STATIC_CONST int PAWN_BLOCKED[2] = {13, 24};
-    //STATIC_CONST int UNPROTECTED_PAWNS[2] = {0, 0}; //TODO cancellare
+    //STATIC_CONST int UNPROTECTED_PAWNS[2] = {0, 0};
     STATIC_CONST int FRIEND_NEAR_KING[2] = {8, 8};
 
     STATIC_CONST int BONUS2BISHOP[2] = {42, 33};

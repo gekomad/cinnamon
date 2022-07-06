@@ -20,7 +20,7 @@
 #include "constants.h"
 using namespace constants;
 
-class See { // TODO
+class See {
 public:
     static int see(const _Tmove &move, const _Tchessboard &chessboard, const u64 allpieces) {
         const uchar side = move.side;
