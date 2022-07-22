@@ -39,13 +39,7 @@ else
 	STRIP=strip.exe
 endif
 
-FLAGS := -std=c++11 -Wall -fno-stack-protector -fno-rtti -fno-exceptions -fomit-frame-pointer -O3 -Wpedantic -W -DNDEBUG -fsigned-char -funroll-loops 
-
-ifeq ($(COMP),clang++)
-    CFLAGS := "$(FLAGS)-fexperimental-new-pass-manager"
-else
-    CFLAGS := "$(FLAGS)"
-endif
+CFLAGS=" -std=c++11 -Wall -fno-stack-protector -fno-rtti -fno-exceptions -fomit-frame-pointer -O3 -Wpedantic -W -DNDEBUG -fsigned-char -funroll-loops "
 
 help:
 
