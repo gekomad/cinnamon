@@ -22,7 +22,6 @@ Useful links
 - [Web Eval debugger](https://github.com/gekomad/chess-engine-eval-debugger)
 - [Cinnamon on Android](https://play.google.com/store/apps/details?id=com.github.gekomad.cinnamonengine)
 - [Cinnamon on DGT Pi](https://www.digitalgametechnology.com/index.php/products/revelation-ii/533-dgt-pi-chess-computer-for-dgt-e-boards)
-- [Clion IDE](https://www.jetbrains.com/?from=CINNAMON_CHESS_ENGINE)
 
 
 Features
@@ -33,7 +32,6 @@ Features
 - UCI protocol
 - GPL 3 License
 - Chess 960
-- C++11 source
 - PVS
 - Rotated bitboards
 - Null moves
