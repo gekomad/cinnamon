@@ -45,12 +45,13 @@ namespace constants {
 
 #ifndef NDEBUG
 #define DEBUG(a) a;
-
+#define DEBUG2(...) __VA_ARGS__
 #define ASSERT_RANGE(value, from, to) {if ((value)<(from) || (value)>(to)){cout<<"ASSERT_RANGE: "<<value<<endl;_assert(0)};}
 #define INC(a) (a++)
 #define SET(a, v) (a=(v))
 #define ADD(a, b) (a+=(b))
 #else
+#define DEBUG2(...)
 #define DEBUG(a)
 #define ASSERT_RANGE(value, from, to)
 #define INC(a)

@@ -498,7 +498,9 @@ short Eval::getHashValue(const u64 key) {
 }
 
 short
-Eval::getScore(const _Tchessboard &chessboard, const u64 key, const uchar side, const int alpha, const int beta) {
+Eval::getScore(const _Tchessboard &chessboard, const u64 key, const uchar side, const int alpha, const int beta DEBUG2(,
+        const bool trace)
+) {
     /// endgame
 //    if (Endgame::win(side, N_PIECE, chessboard)) {
 //        return _INFINITE / 2;
@@ -520,7 +522,7 @@ Eval::getScore(const _Tchessboard &chessboard, const u64 key, const uchar side, 
 //    }
 #ifndef TUNING
     const short hashValue = getHashValue(key);
-  if (hashValue != noHashValue) return side ? -hashValue : hashValue;
+    DEBUG2(if (!trace)) if (hashValue != noHashValue) return side ? -hashValue : hashValue;
 
 #endif
     int lazyscore_white = lazyEvalSide<WHITE>(chessboard);
@@ -595,7 +597,7 @@ Eval::getScore(const _Tchessboard &chessboard, const u64 key, const uchar side, 
              Tresult.knights[WHITE] + Tresult.bishop[WHITE] + Tresult.rooks[WHITE] + Tresult.queens[WHITE] +
              Tresult.kings[WHITE]);
 
-#ifdef DEBUG_MODE
+#ifndef NDEBUG
     if (trace) {
         const string HEADER = "\n|\t\t\t\t\tTOT (white)\t\t  WHITE\t\tBLACK\n";
         cout << "|PHASE: ";
