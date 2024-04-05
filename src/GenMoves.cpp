@@ -57,30 +57,30 @@ void GenMoves::clearHeuristic() {
     memset(killer, 0, sizeof(killer));
 }
 
-_Tmove *GenMoves::getNextMoveQ(_TmoveP *list, const int first) {
-    BENCH_AUTO_CLOSE("getNextMoveQ")
-    int bestId = -1;
-    int bestScore = -INT_MAX;
-
-    for (int i = first; i < list->size; i++) {
-        const auto move = list->moveList[i];
-        ASSERT_RANGE(move.pieceFrom, 0, 11)
-        ASSERT_RANGE(move.to, 0, 63)
-        ASSERT_RANGE(move.from, 0, 63)
-
-        const int score = CAPTURES[move.pieceFrom][move.capturedPiece];
-        if (score > bestScore) {
-            bestScore = score;
-            bestId = i;
-        }
-    }
-    if (bestId == -1) {
-        return nullptr;
-    }
-    return swap(list, first, bestId);
+_Tmove *GenMoves::getNextMoveQ(_TmoveP *list, const int first) {ASSERT(0);
+//    BENCH_AUTO_CLOSE("getNextMoveQ")
+//    int bestId = -1;
+//    int bestScore = -INT_MAX;
+//
+//    for (int i = first; i < list->size; i++) {
+//        const auto move = list->moveList[i];
+//        ASSERT_RANGE(move.pieceFrom, 0, 11)
+//        ASSERT_RANGE(move.to, 0, 63)
+//        ASSERT_RANGE(move.from, 0, 63)
+//
+//        const int score = CAPTURES[move.pieceFrom][move.capturedPiece];
+//        if (score > bestScore) {
+//            bestScore = score;
+//            bestId = i;
+//        }
+//    }
+//    if (bestId == -1) {
+//        return nullptr;
+//    }
+//    return swap(list, first, bestId);
 }
 
-_Tmove *GenMoves::getNextMove(_TmoveP *list, const int depth, const u64 &hash, const int first) {
+_Tmove *GenMoves::getNextMove(_TmoveP *list, const int depth, const u64 &hash, const int first, const u64 allpieces) {
     BENCH_AUTO_CLOSE("getNextMove")
     int bestId = -1;
     int bestScore = -1;
@@ -98,8 +98,14 @@ _Tmove *GenMoves::getNextMove(_TmoveP *list, const int depth, const u64 &hash, c
                 return swap(list, first, i);
             }
             score += historyHeuristic[move.from][move.to];
-            score += CAPTURES[move.pieceFrom][move.capturedPiece];
-
+//            auto bb = CAPTURES[move.pieceFrom][move.capturedPiece];
+            if (move.capturedPiece != SQUARE_EMPTY) {
+                score += See::see(move, chessboard, allpieces);
+            }
+//            if (move.pieceFrom > 1 && aa != bb) {
+//                display(&move);
+//                cout << aa << " " << bb << endl;
+//            }
 //            if (isKiller(0, move.from, move.to, depth)) score += 50;
 //            else if (isKiller(1, move.from, move.to, depth)) score += 30;
 

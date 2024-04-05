@@ -286,7 +286,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
 
     int first = 0;
 
-    while ((move = getNextMove(&genList[listId], depth, hashItem, first++))) {
+    while ((move = getNextMove(&genList[listId], depth, hashItem, first++, friends | enemies))) {
         if (!checkSearchMoves<checkMoves>(move) && depth == mainDepth)
             continue;
         countMove++;

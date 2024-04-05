@@ -27,7 +27,7 @@
 using namespace std;
 namespace constants {
     
-    static const string NAME = "Cinnamon 2.6-base";
+    static const string NAME = "Cinnamon 2.6-ord_see";
     static const string STARTPOS = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     static constexpr int BLACK = 0;
     static constexpr int WHITE = 1;
@@ -249,7 +249,7 @@ namespace constants {
     static constexpr u64 NOTPOW2_60 = 0xefffffffffffffffULL;
     static constexpr u64 NOTPOW2_61 = 0xdfffffffffffffffULL;
     static constexpr u64 NOTPOW2_63 = 0x7fffffffffffffffULL;
-
+/*
     static constexpr int _0_ = 0;
     static constexpr int Px_ = 1;
     static constexpr int Rx_ = 0;
@@ -314,7 +314,7 @@ namespace constants {
             {_0_,QxP,_0_,QxR,_0_,QxB,_0_,QxN,_0_,QxK,_0_,QxQ,Qx_},
             {QxP,_0_,QxR,_0_,QxB,_0_,QxN,_0_,QxK,_0_,QxQ,_0_,Qx_},
             {_0_,_0_,_0_,_0_,_0_,_0_,_0_,_0_,_0_,_0_,_0_,_0_,_0_}
-    };
+    };*/
 
     static const array<string, 64> BOARD =
         {"h1", "g1", "f1", "e1", "d1", "c1", "b1", "a1", "h2", "g2", "f2", "e2", "d2", "c2", "b2", "a2", "h3", "g3",
