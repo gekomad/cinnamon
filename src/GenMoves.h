@@ -805,7 +805,6 @@ protected:
     }
 
     bool isKiller(const int idx, const int from, const int to, const int depth) {
-        return false;
         ASSERT_RANGE(from, 0, 63)
         ASSERT_RANGE(to, 0, 63)
         ASSERT_RANGE(depth, 0, MAX_PLY - 1)

@@ -314,6 +314,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
 
             if (move->capturedPiece == SQUARE_EMPTY && move->promotionPiece == NO_PROMOTION) {
                 setHistoryHeuristic(move->from, move->to, depth);
+                setKiller(move->from, move->to, depth);
             }
 
             bestscore = score;
@@ -321,12 +322,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
             break;
         }
         if (score > bestscore) {
-//            if (move->capturedPiece == SQUARE_EMPTY && move->promotionPiece == NO_PROMOTION) {
-//                setKiller(move->from, move->to, depth);
-//            }
             bestscore = score;
-//            alpha = score;
-//            hashf = Hash::hashfEXACT;
             best = move;
             if (score > alpha) {
                 alpha = score;
@@ -335,10 +331,6 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
         }
     }
 
-//        if (best->capturedPiece == SQUARE_EMPTY && best->promotionPiece == NO_PROMOTION && (depth - extension) >= 0) {
-//            setHistoryHeuristic(best->from, best->to, depth - extension);
-//            setKiller(best->from, best->to, depth - extension);
-//        }
     if (alpha != oldAlpha) {
         const char hashf =
                 (alpha <= oldAlpha) ? Hash::hashfALPHA :

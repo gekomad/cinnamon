@@ -50,6 +50,9 @@ void GenMoves::agedHeuristic() {
     for (int i = 0; i < 64; i++)
         for (int j = 0; j < 64; j++)
             historyHeuristic[i][j] /= 64;
+//    for (int i = 0; i < 2; i++) TODO
+//        for (int j = 0; j < MAX_PLY; j++)
+//            killer[i][j] /= 64;
 }
 
 void GenMoves::clearHeuristic() {
@@ -100,8 +103,8 @@ _Tmove *GenMoves::getNextMove(_TmoveP *list, const int depth, const u64 &hash, c
             score += historyHeuristic[move.from][move.to];
             score += CAPTURES[move.pieceFrom][move.capturedPiece];
 
-//            if (isKiller(0, move.from, move.to, depth)) score += 50;
-//            else if (isKiller(1, move.from, move.to, depth)) score += 30;
+            if (isKiller(0, move.from, move.to, depth)) score += 50;
+            else if (isKiller(1, move.from, move.to, depth)) score += 30;
 
         } else if (move.type & 0xc) {    //castle
             ASSERT(rightCastle);
