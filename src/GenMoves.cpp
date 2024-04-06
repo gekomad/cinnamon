@@ -57,7 +57,8 @@ void GenMoves::clearHeuristic() {
     memset(killer, 0, sizeof(killer));
 }
 
-_Tmove *GenMoves::getNextMoveQ(_TmoveP *list, const int first) {ASSERT(0);
+_Tmove *GenMoves::getNextMoveQ(_TmoveP *list, const int first) {
+    ASSERT(0);
 //    BENCH_AUTO_CLOSE("getNextMoveQ")
 //    int bestId = -1;
 //    int bestScore = -INT_MAX;
@@ -98,9 +99,17 @@ _Tmove *GenMoves::getNextMove(_TmoveP *list, const int depth, const u64 &hash, c
                 return swap(list, first, i);
             }
             score += historyHeuristic[move.from][move.to];
-//            auto bb = CAPTURES[move.pieceFrom][move.capturedPiece];
+            auto bb = CAPTURES[move.pieceFrom][move.capturedPiece];
             if (move.capturedPiece != SQUARE_EMPTY) {
-                score += See::see(move, chessboard, allpieces);
+                int piece;
+                if (move.side == WHITE)
+                    piece = See::firstAttacker<WHITE>(move.to, allpieces, chessboard);
+                else
+                    piece = See::firstAttacker<BLACK>(move.to, allpieces, chessboard);
+                if (piece != INT_MAX) {
+                    int k = CAPTURES[piece][move.pieceFrom];
+                    score += bb - k;
+                }
             }
 //            if (move.pieceFrom > 1 && aa != bb) {
 //                display(&move);

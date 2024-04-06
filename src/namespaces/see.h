@@ -17,11 +17,45 @@
 */
 
 #pragma once
+
 #include "constants.h"
+
 using namespace constants;
 
 class See {
 public:
+
+    template<uchar side>
+    __attribute__((always_inline))  static int
+    firstAttacker(const int position, const u64 allpieces, const _Tchessboard &chessboard) {
+        BENCH_AUTO_CLOSE("getAttackers")
+        ASSERT_RANGE(position, 0, 63)
+        ASSERT_RANGE(side, 0, 1)
+        constexpr int xside = X(side);
+        ///knight
+        if (KNIGHT_MASK[position] & chessboard[KNIGHT_BLACK + xside])return KNIGHT_BLACK;
+
+        ///king
+        if (NEAR_MASK1[position] & chessboard[KING_BLACK + xside])return KING_BLACK;
+
+        ///pawn
+        if (PAWN_FORK_MASK[side][position] & chessboard[PAWN_BLACK + xside])return PAWN_BLACK;
+
+        ///bishop queen
+        const u64 e = chessboard[BISHOP_BLACK + xside];
+        if (Bitboard::getDiagonalAntiDiagonal(position, allpieces) & e)return BISHOP_BLACK;
+
+
+        const u64 e2 = chessboard[ROOK_BLACK + xside];
+        if (Bitboard::getRankFile(position, allpieces) & e2)return ROOK_BLACK;
+
+        const u64 q = chessboard[QUEEN_BLACK + xside];
+        if (Bitboard::getDiagonalAntiDiagonal(position, allpieces) & q)return QUEEN_BLACK;
+        if (Bitboard::getRankFile(position, allpieces) & q)return QUEEN_BLACK;
+        return INT_MAX;
+    }
+
+
     static int see(const _Tmove &move, const _Tchessboard &chessboard, const u64 allpieces) {
         const uchar side = move.side;
         const int position = move.to;
