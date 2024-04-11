@@ -407,7 +407,7 @@ protected:
 
     _Tmove *getNextMoveQ(_TmoveP *list, const int first);
 
-    _Tmove *getNextMove(_TmoveP *list, const int depth, const u64 &, const int first, bool isCapture);
+    _Tmove *getNextMove(_TmoveP *list, const int depth, const u64 &, const int first, const bool isCapture);
 
     template<uchar side>
     __attribute__((always_inline)) int getMobilityCastle(const u64 allpieces) const {
@@ -801,17 +801,17 @@ protected:
         ASSERT_RANGE(from, 0, 63)
         ASSERT_RANGE(to, 0, 63)
         ASSERT_RANGE(depth, 0, MAX_PLY - 1)
+        if(killer[1][depth] == killer[0][depth])return;
         killer[1][depth] = killer[0][depth];
         killer[0][depth] = from | (to << 8);
     }
 
-    bool isKiller(const int idx, const int from, const int to, const int depth) {
-        return false;
+    bool isKiller(const int from, const int to, const int depth) {
         ASSERT_RANGE(from, 0, 63)
         ASSERT_RANGE(to, 0, 63)
         ASSERT_RANGE(depth, 0, MAX_PLY - 1)
         const unsigned short v = from | (to << 8);
-        return v == killer[idx][depth];
+        return v == killer[0][depth] || v == killer[1][depth];
     }
 
     bool forceCheck = false;

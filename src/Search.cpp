@@ -321,7 +321,8 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
                               (((double) countMove * 100.0 / (double) listcount) / (double) countMove))
 
                 if (move->capturedPiece == SQUARE_EMPTY && move->promotionPiece == NO_PROMOTION) {
-                    setHistoryHeuristic(move->from, move->to, depth);// TODO inc ?
+                    setHistoryHeuristic(move->from, move->to, depth); // TODO inc ?
+                    setKiller(move->from, move->to, depth); // TODO aged? inc ? mainDepth-depth ?
                 }
 
                 bestscore = score;
@@ -330,9 +331,6 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
                 break;
             }
             if (score > bestscore) {
-//            if (move->capturedPiece == SQUARE_EMPTY && move->promotionPiece == NO_PROMOTION) {
-//                setKiller(move->from, move->to, depth);
-//            }
                 bestscore = score;
 //            alpha = score;
 //            hashf = Hash::hashfEXACT;
