@@ -47,27 +47,27 @@ void Search::aspirationWindow(const int depth, const int valWin) {
 
 
     if (true) {
-        valWindow = search<side, searchMoves>(depth, -_INFINITE - 1, _INFINITE + 1, &pvLine, nPieces);
+        valWindow = search<side, searchMoves>(depth, -_INFINITE - 1, _INFINITE + 1, &pvLine, nPieces, 1);
     } else {
-        int tmp = search<side, searchMoves>(depth, valWindow - VAL_WINDOW, valWindow + VAL_WINDOW, &pvLine, nPieces);
+        int tmp = search<side, searchMoves>(depth, valWindow - VAL_WINDOW, valWindow + VAL_WINDOW, &pvLine, nPieces, 1);
         if (tmp <= valWindow - VAL_WINDOW || tmp >= valWindow + VAL_WINDOW) {
             if (tmp <= valWindow - VAL_WINDOW) {
                 tmp = search<side, searchMoves>(depth, valWindow - VAL_WINDOW * 2, valWindow + VAL_WINDOW, &pvLine,
-                                                nPieces);
+                                                nPieces, 1);
             } else {
                 tmp = search<side, searchMoves>(depth, valWindow - VAL_WINDOW, valWindow + VAL_WINDOW * 2, &pvLine,
-                                                nPieces);
+                                                nPieces, 1);
             }
             if (tmp <= valWindow - VAL_WINDOW || tmp >= valWindow + VAL_WINDOW) {
                 if (tmp <= valWindow - VAL_WINDOW) {
                     tmp = search<side, searchMoves>(depth, valWindow - VAL_WINDOW * 4, valWindow + VAL_WINDOW, &pvLine,
-                                                    nPieces);
+                                                    nPieces, 1);
                 } else {
                     tmp = search<side, searchMoves>(depth, valWindow - VAL_WINDOW, valWindow + VAL_WINDOW * 4, &pvLine,
-                                                    nPieces);
+                                                    nPieces, 1);
                 }
                 if (tmp <= valWindow - VAL_WINDOW || tmp >= valWindow + VAL_WINDOW) {
-                    tmp = search<side, searchMoves>(depth, -_INFINITE - 1, _INFINITE + 1, &pvLine, nPieces);
+                    tmp = search<side, searchMoves>(depth, -_INFINITE - 1, _INFINITE + 1, &pvLine, nPieces, 1);
                 }
             }
         }
@@ -190,7 +190,7 @@ bool Search::checkSearchMoves(const _Tmove *move) const {
 
 
 template<uchar side, bool checkMoves>
-int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, const int N_PIECE) {
+int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, const int N_PIECE, const int ply1) {
     ASSERT_RANGE(side, 0, 1)
     if (!getRunning()) return 0;
     const int oldAlpha = alpha;
@@ -294,7 +294,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
 
         int first = 0;
 
-        while ((move = getNextMove(&genList[listId], depth, hashItem, first++, _i == 0))) {
+        while ((move = getNextMove(&genList[listId], ply1, hashItem, first++, _i == 0))) {
             if (!checkSearchMoves<checkMoves>(move) && depth == mainDepth)
                 continue;
             countMove++;
@@ -308,7 +308,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
             newLine.cmove = 0;
 
             const auto nPieces = move ? (move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1) : N_PIECE;
-            int score = -search<X(side), checkMoves>(depth - 1, -beta, -alpha, &newLine, nPieces);
+            int score = -search<X(side), checkMoves>(depth - 1, -beta, -alpha, &newLine, nPieces, ply1 + 1);
 
             takeback(move, oldKey, oldEnpassant, true);
             ASSERT(chessboard[KING_BLACK]);
@@ -321,7 +321,8 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
                               (((double) countMove * 100.0 / (double) listcount) / (double) countMove))
 
                 if (move->capturedPiece == SQUARE_EMPTY && move->promotionPiece == NO_PROMOTION) {
-                    setHistoryHeuristic(move->from, move->to, depth);// TODO inc ?
+                    setHistoryHeuristic(move->from, move->to, depth); // TODO inc ?
+                    setKiller(move->from, move->to, ply1);
                 }
 
                 bestscore = score;
@@ -330,9 +331,6 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
                 break;
             }
             if (score > bestscore) {
-//            if (move->capturedPiece == SQUARE_EMPTY && move->promotionPiece == NO_PROMOTION) {
-//                setKiller(move->from, move->to, depth);
-//            }
                 bestscore = score;
 //            alpha = score;
 //            hashf = Hash::hashfEXACT;

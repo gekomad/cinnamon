@@ -80,7 +80,7 @@ _Tmove *GenMoves::getNextMoveQ(_TmoveP *list, const int first) {
     return swap(list, first, bestId);
 }
 
-_Tmove *GenMoves::getNextMove(_TmoveP *list, const int depth, const u64 &hash, const int first, bool isCapture) {
+_Tmove *GenMoves::getNextMove(_TmoveP *list, const int ply, const u64 &hash, const int first, const bool isCapture) {
     BENCH_AUTO_CLOSE("getNextMove")
     int bestId = -1;
     int bestScore = -1;
@@ -106,16 +106,17 @@ _Tmove *GenMoves::getNextMove(_TmoveP *list, const int depth, const u64 &hash, c
                     bestId = i;
                 }
             } else {
-                const int a = historyHeuristic[move.from][move.to];
-                if (a > bestScore) {
-                    bestScore = a;
-                    bestId = i;
+                if (isKiller(move.from, move.to, ply)) {
+                    return swap(list, first, i);
+                } else {
+                    const int a = historyHeuristic[move.from][move.to];
+                    if (a > bestScore) {
+                        bestScore = a;
+                        bestId = i;
+                    }
                 }
             }
 
-
-//            if (isKiller(0, move.from, move.to, depth)) score += 50;
-//            else if (isKiller(1, move.from, move.to, depth)) score += 30;
 
         } else if (move.type & 0xc) {    //castle
             ASSERT(rightCastle);

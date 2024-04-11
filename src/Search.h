@@ -152,7 +152,7 @@ private:
     bool checkDraw(u64);
 
     template<uchar side, bool checkMoves>
-    int search(const int depth, int alpha, const int beta, _TpvLine *pline, const int N_PIECE);
+    int search(const int depth, int alpha, const int beta, _TpvLine *pline, const int N_PIECE, const int ply1);
 
     template<bool checkMoves>
     bool checkSearchMoves(const _Tmove *move) const;
