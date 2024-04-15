@@ -49,6 +49,7 @@ void GenMoves::setPerft(const bool b) {
 void GenMoves::clearHeuristic() {
     memset(historyHeuristic, 0, sizeof(historyHeuristic));
     memset(killer, 0, sizeof(killer));
+    memset(counterMove, 0, sizeof(counterMove));
 }
 
 _Tmove *GenMoves::getNextMoveQ(_TmoveP *list, const int first) {
@@ -74,7 +75,8 @@ _Tmove *GenMoves::getNextMoveQ(_TmoveP *list, const int first) {
     return swap(list, first, bestId);
 }
 
-_Tmove *GenMoves::getNextMove(_TmoveP *list, const int depth, const u64 &hash, const int first, bool isCapture) {
+_Tmove *GenMoves::getNextMove(_TmoveP *list, const int depth, const u64 &hash, const int first, bool isCapture,
+                              const _Tmove *previousMove) {
     BENCH_AUTO_CLOSE("getNextMove")
     int bestId = -1;
     int bestScore = -1;
@@ -101,7 +103,8 @@ _Tmove *GenMoves::getNextMove(_TmoveP *list, const int depth, const u64 &hash, c
                 }
             } else {
                 const int a = historyHeuristic[move.pieceFrom][move.to];
-                if (a > bestScore) {
+                const int b = isCounterMove(previousMove, move) * 50;
+                if ((a + b) > bestScore) {
                     bestScore = a;
                     bestId = i;
                 }
