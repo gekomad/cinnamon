@@ -117,7 +117,7 @@ Search::~Search() {
 }
 
 template<uchar side>
-int Search::qsearch(int alpha, const int beta, const uchar promotionPiece, const int depth) {
+int Search::qsearch(int alpha, const int beta, const uchar promotionPiece, const int depth, const int npieces) {
     if (!getRunning()) return 0;
     ++numMovesq;
 
@@ -128,6 +128,8 @@ int Search::qsearch(int alpha, const int beta, const uchar promotionPiece, const
         if (score >= beta) return score;
         alpha = score;
     }
+
+    // TODO provare if (score > alpha) alpha = score;
 
     incListId();
 
@@ -152,7 +154,15 @@ int Search::qsearch(int alpha, const int beta, const uchar promotionPiece, const
             continue;
         }
 
-        int val = -qsearch<X(side)>(-beta, -alpha, move->promotionPiece, depth - 1);
+        /// **************Delta Pruning ****************
+        if (npieces >= 6 && score + PIECES_VALUE[move->capturedPiece] + 300 <= alpha &&
+            move->promotionPiece == NO_PROMOTION) {
+            INC(nCutFp);
+            takeback(move, oldKey, oldEnpassant, false);
+            continue;
+        } 
+        /// ************ end Delta Pruning *************
+        int val = -qsearch<X(side)>(-beta, -alpha, move->promotionPiece, depth - 1, npieces - 1);
         score = max(score, val);
         takeback(move, oldKey, oldEnpassant, false);
         if (score > alpha) {
@@ -277,7 +287,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     }
     int extension = 0;//isIncheckSide;
     if (depth + extension == 0) {
-        return qsearch<side>(alpha, beta, NO_PROMOTION, 0);
+        return qsearch<side>(alpha, beta, NO_PROMOTION, 0, N_PIECE);
     }
 
     /// ************* hash ****************
@@ -339,48 +349,48 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
             countMove++;
 
             if (!makemove(move, true)) {
-            takeback(move, oldKey, oldEnpassant, true);
-            continue;
-        }
-
-        _TpvLine newLine;
-        newLine.cmove = 0;
-
-        const auto nPieces = move ? (move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1) : N_PIECE;
-        int score = -search<X(side), checkMoves>(depth - 1, -beta, -alpha, &newLine, nPieces);
-
-        takeback(move, oldKey, oldEnpassant, true);
-        ASSERT(chessboard[KING_BLACK]);
-        ASSERT(chessboard[KING_WHITE]);
-        if (score >= beta) {
-            INC(nCutAB);
-            INC(betaEfficiencyCount);
-            DEBUG(betaEfficiency +=
-                          (100.0 - ((double) countMove * 100.0 / (double) listcount)) +
-                          (((double) countMove * 100.0 / (double) listcount) / (double) countMove))
-
-            if (move->capturedPiece == SQUARE_EMPTY && move->promotionPiece == NO_PROMOTION) {
-                setHistoryHeuristic(move->pieceFrom, move->to, depth);
+                takeback(move, oldKey, oldEnpassant, true);
+                continue;
             }
 
-            bestscore = score;
-            best = move;
-           _i = 3;
-            break;
-        }
-        if (score > bestscore) {
+            _TpvLine newLine;
+            newLine.cmove = 0;
+
+            const auto nPieces = move ? (move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1) : N_PIECE;
+            int score = -search<X(side), checkMoves>(depth - 1, -beta, -alpha, &newLine, nPieces);
+
+            takeback(move, oldKey, oldEnpassant, true);
+            ASSERT(chessboard[KING_BLACK]);
+            ASSERT(chessboard[KING_WHITE]);
+            if (score >= beta) {
+                INC(nCutAB);
+                INC(betaEfficiencyCount);
+                DEBUG(betaEfficiency +=
+                              (100.0 - ((double) countMove * 100.0 / (double) listcount)) +
+                              (((double) countMove * 100.0 / (double) listcount) / (double) countMove))
+
+                if (move->capturedPiece == SQUARE_EMPTY && move->promotionPiece == NO_PROMOTION) {
+                    setHistoryHeuristic(move->pieceFrom, move->to, depth);
+                }
+
+                bestscore = score;
+                best = move;
+                _i = 3;
+                break;
+            }
+            if (score > bestscore) {
 //            if (move->capturedPiece == SQUARE_EMPTY && move->promotionPiece == NO_PROMOTION) {
 //                setKiller(move->from, move->to, depth);
 //            }
-            bestscore = score;
+                bestscore = score;
 //            alpha = score;
 //            hashf = Hash::hashfEXACT;
-            best = move;
-            if (score > alpha) {
-                alpha = score;
-                updatePv(pline, &newLine, move);
+                best = move;
+                if (score > alpha) {
+                    alpha = score;
+                    updatePv(pline, &newLine, move);
+                }
             }
-        }
         }
         decListId();
     }

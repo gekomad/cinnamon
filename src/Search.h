@@ -158,7 +158,7 @@ private:
     bool checkSearchMoves(const _Tmove *move) const;
 
     template<uchar side>
-    int qsearch(int alpha, const int beta, const uchar promotionPiece, const int depth);
+    int qsearch(int alpha, const int beta, const uchar promotionPiece, const int depth, const int N_PIECE);
 
     void updatePv(_TpvLine *pline, const _TpvLine *line, const _Tmove *move);
 
