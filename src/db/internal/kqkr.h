@@ -26,7 +26,9 @@ class Kqkr {
 
 
 public:
-    static bool search(const _Tchessboard &c) ;
+    static int get_idx(const _Tchessboard &c);
+
+    static void generate(string path, string fen);
 
 private:
     static bool find(const Tables::bitset22 c) { return false; };

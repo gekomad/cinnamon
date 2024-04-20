@@ -27,13 +27,9 @@ SearchManager::SearchManager() {
     threadPool = new ThreadPool<Search>(1);
 }
 
-#if defined(FULL_TEST)
-
 unsigned SearchManager::SZtbProbeWDL() const {
     return SYZYGY::getInstance().SZtbProbeWDL(threadPool->getThread(0).chessboard, threadPool->getThread(0).sideToMove);
 }
-
-#endif
 
 int SearchManager::search(const int plyFromRoot, const int iter_depth) {
 

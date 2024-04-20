@@ -394,6 +394,6 @@ int ChessBoard::loadFen(const string &fen) {
         MATCH_QUEENSIDE = MATCH_QUEENSIDE_WHITE + " e8c8";
     }
 
-    Tables::search(chessboard);
+//    Tables::search(chessboard);
     return sideToMove;
 }

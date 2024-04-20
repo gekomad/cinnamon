@@ -32,6 +32,6 @@ int Tables::get_quadrant(const u64 c) {
 
 //void Tables::generate_kqkr(const bitset22 idx) {}
 bool Tables::search(const _Tchessboard &c) {
-    return Kqkr::search(c);
-
+//    return Kqkr::search(c);
+    return false;
 }

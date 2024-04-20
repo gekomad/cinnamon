@@ -111,7 +111,9 @@ public:
     static void setChess960(const bool i);
 
     static bool makemove(const _Tmove *i);
+
     static void updateFenString();
+
     static void takeback(const _Tmove *move, const u64 oldkey, const uchar oldEnpassant, const bool rep);
 
     static void setSide(const bool i);
@@ -136,10 +138,9 @@ public:
 
     static bool setNthread(const int);
 
-#if defined(FULL_TEST)
-
     unsigned SZtbProbeWDL() const;
 
+#if defined(FULL_TEST)
     u64 getBitmap(const int n, const uchar side) const {
         return side ? board::getBitmap<WHITE>(threadPool->getPool()[n]->chessboard)
                     : board::getBitmap<BLACK>(threadPool->getPool()[n]->chessboard);
@@ -164,7 +165,7 @@ public:
 
     static unsigned getNCutAB() {
         unsigned i = 0;
-        for (Search *s:threadPool->getPool()) {
+        for (Search *s: threadPool->getPool()) {
             i += s->nCutAB;
         }
         return i;
@@ -173,7 +174,7 @@ public:
     static double getBetaEfficiency() {
         double b = 0;
         unsigned count = 0;
-        for (Search *s:threadPool->getPool()) {
+        for (Search *s: threadPool->getPool()) {
             b += s->betaEfficiency;
             count += s->betaEfficiencyCount;
         }
@@ -182,7 +183,7 @@ public:
 
     static unsigned getLazyEvalCuts() {
         unsigned i = 0;
-        for (Search *s:threadPool->getPool()) {
+        for (Search *s: threadPool->getPool()) {
             i += s->getLazyEvalCuts();
         }
         return i;
@@ -190,7 +191,7 @@ public:
 
     static unsigned getNCutFp() {
         unsigned i = 0;
-        for (Search *s:threadPool->getPool()) {
+        for (Search *s: threadPool->getPool()) {
             i += s->nCutFp;
         }
         return i;
@@ -198,7 +199,7 @@ public:
 
     static unsigned getNCutRazor() {
         unsigned i = 0;
-        for (Search *s:threadPool->getPool()) {
+        for (Search *s: threadPool->getPool()) {
             i += s->nCutRazor;
         }
         return i;
@@ -206,7 +207,7 @@ public:
 
     static unsigned getTotBadCaputure() {
         unsigned i = 0;
-        for (Search *s:threadPool->getPool()) {
+        for (Search *s: threadPool->getPool()) {
             i += s->nCutBadCaputure;
         }
         return i;
@@ -214,7 +215,7 @@ public:
 
     static unsigned getNullMoveCut() {
         unsigned i = 0;
-        for (Search *s:threadPool->getPool()) {
+        for (Search *s: threadPool->getPool()) {
             i += s->nNullMoveCut;
         }
         return i;

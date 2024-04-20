@@ -19,8 +19,26 @@
 #pragma once
 
 #include "kqkr.h"
+#include "../../SearchManager.h"
 
-bool Kqkr::search(const _Tchessboard &c) {
+void Kqkr::generate(string path, string fen) {
+
+    SearchManager &searchManager = Singleton<SearchManager>::getInstance();
+    SYZYGY::getInstance().createSYZYGY(path);
+    searchManager.loadFen(fen);
+    auto res = searchManager.SZtbProbeWDL();
+    const auto idx = Kqkr::get_idx(searchManager.getSearch(0).chessboard);
+
+    cout << fen << "|"<<idx<<"|";
+    if (res != TB_RESULT_FAILED) {
+        res = TB_GET_WDL(res);
+        if (res == TB_WIN || res == TB_CURSED_WIN) cout << "ok"; else cout << "ko";
+    } else cout << "ko";
+    cout << endl;
+
+}
+
+int Kqkr::get_idx(const _Tchessboard &c) {
     _Tchessboard chessboard;
     memcpy(chessboard, c, sizeof(_Tchessboard));
     const int quad_kw = Tables::get_quadrant(BITScanForward(chessboard[KING_WHITE]));
@@ -87,8 +105,8 @@ bool Kqkr::search(const _Tchessboard &c) {
     const unsigned idx =
             PACK_KING1(pos_kw) | PACK_QUADRANT_QUEEN(quad_qw) | PACK_QUEEN(pos_qw) | PACK_QUADRANT_KING2(quad_kq) |
             PACK_KING2(pos_kb) | PACK_QUADRANT_ROOK(quad_rb) | PACK_ROOK(pos_rb);
-
-    const auto i = static_cast<Tables::bitset22>(idx);
-    return Kqkr::find(i);
+    return idx;
+//    const auto i = static_cast<Tables::bitset22>(idx);
+//    return Kqkr::find(i);
 
 }
