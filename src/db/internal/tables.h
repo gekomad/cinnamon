@@ -17,9 +17,12 @@
 */
 
 #pragma once
+
 #include <bitset>
 #include "../../util/Bitboard.h"
 #include "../../ChessBoard.h"
+#include "../../SearchManager.h"
+
 namespace tb_constants {
     static constexpr array<uchar, 32> DECODE = {0, 1, 2, 3, 0xf, 0xf, 0xf, 0xf, 4, 5, 6, 7, 0xf, 0xf, 0xf, 0xf, 8,
                                                 9, 10, 11, 0xf, 0xf, 0xf, 0xf, 12, 13, 14, 15};
@@ -28,6 +31,7 @@ class Tables {
 public:
     typedef std::bitset<22> bitset22;
 
+    static void generate(string path, string fen);
 
     static int get_quadrant(const u64 c);
 

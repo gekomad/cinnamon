@@ -19,24 +19,8 @@
 #pragma once
 
 #include "kqkr.h"
-#include "../../SearchManager.h"
 
-void Kqkr::generate(string path, string fen) {
 
-    SearchManager &searchManager = Singleton<SearchManager>::getInstance();
-    SYZYGY::getInstance().createSYZYGY(path);
-    searchManager.loadFen(fen);
-    auto res = searchManager.SZtbProbeWDL();
-    const auto idx = Kqkr::get_idx(searchManager.getSearch(0).chessboard);
-
-    cout << fen << "|"<<idx<<"|";
-    if (res != TB_RESULT_FAILED) {
-        res = TB_GET_WDL(res);
-        if (res == TB_WIN || res == TB_CURSED_WIN) cout << "ok"; else cout << "ko";
-    } else cout << "ko";
-    cout << endl;
-
-}
 
 int Kqkr::get_idx(const _Tchessboard &c) {
     _Tchessboard chessboard;

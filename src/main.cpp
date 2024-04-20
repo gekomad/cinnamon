@@ -48,7 +48,7 @@ int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 #endif
-    Kqkr::generate("/store2/chess/syzygy", "4k3/8/8/8/8/8/8/r2K3Q w - - 0 1");
+    Tables::generate("/store2/chess/syzygy", "4k3/8/8/8/8/8/8/r2K3Q w - - 0 1");
     GetOpt::parse(argc, argv);
     return 0;
 }
