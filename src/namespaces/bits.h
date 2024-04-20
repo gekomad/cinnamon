@@ -110,6 +110,25 @@ namespace _def {
 
 #endif
 
+    static inline u64 flipVertical(u64 x) {
+        const u64 k1 = 0x00FF00FF00FF00FFull;
+        const u64 k2 = 0x0000FFFF0000FFFFull;
+        x = ((x >> 8) & k1) | ((x & k1) << 8);
+        x = ((x >> 16) & k2) | ((x & k2) << 16);
+        x = (x >> 32) | (x << 32);
+        return x;
+    }
+
+    static inline u64 flipHorizontal(u64 x) {
+        const u64 k1 = 0x5555555555555555ull;
+        const u64 k2 = 0x3333333333333333ull;
+        const u64 k4 = 0x0f0f0f0f0f0f0f0full;
+        x = ((x >> 1) & k1) + 2 * (x & k1);
+        x = ((x >> 2) & k2) + 4 * (x & k2);
+        x = ((x >> 4) & k4) + 16 * (x & k4);
+        return x;
+    }
+
     template<uchar side, int shift>
     static inline u64 shiftForward(const u64 bits) {
         ASSERT(shift == 7 || shift == 8 || shift == 9);

@@ -17,6 +17,7 @@
 */
 
 #include "ChessBoard.h"
+#include "db/internal/tables.h"
 
 ChessBoard::ChessBoard() {
     Bitboard();
@@ -131,7 +132,7 @@ void ChessBoard::display(const _Tmove *move) const {
     print(move);
 }
 
-void ChessBoard::display(const _Tchessboard &chessboard) {
+void ChessBoard::display(const _Tchessboard &chessboard ) {
     cout << endl << "     a   b   c   d   e   f   g   h";
     for (int t = 0; t <= 63; t++) {
         char x;
@@ -146,12 +147,11 @@ void ChessBoard::display(const _Tchessboard &chessboard) {
         cout << " | ";
     }
     cout << endl << "   ----+---+---+---+---+---+---+----" << endl;
-    cout << "     a   b   c   d   e   f   g   h" << endl;
 }
 
 void ChessBoard::display() const {
     ChessBoard::display(chessboard);
-    cout << endl << "fen:\t\t" << boardToFen() << endl;
+    cout << "     a   b   c   d   e   f   g   h" << endl << endl << "fen:\t\t" << boardToFen() << endl;
 
     cout << "side:\t\t" << (sideToMove ? "White" : "Black") << endl;
     cout << "castle:\t\t";
@@ -393,6 +393,6 @@ int ChessBoard::loadFen(const string &fen) {
         MATCH_KINGSIDE_BLACK += "e8g8";
         MATCH_QUEENSIDE = MATCH_QUEENSIDE_WHITE + " e8c8";
     }
-
+    tables::kqkr(chessboard);
     return sideToMove;
 }

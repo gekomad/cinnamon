@@ -34,6 +34,8 @@ set(SOURCE_FILES
         perft/_TPerftRes.h
         perft/Perft.cpp
         perft/Perft.h
+        db/internal/tables.cpp
+        db/internal/tables.h
         db/syzygy/SYZYGY.h
         db/syzygy/SYZYGY.cpp
         db/syzygy/tbprobe.c
