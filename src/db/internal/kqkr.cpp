@@ -25,7 +25,12 @@ void Kqkr::generate(SYZYGY &syzygy) {
     Search &g = searchManager.getSearch(0);
     g.clearChessboard();
     g.sideToMove = WHITE;
-
+    ///////
+    searchManager.loadFen("8/3Q4/8/1rk5/8/8/8/4K3 w - - 0 1");
+    const auto idx1 = Kqkr::get_idx(searchManager.getSearch(0).chessboard);
+    searchManager.loadFen("8/8/8/5kr1/8/8/8/3KQ3 w - - 0 1");
+    const auto idx2 = Kqkr::get_idx(searchManager.getSearch(0).chessboard);
+    ///////
     for (int pos_kw = 0; pos_kw < 64; pos_kw++) {
         g.chessboard[KING_WHITE] = POW2(pos_kw);
         for (int pos_kb = 0; pos_kb < 64; pos_kb++) {
@@ -37,6 +42,7 @@ void Kqkr::generate(SYZYGY &syzygy) {
                     if (NEAR_MASK1[pos_kw] & g.chessboard[KING_BLACK])continue;
                     if (bitCount(board::getBitmap(g.chessboard)) != 4)continue;
                     if (board::inCheck1<BLACK>(g.chessboard))continue;
+
                     const auto idx = Kqkr::get_idx(g.chessboard);
                     const auto win = Tables::generate(g.chessboard, g.sideToMove, syzygy) ? "ok" : "ko";
                     const auto fen = g.boardToFen();
@@ -51,7 +57,7 @@ void Kqkr::generate(SYZYGY &syzygy) {
 int Kqkr::get_idx(const _Tchessboard &c) {
     _Tchessboard chessboard;
     memcpy(chessboard, c, sizeof(_Tchessboard));
-    const int quad_kw = Tables::get_quadrant(BITScanForward(chessboard[KING_WHITE]));
+    const int quad_kw = Tables::get_quadrant(chessboard[KING_WHITE]);
     switch (quad_kw) {
         case 1 :
             // flip vertical
@@ -110,9 +116,9 @@ int Kqkr::get_idx(const _Tchessboard &c) {
     #define PACK_KING2(a) ((a)<<6)
     #define PACK_QUADRANT_ROOK(a) ((a) << 4)
     #define PACK_ROOK(a) (a)
-    const int pos_qw = BITScanForward(chessboard[QUEEN_WHITE]);
-    const int pos_kb = BITScanForward(chessboard[KING_BLACK]);
-    const int pos_rb = BITScanForward(chessboard[ROOK_BLACK]);
+    const int pos_qw = tb_constants::DECODE[BITScanForward(chessboard[QUEEN_WHITE])];
+    const int pos_kb = tb_constants::DECODE[BITScanForward(chessboard[KING_BLACK])];
+    const int pos_rb = tb_constants::DECODE[BITScanForward(chessboard[ROOK_BLACK])];
 
     const unsigned idx =
             PACK_KING1(pos_kw) | PACK_QUADRANT_QUEEN(quad_qw) | PACK_QUEEN(pos_qw) | PACK_QUADRANT_KING2(quad_kq) |
