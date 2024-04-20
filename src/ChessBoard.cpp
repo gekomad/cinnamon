@@ -17,8 +17,8 @@
 */
 
 #include "ChessBoard.h"
-#include "db/internal/tables.h"
-
+#include "db/internal/tables.cpp"
+using namespace tables;
 ChessBoard::ChessBoard() {
     Bitboard();
     fenString = string(STARTPOS);
