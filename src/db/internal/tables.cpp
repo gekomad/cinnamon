@@ -21,22 +21,23 @@
 #include "tables.h"
 #include "kqkr.h"
 
-void Tables::generate(string path, string fen) {
+bool Tables::generate(string path, _Tchessboard &chessboard, const int sideToMove) {
 
     SearchManager &searchManager = Singleton<SearchManager>::getInstance();
-    SYZYGY::getInstance().createSYZYGY(path);
-    searchManager.loadFen(fen);
-    auto res = searchManager.SZtbProbeWDL();
-    const auto idx = Kqkr::get_idx(searchManager.getSearch(0).chessboard);
+    SYZYGY::getInstance().createSYZYGY(path, false);
 
-    cout << fen << "|"<<idx<<"|";
+    auto res = searchManager.SZtbProbeWDL();
+    SYZYGY::getInstance().SZtbProbeWDL(chessboard, sideToMove);
+
+
     if (res != TB_RESULT_FAILED) {
         res = TB_GET_WDL(res);
-        if (res == TB_WIN || res == TB_CURSED_WIN) cout << "ok"; else cout << "ko";
-    } else cout << "ko";
-    cout << endl;
+        if (res == TB_WIN || res == TB_CURSED_WIN) return true;
+    }
+    return false;
 
 }
+
 int Tables::get_quadrant(const u64 c) {
     if (c & Q1)return 1;
     if (c & Q2)return 2;

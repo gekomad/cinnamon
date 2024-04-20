@@ -20,7 +20,28 @@
 
 #include "kqkr.h"
 
+void Kqkr::generate(string path, string fen) {
+    SearchManager &searchManager = Singleton<SearchManager>::getInstance();
+    Search &g = searchManager.getSearch(0);
+    g.clearChessboard();
+    g.sideToMove = WHITE;
 
+    for (int pos_kw = 0; pos_kw < 64; pos_kw++) {
+        g.chessboard[KING_WHITE] = POW2(pos_kw);
+        for (int pos_kb = 0; pos_kb < 64; pos_kb++) {
+            g.chessboard[KING_BLACK] = POW2(pos_kb);
+            for (int pos_qw = 0; pos_qw < 64; pos_qw++) {
+                g.chessboard[QUEEN_WHITE] = POW2(pos_qw);
+                for (int pos_rb = 0; pos_rb < 64; pos_rb++) {
+                    g.chessboard[ROOK_BLACK] = POW2(pos_rb);
+                    const auto idx = Kqkr::get_idx(searchManager.getSearch(0).chessboard);
+                    const auto win = Tables::generate(path, g.chessboard, g.sideToMove) ? "ok" : "ko";
+                    cout << "tablebase|" << fen << "|" << idx << "|" << win << endl;
+                }
+            }
+        }
+    }
+}
 
 int Kqkr::get_idx(const _Tchessboard &c) {
     _Tchessboard chessboard;
@@ -64,8 +85,8 @@ int Kqkr::get_idx(const _Tchessboard &c) {
     ASSERT(quad_qw <= 4);
     ASSERT(quad_kq <= 4);
     ASSERT(quad_rb <= 4);
-    ChessBoard::display(c);
-    ChessBoard::display(chessboard);
+//    ChessBoard::display(c);
+//    ChessBoard::display(chessboard);
 
     // pos king_w 4 bits translate to quadrant 4
 

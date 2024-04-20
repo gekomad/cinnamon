@@ -31,7 +31,7 @@ class Tables {
 public:
     typedef std::bitset<22> bitset22;
 
-    static void generate(string path, string fen);
+    static bool generate(string path, _Tchessboard &chessboard, const int sideToMove);
 
     static int get_quadrant(const u64 c);
 

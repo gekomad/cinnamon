@@ -65,7 +65,7 @@ public:
         return installedPieces;
     }
 
-    bool createSYZYGY(string path) {
+    bool createSYZYGY(string path, bool trace = true) {
 
         installedPieces = setPath(path);
         if (!installedPieces) {
