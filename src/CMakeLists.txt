@@ -34,8 +34,10 @@ set(SOURCE_FILES
         perft/_TPerftRes.h
         perft/Perft.cpp
         perft/Perft.h
-        db/internal/tables.cpp
+        db/internal/kqkr.h
+
         db/internal/tables.h
+        db/internal/tables.cpp
         db/syzygy/SYZYGY.h
         db/syzygy/SYZYGY.cpp
         db/syzygy/tbprobe.c
@@ -107,7 +109,8 @@ set(SOURCE_FILES
         Uci.cpp
         Uci.h
         unistd.h
-        db/TB.h)
+        db/TB.h
+        db/internal/tables.cpp)
 
 set(CMAKE_CXX_COMPILER "g++")
 add_executable(cinnamon_debug ${SOURCE_FILES})

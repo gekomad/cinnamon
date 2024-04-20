@@ -17,8 +17,8 @@
 */
 
 #include "ChessBoard.h"
-#include "db/internal/tables.cpp"
-using namespace tables;
+#include "db/internal/tables.h"
+
 ChessBoard::ChessBoard() {
     Bitboard();
     fenString = string(STARTPOS);
@@ -393,6 +393,7 @@ int ChessBoard::loadFen(const string &fen) {
         MATCH_KINGSIDE_BLACK += "e8g8";
         MATCH_QUEENSIDE = MATCH_QUEENSIDE_WHITE + " e8c8";
     }
-    tables::kqkr(chessboard);
+
+    Tables::search(chessboard);
     return sideToMove;
 }
