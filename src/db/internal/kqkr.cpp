@@ -26,10 +26,10 @@ void Kqkr::generate(SYZYGY &syzygy) {
     g.clearChessboard();
     g.sideToMove = WHITE;
     ///////
-    searchManager.loadFen("8/3Q4/8/1rk5/8/8/8/4K3 w - - 0 1");
-    const auto idx1 = Kqkr::get_idx(searchManager.getSearch(0).chessboard);
-    searchManager.loadFen("8/8/8/5kr1/8/8/8/3KQ3 w - - 0 1");
-    const auto idx2 = Kqkr::get_idx(searchManager.getSearch(0).chessboard);
+//    searchManager.loadFen("8/1k6/8/8/8/8/Q7/4K2r w - - 0 1");
+//    const auto idx1 = Kqkr::get_idx(searchManager.getSearch(0).chessboard);
+//    searchManager.loadFen("8/1k6/8/8/8/8/Q7/3K3r w - - 0 1");
+//    const auto idx2 = Kqkr::get_idx(searchManager.getSearch(0).chessboard);
     ///////
     for (int pos_kw = 0; pos_kw < 64; pos_kw++) {
         g.chessboard[KING_WHITE] = POW2(pos_kw);
@@ -57,8 +57,9 @@ void Kqkr::generate(SYZYGY &syzygy) {
 int Kqkr::get_idx(const _Tchessboard &c) {
     _Tchessboard chessboard;
     memcpy(chessboard, c, sizeof(_Tchessboard));
-    const int quad_kw = Tables::get_quadrant(chessboard[KING_WHITE]);
-    switch (quad_kw) {
+
+//    ChessBoard::display(chessboard);
+    switch (Tables::get_quadrant(chessboard[KING_WHITE])) {
         case 1 :
             // flip vertical
             chessboard[KING_WHITE] = flipVertical(chessboard[KING_WHITE]);
@@ -86,11 +87,50 @@ int Kqkr::get_idx(const _Tchessboard &c) {
             chessboard[KING_BLACK] = flipHorizontal(chessboard[KING_BLACK]);
             chessboard[ROOK_BLACK] = flipHorizontal(chessboard[ROOK_BLACK]);
     }
-    const int pos_kw = tb_constants::DECODE[BITScanForward(chessboard[KING_WHITE])];
-
+    const int quad_kw = Tables::get_quadrant(chessboard[KING_WHITE]);
     const int quad_qw = Tables::get_quadrant(chessboard[QUEEN_WHITE]);
     const int quad_kq = Tables::get_quadrant(chessboard[KING_BLACK]);
     const int quad_rb = Tables::get_quadrant(chessboard[ROOK_BLACK]);
+//    ChessBoard::display(chessboard);
+    switch (Tables::get_quadrant(chessboard[QUEEN_WHITE])) {
+        case 1 :
+            chessboard[QUEEN_WHITE] = flipVertical(chessboard[QUEEN_WHITE]);
+            break;
+        case 2 :
+            chessboard[QUEEN_WHITE] = flipVertical(chessboard[QUEEN_WHITE]);
+            chessboard[QUEEN_WHITE] = flipHorizontal(chessboard[QUEEN_WHITE]);
+            break;
+        case 3 :
+            chessboard[QUEEN_WHITE] = flipHorizontal(chessboard[QUEEN_WHITE]);
+    }
+
+    switch (Tables::get_quadrant(chessboard[ROOK_BLACK])) {
+        case 1 :
+            chessboard[ROOK_BLACK] = flipVertical(chessboard[ROOK_BLACK]);
+            break;
+        case 2 :
+            chessboard[ROOK_BLACK] = flipVertical(chessboard[ROOK_BLACK]);
+            chessboard[ROOK_BLACK] = flipHorizontal(chessboard[ROOK_BLACK]);
+            break;
+        case 3 :
+            chessboard[ROOK_BLACK] = flipHorizontal(chessboard[ROOK_BLACK]);
+    }
+
+    switch (Tables::get_quadrant(chessboard[KING_BLACK])) {
+        case 1 :
+            chessboard[KING_BLACK] = flipVertical(chessboard[KING_BLACK]);
+            break;
+        case 2 :
+            chessboard[KING_BLACK] = flipVertical(chessboard[KING_BLACK]);
+            chessboard[KING_BLACK] = flipHorizontal(chessboard[KING_BLACK]);
+            break;
+        case 3 :
+            chessboard[KING_BLACK] = flipHorizontal(chessboard[KING_BLACK]);
+    }
+//    ChessBoard::display(chessboard);
+    const int pos_kw = tb_constants::DECODE[BITScanForward(chessboard[KING_WHITE])];
+
+
     ASSERT(quad_qw <= 4);
     ASSERT(quad_kq <= 4);
     ASSERT(quad_rb <= 4);
