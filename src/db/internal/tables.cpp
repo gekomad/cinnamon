@@ -21,13 +21,13 @@
 #include "tables.h"
 #include "kqkr.h"
 
-bool Tables::generate(string path, _Tchessboard &chessboard, const int sideToMove) {
+bool Tables::generate(_Tchessboard &chessboard, const int sideToMove, SYZYGY &syzygy) {
 
     SearchManager &searchManager = Singleton<SearchManager>::getInstance();
-    SYZYGY::getInstance().createSYZYGY(path, false);
+    searchManager.loadFen("8/8/8/8/8/8/7r/5Q1K w - - 0 1");sss
 
     auto res = searchManager.SZtbProbeWDL();
-    SYZYGY::getInstance().SZtbProbeWDL(chessboard, sideToMove);
+    syzygy.SZtbProbeWDL(chessboard, sideToMove);
 
 
     if (res != TB_RESULT_FAILED) {

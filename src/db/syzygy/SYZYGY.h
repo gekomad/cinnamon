@@ -72,7 +72,7 @@ public:
             cout << "error: unable to initialize syzygy lib; no lib files found" << endl;
             return false;
         }
-        cout << "syzygy tb use " << installedPieces << " pieces" << endl;
+        if (trace)cout << "syzygy tb use " << installedPieces << " pieces" << endl;
 
         return true;
     }

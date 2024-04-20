@@ -20,7 +20,7 @@
 
 #include "kqkr.h"
 
-void Kqkr::generate(string path, string fen) {
+void Kqkr::generate(  SYZYGY &syzygy) {
     SearchManager &searchManager = Singleton<SearchManager>::getInstance();
     Search &g = searchManager.getSearch(0);
     g.clearChessboard();
@@ -34,8 +34,12 @@ void Kqkr::generate(string path, string fen) {
                 g.chessboard[QUEEN_WHITE] = POW2(pos_qw);
                 for (int pos_rb = 0; pos_rb < 64; pos_rb++) {
                     g.chessboard[ROOK_BLACK] = POW2(pos_rb);
-                    const auto idx = Kqkr::get_idx(searchManager.getSearch(0).chessboard);
-                    const auto win = Tables::generate(path, g.chessboard, g.sideToMove) ? "ok" : "ko";
+                    //const auto n = bitCount(board::getBitmap(g.chessboard));
+                    if (bitCount(board::getBitmap(g.chessboard)) != 4)continue;
+                    const auto idx = Kqkr::get_idx(g.chessboard);
+                    const auto win = Tables::generate( g.chessboard, g.sideToMove, syzygy) ? "ok" : "ko";
+                    const auto fen = g.boardToFen();
+
                     cout << "tablebase|" << fen << "|" << idx << "|" << win << endl;
                 }
             }
