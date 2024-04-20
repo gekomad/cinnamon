@@ -35,6 +35,7 @@ set(SOURCE_FILES
         perft/Perft.cpp
         perft/Perft.h
         db/internal/kqkr.h
+        db/internal/kqkr.cpp
 
         db/internal/tables.h
         db/internal/tables.cpp
