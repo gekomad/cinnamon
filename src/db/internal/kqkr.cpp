@@ -20,7 +20,7 @@
 
 #include "kqkr.h"
 
-void Kqkr::generate(  SYZYGY &syzygy) {
+void Kqkr::generate(SYZYGY &syzygy) {
     SearchManager &searchManager = Singleton<SearchManager>::getInstance();
     Search &g = searchManager.getSearch(0);
     g.clearChessboard();
@@ -34,13 +34,14 @@ void Kqkr::generate(  SYZYGY &syzygy) {
                 g.chessboard[QUEEN_WHITE] = POW2(pos_qw);
                 for (int pos_rb = 0; pos_rb < 64; pos_rb++) {
                     g.chessboard[ROOK_BLACK] = POW2(pos_rb);
-                    //const auto n = bitCount(board::getBitmap(g.chessboard));
+                    if (NEAR_MASK1[pos_kw] & g.chessboard[KING_BLACK])continue;
                     if (bitCount(board::getBitmap(g.chessboard)) != 4)continue;
+                    if (board::inCheck1<BLACK>(g.chessboard))continue;
                     const auto idx = Kqkr::get_idx(g.chessboard);
-                    const auto win = Tables::generate( g.chessboard, g.sideToMove, syzygy) ? "ok" : "ko";
+                    const auto win = Tables::generate(g.chessboard, g.sideToMove, syzygy) ? "ok" : "ko";
                     const auto fen = g.boardToFen();
 
-                    cout << "tablebase|" << fen << "|" << idx << "|" << win << endl;
+                    cout << fen << "|" << idx << "|" << win << endl;
                 }
             }
         }
@@ -80,12 +81,10 @@ int Kqkr::get_idx(const _Tchessboard &c) {
             chessboard[ROOK_BLACK] = flipHorizontal(chessboard[ROOK_BLACK]);
     }
     const int pos_kw = tb_constants::DECODE[BITScanForward(chessboard[KING_WHITE])];
-    const int pos_qw = BITScanForward(chessboard[QUEEN_WHITE]);
-    const int pos_kb = BITScanForward(chessboard[KING_BLACK]);
-    const int pos_rb = BITScanForward(chessboard[ROOK_BLACK]);
-    const int quad_qw = Tables::get_quadrant(pos_qw);
-    const int quad_kq = Tables::get_quadrant(pos_kb);
-    const int quad_rb = Tables::get_quadrant(pos_rb);
+
+    const int quad_qw = Tables::get_quadrant(chessboard[QUEEN_WHITE]);
+    const int quad_kq = Tables::get_quadrant(chessboard[KING_BLACK]);
+    const int quad_rb = Tables::get_quadrant(chessboard[ROOK_BLACK]);
     ASSERT(quad_qw <= 4);
     ASSERT(quad_kq <= 4);
     ASSERT(quad_rb <= 4);
@@ -111,6 +110,10 @@ int Kqkr::get_idx(const _Tchessboard &c) {
     #define PACK_KING2(a) ((a)<<6)
     #define PACK_QUADRANT_ROOK(a) ((a) << 4)
     #define PACK_ROOK(a) (a)
+    const int pos_qw = BITScanForward(chessboard[QUEEN_WHITE]);
+    const int pos_kb = BITScanForward(chessboard[KING_BLACK]);
+    const int pos_rb = BITScanForward(chessboard[ROOK_BLACK]);
+
     const unsigned idx =
             PACK_KING1(pos_kw) | PACK_QUADRANT_QUEEN(quad_qw) | PACK_QUEEN(pos_qw) | PACK_QUADRANT_KING2(quad_kq) |
             PACK_KING2(pos_kb) | PACK_QUADRANT_ROOK(quad_rb) | PACK_ROOK(pos_rb);
