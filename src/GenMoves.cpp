@@ -108,8 +108,7 @@ _Tmove *GenMoves::getNextMove(_TmoveP *list, const int depth, const u64 &hash, c
             const int b = historyHeuristic[move.pieceFrom][move.to];
             score |= (b << 7);
 
-//            if (isKiller(0, move.from, move.to, depth)) score |= (50 << 13);
-//            else if (isKiller(1, move.from, move.to, depth))  score |= (30 << 13);
+            score |= (getKiller(move, depth) << 22);
 
         } else if (move.type & 0xc) {    //castle
             ASSERT(rightCastle);

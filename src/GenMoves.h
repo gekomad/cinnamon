@@ -426,7 +426,7 @@ protected:
     }
 
     int historyHeuristic[12][64];
-    unsigned short killer[2][MAX_PLY];
+    unsigned short killer[2][2][MAX_PLY];
 
 #ifdef DEBUG_MODE
 
@@ -802,21 +802,22 @@ protected:
         }
     }
 
-    __attribute__((always_inline)) void setKiller(const int from, const int to, const int depth) {
-        ASSERT_RANGE(from, 0, 63)
-        ASSERT_RANGE(to, 0, 63)
-        ASSERT_RANGE(depth, 0, MAX_PLY - 1)
-        killer[1][depth] = killer[0][depth];
-        killer[0][depth] = from | (to << 8);
+    __attribute__((always_inline)) void updateKiller(const _Tmove &move, const int ply) {
+        ASSERT_RANGE(ply, 0, MAX_PLY - 1)
+        const int a = move.pieceFrom | (move.to << 8);
+        if (killer[move.side][1][ply] != killer[move.side][0][ply])
+            killer[move.side][1][ply] = killer[move.side][0][ply];
+        if (killer[move.side][0][ply] != a)killer[move.side][0][ply] = a;
     }
 
-    bool isKiller(const int idx, const int from, const int to, const int depth) {
-        return false;
-        ASSERT_RANGE(from, 0, 63)
-        ASSERT_RANGE(to, 0, 63)
+    int getKiller(const _Tmove &move, const int depth) {
+        ASSERT_RANGE(move.from, 0, 63)
+        ASSERT_RANGE(move.to, 0, 63)
         ASSERT_RANGE(depth, 0, MAX_PLY - 1)
-        const unsigned short v = from | (to << 8);
-        return v == killer[idx][depth];
+        const unsigned short v = move.pieceFrom | (move.to << 8);
+        if (v == killer[move.side][0][depth])return 2;
+        if (v == killer[move.side][1][depth])return 1;
+        return 0;
     }
 
     bool forceCheck = false;
