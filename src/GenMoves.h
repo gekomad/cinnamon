@@ -802,12 +802,13 @@ protected:
         }
     }
 
-    __attribute__((always_inline)) void updateKiller(const _Tmove &move, const int ply) {
-        ASSERT_RANGE(ply, 0, MAX_PLY - 1)
-        const int a = move.pieceFrom | (move.to << 8);
-        if (killer[move.side][1][ply] != killer[move.side][0][ply])
-            killer[move.side][1][ply] = killer[move.side][0][ply];
-        if (killer[move.side][0][ply] != a)killer[move.side][0][ply] = a;
+    __attribute__((always_inline)) void updateKiller(const _Tmove &move, const int depth) {
+        ASSERT_RANGE(depth, 0, MAX_PLY - 1)
+        const unsigned short a = move.pieceFrom | (move.to << 8);
+        if (killer[move.side][0][depth] != a) {
+            killer[move.side][1][depth] = killer[move.side][0][depth];
+            killer[move.side][0][depth] = a;
+        }
     }
 
     int getKiller(const _Tmove &move, const int depth) {
