@@ -259,7 +259,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     int wdl = TB::probeWdl(depth, side, N_PIECE, mainDepth, rightCastle, chessboard);
     if (wdl != INT_MAX) return wdl;
 #endif
-
+    int score = -_INFINITE;
     int bestscore = -_INFINITE;
 
     ASSERT(chessboard[KING_BLACK]);
@@ -356,8 +356,19 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
         _TpvLine newLine;
         newLine.cmove = 0;
 
-        int score = searchLambda(&newLine, depth - 1, -beta, -alpha, move);
+        const auto nPieces = move ? (move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1) : N_PIECE;
 
+        const bool doMws = (score > -_INFINITE + MAX_PLY);
+
+        const int lwb = max(alpha, score);
+        const int upb = (doMws ? (lwb + 1) : beta);
+
+        int val = -search<X(side), checkMoves>(depth - 1, -upb, -lwb, &newLine, nPieces);
+        if (doMws && (lwb < val) && (val < beta)) {
+            val = -search<X(side), checkMoves>(depth - 1, -beta, -val + 1, &newLine, nPieces);
+        }
+
+        score = max(score, val);
         takeback(move, oldKey, oldEnpassant, true);
         ASSERT(chessboard[KING_BLACK]);
         ASSERT(chessboard[KING_WHITE]);
