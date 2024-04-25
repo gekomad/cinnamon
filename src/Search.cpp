@@ -362,10 +362,10 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
 
         const int lwb = max(alpha, score);
         const int upb = (doMws ? (lwb + 1) : beta);
-
-        int val = -search<X(side), checkMoves>(depth - 1, -upb, -lwb, &newLine, nPieces);
+        const bool isIncheckSide = board::inCheck1<X(side)>(chessboard);
+        int val = -search<X(side), checkMoves>(depth - 1 + isIncheckSide, -upb, -lwb, &newLine, nPieces);
         if (doMws && (lwb < val) && (val < beta)) {
-            val = -search<X(side), checkMoves>(depth - 1, -beta, -val + 1, &newLine, nPieces);
+            val = -search<X(side), checkMoves>(depth - 1 + isIncheckSide, -beta, -val + 1, &newLine, nPieces);
         }
 
         score = max(score, val);
