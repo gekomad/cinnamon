@@ -99,7 +99,8 @@ void IterativeDeeping::run() {
             break;
         }
 
-        searchManager.incHistoryHeuristic(resultMove.from, resultMove.to, 0x1000);
+        searchManager.incHistoryHeuristic(resultMove, iter_depth);
+        searchManager.updateKiller(resultMove, iter_depth);
 
         auto end1 = std::chrono::high_resolution_clock::now();
         timeTaken = Time::diffTime(end1, start1) + 1;
@@ -147,10 +148,11 @@ void IterativeDeeping::run() {
         cout << "info string bad caputure cut: " << nBadCaputure << endl;
 
         printf("info string hash stored %.2f%%  (alpha=%.2f%%  beta=%.2f%%  exact=%.2f%% )\n",
-               ( (double)totStoreHash * 100 / (1 + cumulativeMovesCount)), percStoreHashA, percStoreHashB, percStoreHashE);
+               ((double) totStoreHash * 100 / (1 + cumulativeMovesCount)), percStoreHashA, percStoreHashB,
+               percStoreHashE);
 
         printf("info string hash cut %.2f%% (alpha=%.2f%% beta=%.2f%% exact=%.2f%%)\n",
-               ( (double) totCutHash * 100 / (1 + searchManager.getCumulativeMovesCount())), percCutHashA, percCutHashB,
+               ((double) totCutHash * 100 / (1 + searchManager.getCumulativeMovesCount())), percCutHashA, percCutHashB,
                percCutHashE);
         printf("info string hash write collisions: %d%%\n", hash.collisions * 100 / (totStoreHash + 1));
         printf("info string hash read collisions: %d%%\n", hash.readCollisions * 100 / (hash.readHashCount + 1));

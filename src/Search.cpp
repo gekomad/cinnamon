@@ -370,7 +370,8 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
                           (((double) countMove * 100.0 / (double) listcount) / (double) countMove))
 
             if (move->capturedPiece == SQUARE_EMPTY && move->promotionPiece == NO_PROMOTION) {
-                setHistoryHeuristic(move->pieceFrom, move->to, depth);
+                incHistoryHeuristic(move->pieceFrom, move->to, depth);
+                updateKiller(*move, depth);
             }
 
             bestscore = score;
