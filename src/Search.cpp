@@ -342,7 +342,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     int countMove = 0;
 
     int first = 0;
-
+    int score = -_INFINITE;
     while ((move = getNextMove(&genList[listId], depth, hashItem, first++))) {
         if (!checkSearchMoves<checkMoves>(move) && depth == mainDepth)
             continue;
@@ -356,8 +356,17 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
         _TpvLine newLine;
         newLine.cmove = 0;
 
-        int score = searchLambda(&newLine, depth - 1, -beta, -alpha, move);
+        const bool doMws = (score > -_INFINITE + MAX_PLY);
 
+        const int lwb = max(alpha, score);
+        const int upb = (doMws ? (lwb + 1) : beta);
+        const bool isIncheckSide = board::inCheck1<X(side)>(chessboard);
+        int val = searchLambda(&newLine, depth - 1 + isIncheckSide, -upb, -lwb, nullptr);
+        if (doMws && (lwb < val) && (val < beta)) {
+            val = searchLambda(&newLine, depth - 1 + isIncheckSide, -beta, -val + 1, nullptr);
+        }
+
+        score = max(score, val);
         takeback(move, oldKey, oldEnpassant, true);
         ASSERT(chessboard[KING_BLACK]);
         ASSERT(chessboard[KING_WHITE]);
