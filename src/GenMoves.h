@@ -57,7 +57,7 @@ public:
 
 #ifdef DEBUG_MODE
 
-    static void verifyPV(const string fen, string pv) {
+    static void verifyPV(string fen, string pv) {
         cout << flush;
         std::string delimiter = " ";
         size_t pos;
@@ -68,13 +68,8 @@ public:
             token = pv.substr(0, pos);
             //std::cout << token << std::endl;
             _Tmove move;
-            const int x = g.getMoveFromSan(token, &move);
-            if (x == INT_MAX) {
-                cout << fen << "|||" << pv << endl;
-                ASSERT(0);
-            }
-
-            g.setSide(!x);
+            int x = !g.getMoveFromSan(token, &move);
+            g.setSide(x);
             g.makemove(&move, false);
             pv.erase(0, pos + delimiter.length());
         }
@@ -403,7 +398,7 @@ protected:
     int repetitionMapCount;
 
     u64 *repetitionMap;
-    int currentPly;
+    int currentPly; // TODO eliminare
 
     u64 numMoves = 0;
     u64 numMovesq = 0;

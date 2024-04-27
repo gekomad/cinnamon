@@ -27,7 +27,7 @@
 using namespace std;
 namespace constants {
     
-    static const string NAME = "Cinnamon 2.6-rollback_2.5_to_2.4";
+    static const string NAME = "base";
     static const string STARTPOS = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     static constexpr int BLACK = 0;
     static constexpr int WHITE = 1;
@@ -54,8 +54,8 @@ namespace constants {
 #else
 #define DEBUG2(...)
 #define DEBUG(a)
-#define ASSERT(a)
 #define ASSERT_RANGE(value, from, to)
+#define ASSERT(a)
 #define INC(a)
 #define SET(a, v)
 #define ADD(a, b)

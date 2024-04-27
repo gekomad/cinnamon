@@ -126,7 +126,12 @@ string ChessBoard::boardToFen() const {
     return fen;
 }
 
-void ChessBoard::display() const {
+void ChessBoard::display(const _Tmove *move) const {
+    display();
+    print(move);
+}
+
+void ChessBoard::display(const _Tchessboard &chessboard) {
     cout << endl << "     a   b   c   d   e   f   g   h";
     for (int t = 0; t <= 63; t++) {
         char x;
@@ -141,7 +146,12 @@ void ChessBoard::display() const {
         cout << " | ";
     }
     cout << endl << "   ----+---+---+---+---+---+---+----" << endl;
-    cout << "     a   b   c   d   e   f   g   h" << endl << endl << "fen:\t\t" << boardToFen() << endl;
+    cout << "     a   b   c   d   e   f   g   h" << endl;
+}
+
+void ChessBoard::display() const {
+    ChessBoard::display(chessboard);
+    cout << endl << "fen:\t\t" << boardToFen() << endl;
 
     cout << "side:\t\t" << (sideToMove ? "White" : "Black") << endl;
     cout << "castle:\t\t";
@@ -163,15 +173,17 @@ void ChessBoard::updateFenString() {
     fenString = boardToFen();
 }
 
-void ChessBoard::print(const _Tmove *move) {
-    cout << decodeBoardinv(move, false) << " " << flush;
+void ChessBoard::print(const _Tmove *move) const {
+    cout << decodeBoardinv(move) << " " << flush;
 }
 
 string
-ChessBoard::decodeBoardinv(const _Tmove *move, const bool verbose) {
+ChessBoard::decodeBoardinv(const _Tmove *move, const bool verbose) const {
     const uchar type = move->type;
+    const int from = move->from;
+    const int to = move->to;
     const int side = move->side;
-
+    const int promotionPiece = move->promotionPiece;
     if (type & QUEEN_SIDE_CASTLE_MOVE_MASK && side == WHITE) {
         return isChess960() ? BOARD[startPosWhiteKing] + BOARD[startPosWhiteRookQueenSide] : "e1c1";
     }
@@ -184,9 +196,6 @@ ChessBoard::decodeBoardinv(const _Tmove *move, const bool verbose) {
     if (type & KING_SIDE_CASTLE_MOVE_MASK && side == BLACK) {
         return isChess960() ? BOARD[startPosBlackKing] + BOARD[startPosBlackRookKingSide] : "e8g8";
     }
-    const int from = move->from;
-    const int to = move->to;
-    const int promotionPiece = move->promotionPiece;
     ASSERT(!(type & 0xC));
     assert (to >= 0 && to < 64);
     string cap = "";
