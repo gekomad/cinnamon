@@ -405,7 +405,7 @@ protected:
 
     _Tmove *getNextMoveQ(_TmoveP *list, const int first);
 
-    _Tmove *getNextMove(_TmoveP *list, const int depth, const u64 &, const int first);
+    _Tmove *getNextMove(_TmoveP *list, const int depth, const u64 &, const int first, const _Tmove *previousMove);
 
     template<uchar side>
     __attribute__((always_inline)) int getMobilityCastle(const u64 allpieces) const {
@@ -423,6 +423,7 @@ protected:
     }
 
     int historyHeuristic[64][64];
+    int counterMove[64][64];
     unsigned short killer[2][MAX_PLY];
 
 #ifdef DEBUG_MODE
@@ -785,6 +786,17 @@ protected:
 
     virtual int getRunning() const {
         return running;
+    }
+
+    __attribute__((always_inline)) void
+    setCounterMove(const _Tmove *previousMove, const _Tmove *move) {
+        if (!previousMove)return;
+        counterMove[previousMove->from][previousMove->to] = move->from | (move->to << 8);
+    }
+
+    int isCounterMove(const _Tmove *previousMove, const _Tmove &move) {
+        if (!previousMove)return 0;
+        return counterMove[previousMove->from][previousMove->to] == (move.from | (move.to << 8));
     }
 
     __attribute__((always_inline)) void setHistoryHeuristic(const int from, const int to, const int depth) {

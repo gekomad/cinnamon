@@ -310,7 +310,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     }
 
     /// ********** end hash ***************
-
+    _Tmove *prevMove = nullptr;
     if (!(numMoves % 2048)) setRunning(checkTime());
     ++numMoves;
     _TpvLine newLine1;
@@ -398,12 +398,15 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     _Tmove *best = &genList[listId].moveList[0];
 
     INC(totGen);
-    _Tmove *move;
+    _Tmove *move = nullptr;
     int countMove = 0;
     char hashf = Hash::hashfALPHA;
     int first = 0;
 
-    while ((move = getNextMove(&genList[listId], depth, hashItem, first++))) {
+    while (true) {
+        prevMove = move;
+        move = getNextMove(&genList[listId], depth, hashItem, first++, prevMove);
+        if (!move)break;
         if (!checkSearchMoves<checkMoves>(move) && depth == mainDepth) continue;
         countMove++;
 
@@ -460,6 +463,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
 
                     if (move->capturedPiece == SQUARE_EMPTY && move->promotionPiece == NO_PROMOTION) {
                         setHistoryHeuristic(move->from, move->to, depth);
+                        setCounterMove(prevMove, move);
                     }
                 }
                 return score;
