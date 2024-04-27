@@ -78,8 +78,7 @@ public:
             const int beta,
             const int depth,
             const u64 zobristKeyR,
-            u64 &hashStruct,
-            const bool currentPly) {
+            u64 &hashStruct) {
         INC(readHashCount);
         const Hash::_Thash *hash = &(hashArray[zobristKeyR % HASH_SIZE]);
         DEBUG(u64 d = 0)
@@ -93,7 +92,7 @@ public:
                 found = true;
                 hashStruct = data;
                 if (GET_DEPTH(hashStruct) >= depth) {
-                    if (currentPly) {
+
                         switch (GET_FLAGS(hashStruct)) {
                             case Hash::hashfEXACT:
                             case Hash::hashfBETA:
@@ -112,7 +111,7 @@ public:
                                 fatal("Error checkHash")
                                 exit(1);
                         }
-                    }
+
                 }
             }
         }
