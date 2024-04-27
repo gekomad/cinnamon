@@ -444,9 +444,6 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
         ASSERT(chessboard[KING_WHITE]);
 
         if (score > alpha) {
-            if (move->capturedPiece == SQUARE_EMPTY && move->promotionPiece == NO_PROMOTION) {
-                setKiller(move->from, move->to, depth);
-            }
             if (score >= beta) {
                 decListId();
                 INC(nCutAB);
@@ -459,7 +456,8 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
                     hash.recordHash(data, ply);
 
                     if (move->capturedPiece == SQUARE_EMPTY && move->promotionPiece == NO_PROMOTION) {
-                        setHistoryHeuristic(*move, depth);
+                        incHistoryHeuristic(*move, depth);
+                        updateKiller(*move, depth);
                     }
                 }
                 return score;
@@ -471,10 +469,10 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
         }
     }
     if (getRunning()) {
-        if (best->capturedPiece == SQUARE_EMPTY && best->promotionPiece == NO_PROMOTION && (depth - extension) >= 0) {
-            setHistoryHeuristic(*best, depth - extension);
-            setKiller(best->from, best->to, depth - extension);
-        }
+        /*if (best->capturedPiece == SQUARE_EMPTY && best->promotionPiece == NO_PROMOTION && (depth - extension) >= 0) {
+            incHistoryHeuristic(*best, depth - extension);
+            updateKiller(*best, depth - extension);
+        }*/
         Hash::_Thash data(zobristKeyR, score, depth, best, hashf);
         hash.recordHash(data, ply);
     }

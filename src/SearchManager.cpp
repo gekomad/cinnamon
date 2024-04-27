@@ -116,7 +116,7 @@ void SearchManager::startThread(Search &thread, const int depth) {
 }
 
 void SearchManager::setMainPly(const int ply, const int iter_depth) {
-    for (Search *s:threadPool->getPool()) {
+    for (Search *s: threadPool->getPool()) {
         s->setMainPly(ply, iter_depth);
     }
 }
@@ -128,15 +128,21 @@ int SearchManager::getPieceAt(const uchar side, const u64 i) {
 
 u64 SearchManager::getTotMoves() {
     u64 i = 0;
-    for (Search *s:threadPool->getPool()) {
+    for (Search *s: threadPool->getPool()) {
         i += s->getTotMoves();
     }
     return i;
 }
 
-void SearchManager::incHistoryHeuristic(const int from, const int to, const int value) {return;// TODO eliminare
-    for (Search *s:threadPool->getPool()) {
-        s->incHistoryHeuristic(from, to, value);
+void SearchManager::updateKiller(const _Tmove &move, const int depth) {
+    for (Search *s: threadPool->getPool()) {
+        s->updateKiller(move, depth);
+    }
+}
+
+void SearchManager::incHistoryHeuristic(const _Tmove &move, const int depth) {
+    for (Search *s: threadPool->getPool()) {
+        s->incHistoryHeuristic(move, depth);
     }
 }
 
@@ -145,7 +151,7 @@ void SearchManager::startClock() {
 }
 
 void SearchManager::clearHeuristic() {
-    for (Search *s:threadPool->getPool()) {
+    for (Search *s: threadPool->getPool()) {
         s->clearHeuristic();
     }
 }
@@ -159,7 +165,7 @@ u64 SearchManager::getZobristKey(const int id) {
 }
 
 void SearchManager::setForceCheck(const bool a) {
-    for (Search *s:threadPool->getPool()) {
+    for (Search *s: threadPool->getPool()) {
         s->setForceCheck(a);
     }
 }
@@ -169,7 +175,7 @@ void SearchManager::setRunningThread(const bool r) {
 }
 
 void SearchManager::setRunning(const int i) {
-    for (Search *s:threadPool->getPool()) {
+    for (Search *s: threadPool->getPool()) {
         s->setRunning(i);
     }
 }
@@ -183,13 +189,13 @@ void SearchManager::display() {
 }
 
 void SearchManager::setMaxTimeMillsec(const int i) {
-    for (Search *s:threadPool->getPool()) {
+    for (Search *s: threadPool->getPool()) {
         s->setMaxTimeMillsec(i);
     }
 }
 
 void SearchManager::unsetSearchMoves() {
-    for (Search *s:threadPool->getPool()) {
+    for (Search *s: threadPool->getPool()) {
         s->unsetSearchMoves();
     }
 }
@@ -202,13 +208,13 @@ void SearchManager::setSearchMoves(const vector<string> &searchMov) {
         const int x = move.to | (int) (move.from << 8);
         searchMoves.push_back(x);
     }
-    for (Search *s:threadPool->getPool()) {
+    for (Search *s: threadPool->getPool()) {
         s->setSearchMoves(searchMoves);
     }
 }
 
 void SearchManager::setPonder(const bool i) {
-    for (Search *s:threadPool->getPool()) {
+    for (Search *s: threadPool->getPool()) {
         s->setPonder(i);
     }
 }
@@ -216,7 +222,7 @@ void SearchManager::setPonder(const bool i) {
 int SearchManager::getSide() {
 #ifdef DEBUG_MODE
     int t = threadPool->getThread(0).sideToMove;
-    for (Search *s:threadPool->getPool()) {
+    for (Search *s: threadPool->getPool()) {
         ASSERT(s->sideToMove == t);
     }
 #endif
@@ -232,23 +238,24 @@ int SearchManager::getMaxTimeMillsec() {
 }
 
 void SearchManager::setNullMove(const bool i) {
-    for (Search *s:threadPool->getPool()) {
+    for (Search *s: threadPool->getPool()) {
         s->setNullMove(i);
     }
 }
 
 void SearchManager::setChess960(const bool i) {
-    for (Search *s:threadPool->getPool()) {
+    for (Search *s: threadPool->getPool()) {
         s->setChess960(i);
     }
 }
 
 void SearchManager::updateFenString() {
-      threadPool->getThread(0).updateFenString();
+    threadPool->getThread(0).updateFenString();
 }
+
 bool SearchManager::makemove(const _Tmove *i) {
     bool b = false;
-    for (Search *s:threadPool->getPool()) {
+    for (Search *s: threadPool->getPool()) {
         b = s->makemove(i, true);
     }
     return b;
@@ -259,13 +266,13 @@ string SearchManager::decodeBoardinv(const _Tmove *move) {
 }
 
 void SearchManager::takeback(const _Tmove *move, const u64 oldkey, const uchar oldEnpassant, const bool rep) {
-    for (Search *s:threadPool->getPool()) {
+    for (Search *s: threadPool->getPool()) {
         s->takeback(move, oldkey, oldEnpassant, rep);
     }
 }
 
 void SearchManager::setSide(const bool i) {
-    for (Search *s:threadPool->getPool()) {
+    for (Search *s: threadPool->getPool()) {
         s->setSide(i);
     }
 }
@@ -289,7 +296,7 @@ void SearchManager::printWdlSyzygy() {
 int SearchManager::getMoveFromSan(const string &string, _Tmove *ptr) {
 #ifdef DEBUG_MODE
     int t = threadPool->getThread(0).getMoveFromSan(string, ptr);
-    for (Search *s:threadPool->getPool()) {
+    for (Search *s: threadPool->getPool()) {
         ASSERT(s->getMoveFromSan(string, ptr) == t);
     }
 #endif
@@ -297,19 +304,19 @@ int SearchManager::getMoveFromSan(const string &string, _Tmove *ptr) {
 }
 
 void SearchManager::pushStackMove() {
-    for (Search *s:threadPool->getPool()) {
+    for (Search *s: threadPool->getPool()) {
         s->pushStackMove();
     }
 }
 
 void SearchManager::init() {
-    for (Search *s:threadPool->getPool()) {
+    for (Search *s: threadPool->getPool()) {
         s->init();
     }
 }
 
 void SearchManager::setRepetitionMapCount(const int i) {
-    for (Search *s:threadPool->getPool()) {
+    for (Search *s: threadPool->getPool()) {
         s->setRepetitionMapCount(i);
     }
 }

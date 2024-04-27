@@ -41,6 +41,10 @@ public:
 
     static void incHistoryHeuristic(const int from, const int to, const int value);
 
+    static void updateKiller(const _Tmove &move, const int depth);
+
+    void incHistoryHeuristic(const _Tmove &move, const int depth);
+
     static void startClock();
 
     Search &getSearch(int i = 0) {
