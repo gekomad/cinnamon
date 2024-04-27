@@ -430,13 +430,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
         }
 
         if (val > alpha) {
-            const int doMws = (score > -_INFINITE + MAX_PLY);
-            const int lwb = max(alpha, score);
-            const int upb = (doMws ? (lwb + 1) : beta);
-            val = searchLambda(&newLine, depth + extension - 1, -upb, -lwb, move);
-            if (doMws && (lwb < val) && (val < beta)) {
-                val = searchLambda(&newLine, depth + extension - 1, -beta, -val + 1, move);
-            }
+            val = searchLambda(&newLine, depth + extension - 1, -beta, -alpha, move);
         }
         score = max(score, val);
         takeback(move, oldKey, oldEnpassant, true);
