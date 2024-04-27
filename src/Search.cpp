@@ -129,13 +129,6 @@ int Search::qsearch(int alpha, const int beta, const uchar promotionPiece, const
         alpha = score;
     }
 
-    /// **************Delta Pruning ****************
-    bool fprune = false;
-    int fscore;
-    if ((fscore = score + (promotionPiece == NO_PROMOTION ? VALUEQUEEN : 2 * VALUEQUEEN)) < alpha) {
-        fprune = true;
-    }
-    /// ************ end Delta Pruning *************
     if (score > alpha) alpha = score;
 
     incListId();
@@ -166,14 +159,7 @@ int Search::qsearch(int alpha, const int beta, const uchar promotionPiece, const
             takeback(move, oldKey, oldEnpassant, false);
             continue;
         }
-        /// **************Delta Pruning ****************
-        if (fprune && ((move->type & 0x3) != PROMOTION_MOVE_MASK) &&
-            fscore + PIECES_VALUE[move->capturedPiece] <= alpha) {
-            INC(nCutFp);
-            takeback(move, oldKey, oldEnpassant, false);
-            continue;
-        }
-        /// ************ end Delta Pruning *************
+ 
         int val = -qsearch<X(side)>(-beta, -alpha, move->promotionPiece, depth - 1);
         score = max(score, val);
         takeback(move, oldKey, oldEnpassant, false);
