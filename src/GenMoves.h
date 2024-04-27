@@ -305,6 +305,7 @@ public:
 
     void clearHeuristic();
 
+
     template<uchar side>
     __attribute__((always_inline)) void performDiagShift(const uchar piece, const u64 allpieces) {
         BENCH_AUTO_CLOSE("diagShift")
@@ -363,7 +364,9 @@ public:
 
     bool generatePuzzle(const string type);
 
-    __attribute__((always_inline))void incHistoryHeuristic(const int from, const int to, const int value) {
+    __attribute__((always_inline))void
+    incHistoryHeuristic(const int from, const int to, const int value) {//TODO eliminare
+        ASSERT(0);
         ASSERT_RANGE(from, 0, 63)
         ASSERT_RANGE(to, 0, 63)
         ASSERT(historyHeuristic[from][to] <= historyHeuristic[from][to] + value);
@@ -422,7 +425,7 @@ protected:
         return count;
     }
 
-    int historyHeuristic[64][64];
+    int historyHeuristic[12][64];
     unsigned short killer[2][MAX_PLY];
 
 #ifdef DEBUG_MODE
@@ -787,15 +790,18 @@ protected:
         return running;
     }
 
-    __attribute__((always_inline)) void setHistoryHeuristic(const int from, const int to, const int depth) {
-        ASSERT_RANGE(from, 0, 63)
-        ASSERT_RANGE(to, 0, 63)
-        if (depth < 0)return;
-        const int value = (depth < 30) ? 2 << depth : 0x40000000;
-        historyHeuristic[from][to] = value;
+    __attribute__((always_inline)) void setHistoryHeuristic(const _Tmove &move, const int depth) {
+        if (depth <= 0)return;
+        historyHeuristic[move.pieceFrom][move.to] += depth * depth;
+        if (historyHeuristic[move.pieceFrom][move.to] >= 32767) {
+            for (int i = 0; i < 12; i++)
+                for (int j = 0; j < 64; j++)
+                    historyHeuristic[i][j] /= 64;
+        }
     }
 
     __attribute__((always_inline)) void setKiller(const int from, const int to, const int depth) {
+        return;//TODO
         ASSERT_RANGE(from, 0, 63)
         ASSERT_RANGE(to, 0, 63)
         ASSERT_RANGE(depth, 0, MAX_PLY - 1)
@@ -804,6 +810,7 @@ protected:
     }
 
     bool isKiller(const int idx, const int from, const int to, const int depth) {
+        return false;
         ASSERT_RANGE(from, 0, 63)
         ASSERT_RANGE(to, 0, 63)
         ASSERT_RANGE(depth, 0, MAX_PLY - 1)

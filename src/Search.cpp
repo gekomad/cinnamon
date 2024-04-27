@@ -455,11 +455,11 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
                               (100.0 - ((double) countMove * 100.0 / (double) listcount)) +
                               (((double) countMove * 100.0 / (double) listcount) / (double) countMove))
                 if (getRunning()) {
-                    Hash::_Thash data(zobristKeyR, score, depth, move->from, move->to, Hash::hashfBETA);
+                    Hash::_Thash data(zobristKeyR, score, depth, move, Hash::hashfBETA);
                     hash.recordHash(data, ply);
 
                     if (move->capturedPiece == SQUARE_EMPTY && move->promotionPiece == NO_PROMOTION) {
-                        setHistoryHeuristic(move->from, move->to, depth);
+                        setHistoryHeuristic(*move, depth);
                     }
                 }
                 return score;
@@ -472,10 +472,10 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     }
     if (getRunning()) {
         if (best->capturedPiece == SQUARE_EMPTY && best->promotionPiece == NO_PROMOTION && (depth - extension) >= 0) {
-            setHistoryHeuristic(best->from, best->to, depth - extension);
+            setHistoryHeuristic(*best, depth - extension);
             setKiller(best->from, best->to, depth - extension);
         }
-        Hash::_Thash data(zobristKeyR, score, depth, best->from, best->to, hashf);
+        Hash::_Thash data(zobristKeyR, score, depth, best, hashf);
         hash.recordHash(data, ply);
     }
     decListId();
