@@ -19,7 +19,6 @@
 #include "GenMoves.h"
 
 GenMoves::GenMoves() : perftMode(false), listId(-1) {
-    currentPly = 0;
     genList = (_TmoveP *) calloc(MAX_PLY, sizeof(_TmoveP));
     _ASSERT(genList)
     for (int i = 0; i < MAX_PLY; i++) {

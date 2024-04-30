@@ -130,11 +130,8 @@ int Search::qsearch(int alpha, const int beta, const uchar promotionPiece, const
     }
 
     /// **************Delta Pruning ****************
-    bool fprune = false;
-    int fscore;
-    if ((fscore = score + (promotionPiece == NO_PROMOTION ? VALUEQUEEN : 2 * VALUEQUEEN)) < alpha) {
-        fprune = true;
-    }
+    if (score < alpha - VALUEQUEEN)
+        return alpha;
     /// ************ end Delta Pruning *************
     if (score > alpha) alpha = score;
 
@@ -166,14 +163,6 @@ int Search::qsearch(int alpha, const int beta, const uchar promotionPiece, const
             takeback(move, oldKey, oldEnpassant, false);
             continue;
         }
-        /// **************Delta Pruning ****************
-        if (fprune && ((move->type & 0x3) != PROMOTION_MOVE_MASK) &&
-            fscore + PIECES_VALUE[move->capturedPiece] <= alpha) {
-            INC(nCutFp);
-            takeback(move, oldKey, oldEnpassant, false);
-            continue;
-        }
-        /// ************ end Delta Pruning *************
         int val = -qsearch<X(side)>(-beta, -alpha, move->promotionPiece, depth - 1);
         score = max(score, val);
         takeback(move, oldKey, oldEnpassant, false);
@@ -259,14 +248,12 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     const auto searchLambda = [&](_TpvLine *newLine, const int depth, const int alpha, const int beta,
                                   const _Tmove *move) {
         const auto nPieces = move ? (move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1) : N_PIECE;
-        currentPly++;
         int val = -search<X(side), checkMoves>(depth, alpha, beta, newLine, nPieces);
         if (!forceCheck && abs(val) > _INFINITE - MAX_PLY) {
             forceCheck = true;
             val = -search<X(side), checkMoves>(depth, alpha, beta, newLine, nPieces);
             forceCheck = false;
         }
-        currentPly--;
         return val;
     };
 
@@ -304,7 +291,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     /// ************* hash ****************
     const u64 zobristKeyR = chessboard[ZOBRISTKEY_IDX] ^ _random::RANDSIDE[side];
     u64 hashItem;
-    const int hashValue = hash.readHash(alpha, beta, depth, zobristKeyR, hashItem, currentPly);
+    const int hashValue = hash.readHash(alpha, beta, depth, zobristKeyR, hashItem);
     if (hashValue != INT_MAX) {
         return hashValue;
     }
