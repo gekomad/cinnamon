@@ -94,7 +94,7 @@ public:
                 if (GET_DEPTH(hashStruct) >= depth) {
                     switch (GET_FLAGS(hashStruct)) {
                         case Hash::hashfEXACT:
-                            return GET_SCORE(hashStruct);
+//                            return GET_SCORE(hashStruct);
                         case Hash::hashfBETA:
                             if (GET_SCORE(hashStruct) >= *alpha) {
                                 *alpha = GET_SCORE(hashStruct);
