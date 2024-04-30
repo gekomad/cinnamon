@@ -251,7 +251,7 @@ bool Search::checkSearchMoves(const _Tmove *move) const {
 
 
 template<uchar side, bool checkMoves>
-int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, const int N_PIECE) {
+int Search::search(const int depth, int alpha, int beta, _TpvLine *pline, const int N_PIECE) {
     ASSERT_RANGE(side, 0, 1)
     if (!getRunning()) return 0;
 
@@ -259,17 +259,15 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     const auto searchLambda = [&](_TpvLine *newLine, const int depth, const int alpha, const int beta,
                                   const _Tmove *move) {
         const auto nPieces = move ? (move->capturedPiece == SQUARE_EMPTY ? N_PIECE : N_PIECE - 1) : N_PIECE;
-        currentPly++;
         int val = -search<X(side), checkMoves>(depth, alpha, beta, newLine, nPieces);
         if (!forceCheck && abs(val) > _INFINITE - MAX_PLY) {
             forceCheck = true;
             val = -search<X(side), checkMoves>(depth, alpha, beta, newLine, nPieces);
             forceCheck = false;
         }
-        currentPly--;
         return val;
     };
-
+    const bool is_pv = alpha != beta - 1;
     u64 oldKey = chessboard[ZOBRISTKEY_IDX];
     uchar oldEnpassant = enPassant;
     if (depth >= MAX_PLY - 1) {
@@ -303,10 +301,12 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
 
     /// ************* hash ****************
     const u64 zobristKeyR = chessboard[ZOBRISTKEY_IDX] ^ _random::RANDSIDE[side];
-    u64 hashItem;
-    const int hashValue = hash.readHash(alpha, beta, depth, zobristKeyR, hashItem, currentPly);
-    if (hashValue != INT_MAX) {
-        return hashValue;
+    u64 hashItem = INT_MAX;
+    if (!is_pv) {
+        const int hashValue = hash.readHash(&alpha, &beta, depth, zobristKeyR, hashItem);
+        if (hashValue != INT_MAX) {
+            return hashValue;
+        }
     }
 
     /// ********** end hash ***************
