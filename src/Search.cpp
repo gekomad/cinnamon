@@ -161,11 +161,11 @@ int Search::qsearch(int alpha, const int beta, const uchar promotionPiece, const
             continue;
         }
 
-        if (badCapure<side>(*move, friends | enemies)) {
-            INC(nCutBadCaputure);
-            takeback(move, oldKey, oldEnpassant, false);
-            continue;
-        }
+//        if (badCapure<side>(*move, friends | enemies)) {
+//            INC(nCutBadCaputure);
+//            takeback(move, oldKey, oldEnpassant, false);
+//            continue;
+//        }
         /// **************Delta Pruning ****************
         if (fprune && ((move->type & 0x3) != PROMOTION_MOVE_MASK) &&
             fscore + PIECES_VALUE[move->capturedPiece] <= alpha) {
