@@ -74,8 +74,8 @@ public:
 #define GET_KEY(hash) (hash->key ^ (hash->data & 0xffffffffffffULL))
 
     static inline int readHash(
-            const int alpha,
-            const int beta,
+            int *alpha,
+            int *beta,
             const int depth,
             const u64 zobristKeyR,
             u64 &hashStruct,
@@ -96,16 +96,28 @@ public:
                     if (currentPly) {
                         switch (GET_FLAGS(hashStruct)) {
                             case Hash::hashfEXACT:
+                                if (GET_SCORE(hashStruct) >= *beta) {
+                                    INC(n_cut_hashE);
+                                    return *beta;
+                                }
+                                break;
                             case Hash::hashfBETA:
-                                if (GET_SCORE(hashStruct) >= beta) {
+                                if (GET_SCORE(hashStruct) >= *beta) {
                                     INC(n_cut_hashB);
-                                    return beta;
+                                    return *beta;
+                                }
+                                if (GET_SCORE(hashStruct) > *alpha) {
+                                    *alpha = GET_SCORE(hashStruct);
+
                                 }
                                 break;
                             case Hash::hashfALPHA:
-                                if (GET_SCORE(hashStruct) <= alpha) {
+                                if (GET_SCORE(hashStruct) <= *alpha) {
                                     INC(n_cut_hashA);
-                                    return alpha;
+                                    return *alpha;
+                                }
+                                if (GET_SCORE(hashStruct) < *beta) {
+                                    *beta = GET_SCORE(hashStruct);
                                 }
                                 break;
                             default:
@@ -183,8 +195,11 @@ public:
 
 private:
     Hash();
+
     ~Hash();
+
     static void dispose();
+
     static constexpr int BUCKETS = 3;
     static unsigned HASH_SIZE;
 #ifdef JS_MODE

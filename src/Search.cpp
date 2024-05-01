@@ -251,7 +251,7 @@ bool Search::checkSearchMoves(const _Tmove *move) const {
 
 
 template<uchar side, bool checkMoves>
-int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, const int N_PIECE) {
+int Search::search(const int depth, int alpha, int beta, _TpvLine *pline, const int N_PIECE) {
     ASSERT_RANGE(side, 0, 1)
     if (!getRunning()) return 0;
 
@@ -304,7 +304,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     /// ************* hash ****************
     const u64 zobristKeyR = chessboard[ZOBRISTKEY_IDX] ^ _random::RANDSIDE[side];
     u64 hashItem;
-    const int hashValue = hash.readHash(alpha, beta, depth, zobristKeyR, hashItem, currentPly);
+    const int hashValue = hash.readHash(&alpha, &beta, depth, zobristKeyR, hashItem, currentPly);
     if (hashValue != INT_MAX) {
         return hashValue;
     }
