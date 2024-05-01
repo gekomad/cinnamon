@@ -343,37 +343,37 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
 
     /// ******* null move end ********
 
-    /// ********************** Futility Pruning *********************
-    /// ************* Futility Pruning razor at pre-pre-frontier ****
-    bool futilPrune = false;
-    int futilScore = 0;
-    if (depth <= 3 && !isIncheckSide) {
-        const int matBalance = eval.lazyEval<side>(chessboard);
-        /// ******** reverse futility pruning ***********
-        if (depth < 3 && !pvNode && abs(beta - 1) > -_INFINITE + MAX_PLY) {
-            const int evalMargin = matBalance - eval.REVERSE_FUTIL_MARGIN * depth;
-            if (evalMargin >= beta) return evalMargin;
-        }
-        /// *********************************************
-        if ((futilScore = matBalance + eval.FUTIL_MARGIN) <= alpha) {
-            if (depth == 3 && (matBalance + eval.RAZOR_MARGIN) <= alpha &&
-                bitCount(board::getBitmapNoPawnsNoKing<X(side)>(chessboard)) > 3) {
-                INC(nCutRazor);
-                extension--;
-            } else
-                /// **************Futility Pruning at pre-frontier*****
-            if (depth == 2 && (futilScore = matBalance + eval.EXT_FUTIL_MARGIN) <= alpha) {
-                futilPrune = true;
-                score = futilScore;
-            } else
-                /// **************Futility Pruning at frontier*****
-            if (depth == 1) {
-                futilPrune = true;
-                score = futilScore;
-            }
-        }
-    }
-    /// ************ end Futility Pruning*************
+//    /// ********************** Futility Pruning *********************
+//    /// ************* Futility Pruning razor at pre-pre-frontier ****
+//    bool futilPrune = false;
+//    int futilScore = 0;
+//    if (depth <= 3 && !isIncheckSide) {
+//        const int matBalance = eval.lazyEval<side>(chessboard);
+//        /// ******** reverse futility pruning ***********
+//        if (depth < 3 && !pvNode && abs(beta - 1) > -_INFINITE + MAX_PLY) {
+//            const int evalMargin = matBalance - eval.REVERSE_FUTIL_MARGIN * depth;
+//            if (evalMargin >= beta) return evalMargin;
+//        }
+//        /// *********************************************
+//        if ((futilScore = matBalance + eval.FUTIL_MARGIN) <= alpha) {
+//            if (depth == 3 && (matBalance + eval.RAZOR_MARGIN) <= alpha &&
+//                bitCount(board::getBitmapNoPawnsNoKing<X(side)>(chessboard)) > 3) {
+//                INC(nCutRazor);
+//                extension--;
+//            } else
+//                /// **************Futility Pruning at pre-frontier*****
+//            if (depth == 2 && (futilScore = matBalance + eval.EXT_FUTIL_MARGIN) <= alpha) {
+//                futilPrune = true;
+//                score = futilScore;
+//            } else
+//                /// **************Futility Pruning at frontier*****
+//            if (depth == 1) {
+//                futilPrune = true;
+//                score = futilScore;
+//            }
+//        }
+//    }
+//    /// ************ end Futility Pruning*************
     incListId();
     ASSERT_RANGE(KING_BLACK + side, 0, 11)
     ASSERT_RANGE(KING_BLACK + (X(side)), 0, 11)
@@ -416,12 +416,12 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
         newLine.cmove = 0;
 
         if (move->promotionPiece == NO_PROMOTION) {
-            if (futilPrune && futilScore + PIECES_VALUE[move->capturedPiece] <= alpha &&
-                !board::inCheck1<side>(chessboard)) {
-                INC(nCutFp);
-                takeback(move, oldKey, oldEnpassant, true);
-                continue;
-            }
+//            if (futilPrune && futilScore + PIECES_VALUE[move->capturedPiece] <= alpha &&
+//                !board::inCheck1<side>(chessboard)) {
+//                INC(nCutFp);
+//                takeback(move, oldKey, oldEnpassant, true);
+//                continue;
+//            }
             //Late Move Reduction
             if (countMove > 3 && !isIncheckSide && depth >= 3 && move->capturedPiece == SQUARE_EMPTY) {
                 val = searchLambda(&newLine, depth + extension - (countMove > 6 ? 3 : 2), -(alpha + 1), -alpha,
