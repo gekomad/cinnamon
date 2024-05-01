@@ -317,7 +317,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     newLine1.cmove = 0;
 
     /// ********* null move ***********
-    if (!nullSearch && !pvNode && !isIncheckSide) {
+    if (!nullSearch && pvNode && !isIncheckSide) {
         int nDepth = (depth > 3) ? 1 : 3;
         if (nDepth == 3) {
             const u64 pieces = board::getPiecesNoKing<side>(chessboard);
@@ -350,7 +350,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     if (depth <= 3 && !isIncheckSide) {
         const int matBalance = eval.lazyEval<side>(chessboard);
         /// ******** reverse futility pruning ***********
-        if (depth < 3 && !pvNode && abs(beta - 1) > -_INFINITE + MAX_PLY) {
+        if (depth < 3 && pvNode && abs(beta - 1) > -_INFINITE + MAX_PLY) {
             const int evalMargin = matBalance - eval.REVERSE_FUTIL_MARGIN * depth;
             if (evalMargin >= beta) return evalMargin;
         }
