@@ -312,8 +312,8 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     if (depth + extension > 3) {
         _TpvLine newLine1;
         newLine1.cmove = 0;
-        const int sc = searchLambda(&newLine1, (depth + extension) / 2, -beta, -alpha, nullptr);
-        Hash::_Thash data(zobristKeyR, sc, depth, newLine1.argmove[0].from, newLine1.argmove[0].to, Hash::hashfBETA);
+        searchLambda(&newLine1,2, -beta, -alpha, nullptr);
+        Hash::_Thash data(0, 0, 0, newLine1.argmove[0].from, newLine1.argmove[0].to, 200);
         hashItem = data.data;
     }
     /// ********** end hash ***************
