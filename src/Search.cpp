@@ -125,7 +125,7 @@ int Search::qsearch(int alpha, const int beta, const uchar promotionPiece, const
     int score = eval.getScore(chessboard, zobristKeyR, side, alpha, beta);
 
     if (score > alpha) {
-        if (score >= beta) return score;
+        if (score >= beta) return beta;
         alpha = score;
     }
 
@@ -336,7 +336,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
             nullSearch = false;
             if (nullScore >= beta) {
                 INC(nNullMoveCut);
-                return nullScore;
+                return beta;
             }
         }
     }
@@ -352,7 +352,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
         /// ******** reverse futility pruning ***********
         if (depth < 3 && !pvNode && abs(beta - 1) > -_INFINITE + MAX_PLY) {
             const int evalMargin = matBalance - eval.REVERSE_FUTIL_MARGIN * depth;
-            if (evalMargin >= beta) return evalMargin;
+            if (evalMargin >= beta) return beta;
         }
         /// *********************************************
         if ((futilScore = matBalance + eval.FUTIL_MARGIN) <= alpha) {
@@ -462,7 +462,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
                         setHistoryHeuristic(move->from, move->to, depth);
                     }
                 }
-                return score;
+                return beta;
             }
             alpha = score;
             hashf = Hash::hashfEXACT;
