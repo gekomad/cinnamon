@@ -103,7 +103,7 @@ public:
                                 }
                                 break;
                             case Hash::hashfALPHA:
-                                if (GET_SCORE(hashStruct) <= alpha) {
+                                if (GET_SCORE(hashStruct) <= beta) {
                                     INC(n_cut_hashA);
                                     return alpha;
                                 }
