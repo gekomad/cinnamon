@@ -305,6 +305,7 @@ public:
 
     void clearHeuristic();
 
+
     template<uchar side>
     __attribute__((always_inline)) void performDiagShift(const uchar piece, const u64 allpieces) {
         BENCH_AUTO_CLOSE("diagShift")
@@ -363,13 +364,6 @@ public:
 
     bool generatePuzzle(const string type);
 
-    __attribute__((always_inline))void incHistoryHeuristic(const int from, const int to, const int value) {
-        ASSERT_RANGE(from, 0, 63)
-        ASSERT_RANGE(to, 0, 63)
-        ASSERT(historyHeuristic[from][to] <= historyHeuristic[from][to] + value);
-        historyHeuristic[from][to] += value;
-    }
-
     bool perftMode = false;
 
 
@@ -379,6 +373,28 @@ public:
     unsigned betaEfficiencyCount = 0;
 #endif
     static constexpr uchar STANDARD_MOVE_MASK = 0x3;
+
+    __attribute__((always_inline)) void updateKiller(const _Tmove &move, const int depth) {
+        ASSERT_RANGE(depth, 0, MAX_PLY - 1)
+        const unsigned short a = move.pieceFrom | (move.to << 8);
+        if (killer[move.side][0][depth] != a) {
+            killer[move.side][1][depth] = killer[move.side][0][depth];
+            killer[move.side][0][depth] = a;
+        }
+    }
+
+    __attribute__((always_inline)) void incHistoryHeuristic(const int pieceFrom, const int to, const int depth) {
+        ASSERT_RANGE(pieceFrom, 0, 11)
+        ASSERT_RANGE(to, 0, 63)
+        if (depth <= 0) return;
+        historyHeuristic[pieceFrom][to] += depth * depth;
+        if (historyHeuristic[pieceFrom][to] >= 32767) {
+            for (int i = 0; i < 12; i++)
+                for (int j = 0; j < 64; j++)
+                    historyHeuristic[i][j] /= 64;
+        }
+    }
+
 protected:
     typedef struct {
         _Tmove *moveList;
@@ -422,8 +438,8 @@ protected:
         return count;
     }
 
-    int historyHeuristic[64][64];
-    unsigned short killer[2][MAX_PLY];
+    int historyHeuristic[12][64];
+    unsigned short killer[2][2][MAX_PLY];
 
 #ifdef DEBUG_MODE
 
@@ -787,28 +803,14 @@ protected:
         return running;
     }
 
-    __attribute__((always_inline)) void setHistoryHeuristic(const int from, const int to, const int depth) {
-        ASSERT_RANGE(from, 0, 63)
-        ASSERT_RANGE(to, 0, 63)
-        if (depth < 0)return;
-        const int value = (depth < 30) ? 2 << depth : 0x40000000;
-        historyHeuristic[from][to] = value;
-    }
-
-    __attribute__((always_inline)) void setKiller(const int from, const int to, const int depth) {
-        ASSERT_RANGE(from, 0, 63)
-        ASSERT_RANGE(to, 0, 63)
+    int getKiller(const _Tmove &move, const int depth) {
+        ASSERT_RANGE(move.from, 0, 63)
+        ASSERT_RANGE(move.to, 0, 63)
         ASSERT_RANGE(depth, 0, MAX_PLY - 1)
-        killer[1][depth] = killer[0][depth];
-        killer[0][depth] = from | (to << 8);
-    }
-
-    bool isKiller(const int idx, const int from, const int to, const int depth) {
-        ASSERT_RANGE(from, 0, 63)
-        ASSERT_RANGE(to, 0, 63)
-        ASSERT_RANGE(depth, 0, MAX_PLY - 1)
-        const unsigned short v = from | (to << 8);
-        return v == killer[idx][depth];
+        const unsigned short v = move.pieceFrom | (move.to << 8);
+        if (v == killer[move.side][0][depth])return 2;
+        if (v == killer[move.side][1][depth])return 1;
+        return 0;
     }
 
     bool forceCheck = false;

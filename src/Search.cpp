@@ -47,7 +47,7 @@ void Search::aspirationWindow(const int depth, const int valWin) {
 
 
     if (depth == 1) {
-        valWindow = search<side, searchMoves>(depth, -_INFINITE - 1, _INFINITE + 1, &pvLine, nPieces);
+        valWindow = search<side, searchMoves>(depth, -_INFINITE, _INFINITE, &pvLine, nPieces);
     } else {
         int tmp = search<side, searchMoves>(depth, valWindow - VAL_WINDOW, valWindow + VAL_WINDOW, &pvLine, nPieces);
         if (tmp <= valWindow - VAL_WINDOW || tmp >= valWindow + VAL_WINDOW) {
@@ -254,7 +254,7 @@ template<uchar side, bool checkMoves>
 int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, const int N_PIECE) {
     ASSERT_RANGE(side, 0, 1)
     if (!getRunning()) return 0;
-
+    const int oldAlpha = alpha;
 
     const auto searchLambda = [&](_TpvLine *newLine, const int depth, const int alpha, const int beta,
                                   const _Tmove *move) {
@@ -281,9 +281,9 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     if (wdl != INT_MAX) return wdl;
 #endif
 
-    int score = -_INFINITE;
-    const bool pvNode = alpha != beta - 1;
 
+    const bool pvNode = alpha != beta - 1;
+    int bestscore = -_INFINITE;
     ASSERT(chessboard[KING_BLACK]);
     ASSERT(chessboard[KING_WHITE]);
 
@@ -293,7 +293,8 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
             if (board::inCheck1<X(side)>(chessboard)) {
                 return _INFINITE - (mainDepth - depth + 1);
             }
-            return -eval.lazyEval<side>(chessboard) * 2;
+            return -eval.lazyEval<side>(chessboard) *
+                   2;// TODO se ho meno materiale dell'avversario è positivo altrimenti negativo
         }
     }
     int extension = isIncheckSide;
@@ -315,7 +316,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     ++numMoves;
     _TpvLine newLine1;
     newLine1.cmove = 0;
-
+    _Tmove *best = nullptr;
     /// ********* null move ***********
     if (!nullSearch && !pvNode && !isIncheckSide) {
         int nDepth = (depth > 3) ? 1 : 3;
@@ -347,6 +348,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     /// ************* Futility Pruning razor at pre-pre-frontier ****
     bool futilPrune = false;
     int futilScore = 0;
+    int score = -_INFINITE;
     if (depth <= 3 && !isIncheckSide) {
         const int matBalance = eval.lazyEval<side>(chessboard);
         /// ******** reverse futility pruning ***********
@@ -390,17 +392,16 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
         if (isIncheckSide) {
             return -_INFINITE + (mainDepth - depth + 1);
         } else {
-            return -eval.lazyEval<side>(chessboard) * 2;
+            return -eval.lazyEval<side>(chessboard) * 2; // provare return eval
+            // TODO se ho meno materiale dell'avversario è positivo altrimenti negativo
         }
     }
     ASSERT(genList[listId].size > 0);
 
-    _Tmove *best = &genList[listId].moveList[0];
-
     INC(totGen);
     _Tmove *move;
     int countMove = 0;
-    char hashf = Hash::hashfALPHA;
+
     int first = 0;
 
     while ((move = getNextMove(&genList[listId], depth, hashItem, first++))) {
@@ -429,57 +430,55 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
             }
         }
 
-        if (val > alpha) {
-            const int doMws = (score > -_INFINITE + MAX_PLY);
-            const int lwb = max(alpha, score);
-            const int upb = (doMws ? (lwb + 1) : beta);
-            val = searchLambda(&newLine, depth + extension - 1, -upb, -lwb, move);
-            if (doMws && (lwb < val) && (val < beta)) {
-                val = searchLambda(&newLine, depth + extension - 1, -beta, -val + 1, move);
-            }
+
+        const int doMws = (score > -_INFINITE + MAX_PLY);
+        const int lwb = max(alpha, score);
+        const int upb = (doMws ? (lwb + 1) : beta);
+        val = searchLambda(&newLine, depth + extension - 1, -upb, -lwb, move);
+        if (doMws && (lwb < val) && (val < beta)) {
+            val = searchLambda(&newLine, depth + extension - 1, -beta, -val + 1, move);
         }
+
         score = max(score, val);
         takeback(move, oldKey, oldEnpassant, true);
         ASSERT(chessboard[KING_BLACK]);
         ASSERT(chessboard[KING_WHITE]);
+        if (score >= beta) {
+            alpha = max(alpha, score);
+            INC(nCutAB);
+            INC(betaEfficiencyCount);
+            DEBUG(betaEfficiency +=
+                          (100.0 - ((double) countMove * 100.0 / (double) listcount)) +
+                          (((double) countMove * 100.0 / (double) listcount) / (double) countMove))
 
-        if (score > alpha) {
             if (move->capturedPiece == SQUARE_EMPTY && move->promotionPiece == NO_PROMOTION) {
-                setKiller(move->from, move->to, depth);
+                incHistoryHeuristic(move->pieceFrom, move->to, depth);
+                updateKiller(*move, depth);
             }
-            if (score >= beta) {
-                decListId();
-                INC(nCutAB);
-                INC(betaEfficiencyCount);
-                DEBUG(betaEfficiency +=
-                              (100.0 - ((double) countMove * 100.0 / (double) listcount)) +
-                              (((double) countMove * 100.0 / (double) listcount) / (double) countMove))
-                if (getRunning()) {
-                    Hash::_Thash data(zobristKeyR, score, depth, move->from, move->to, Hash::hashfBETA);
-                    hash.recordHash(data, ply);
 
-                    if (move->capturedPiece == SQUARE_EMPTY && move->promotionPiece == NO_PROMOTION) {
-                        setHistoryHeuristic(move->from, move->to, depth);
-                    }
-                }
-                return score;
-            }
-            alpha = score;
-            hashf = Hash::hashfEXACT;
+            bestscore = score;
             best = move;
+            break;
+        }
+        if (score > bestscore) {
+            bestscore = score;
+            best = move;
+        }
+        if (score > alpha) {
+            alpha = score;
             updatePv(pline, &newLine, move);
         }
     }
-    if (getRunning()) {
-        if (best->capturedPiece == SQUARE_EMPTY && best->promotionPiece == NO_PROMOTION && (depth - extension) >= 0) {
-            setHistoryHeuristic(best->from, best->to, depth - extension);
-            setKiller(best->from, best->to, depth - extension);
-        }
-        Hash::_Thash data(zobristKeyR, score, depth, best->from, best->to, hashf);
+    decListId();
+    if (abs(bestscore) < _INFINITE - MAX_PLY) {
+        const char hashf =
+                (alpha <= oldAlpha) ? Hash::hashfALPHA :
+                (alpha >= beta) ? Hash::hashfBETA : Hash::hashfEXACT;
+        Hash::_Thash data(zobristKeyR, bestscore, depth, best, hashf);
         hash.recordHash(data, ply);
     }
-    decListId();
-    return score;
+
+    return bestscore;
 
 }
 
