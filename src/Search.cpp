@@ -281,7 +281,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     if (wdl != INT_MAX) return wdl;
 #endif
 
-
+    int score = -_INFINITE;
     const bool pvNode = alpha != beta - 1;
     int bestscore = -_INFINITE;
     ASSERT(chessboard[KING_BLACK]);
@@ -314,31 +314,24 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
 
     if (!(numMoves % 2048)) setRunning(checkTime());
     ++numMoves;
-    _TpvLine newLine1;
-    newLine1.cmove = 0;
     _Tmove *best = nullptr;
     /// ********* null move ***********
-    if (!nullSearch && !pvNode && !isIncheckSide) {
-        int nDepth = (depth > 3) ? 1 : 3;
-        if (nDepth == 3) {
-            const u64 pieces = board::getPiecesNoKing<side>(chessboard);
-            if (pieces != chessboard[PAWN_BLACK + side] || bitCount(pieces) > 9)
-                nDepth = 1;
+    if (!nullSearch && /* TODO !pvNode &&*/ !isIncheckSide) {
+        nullSearch = true;
+        const int nPieces = bitCount(board::getBitmapNoPawnsNoKing<side>(chessboard));
+        const int R = 2 + (depth > (6 + ((nPieces < 3) ? 2 : 0)));
+        int nullScore;
+        if (depth - R - 1 > 0) {
+            _TpvLine newLine1;
+            newLine1.cmove = 0;
+            nullScore = searchLambda(&newLine1, depth - R - 1, -beta, -beta + 1, nullptr);
+        } else {
+            nullScore = -qsearch<X(side)>(-beta, -beta + 1, -1, 0);
         }
-        if (depth > nDepth) {
-            nullSearch = true;
-            const int R = NULL_DEPTH + depth / NULL_DIVISOR;
-            int nullScore;
-            if (depth - R - 1 > 0) {
-                nullScore = searchLambda(&newLine1, depth + extension - R - 1, -beta, -beta + 1, nullptr);
-            } else {
-                nullScore = -qsearch<X(side)>(-beta, -beta + 1, -1, 0);
-            }
-            nullSearch = false;
-            if (nullScore >= beta) {
-                INC(nNullMoveCut);
-                return nullScore;
-            }
+        nullSearch = false;
+        if (nullScore >= beta) {
+            INC(nNullMoveCut);
+            return nullScore;
         }
     }
 
@@ -348,7 +341,6 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     /// ************* Futility Pruning razor at pre-pre-frontier ****
     bool futilPrune = false;
     int futilScore = 0;
-    int score = -_INFINITE;
     if (depth <= 3 && !isIncheckSide) {
         const int matBalance = eval.lazyEval<side>(chessboard);
         /// ******** reverse futility pruning ***********
@@ -386,6 +378,7 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
         return _INFINITE - (mainDepth - depth + 1);
     }
     generateMoves<side>(friends | enemies);
+
     const int listcount = getListSize();
     if (!listcount) {
         --listId;
@@ -405,7 +398,8 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     int first = 0;
 
     while ((move = getNextMove(&genList[listId], depth, hashItem, first++))) {
-        if (!checkSearchMoves<checkMoves>(move) && depth == mainDepth) continue;
+        if (!checkSearchMoves<checkMoves>(move) && depth == mainDepth)
+            continue;
         countMove++;
 
         if (!makemove(move, true)) {
@@ -430,15 +424,15 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
             }
         }
 
-
-        const int doMws = (score > -_INFINITE + MAX_PLY);
-        const int lwb = max(alpha, score);
-        const int upb = (doMws ? (lwb + 1) : beta);
-        val = searchLambda(&newLine, depth + extension - 1, -upb, -lwb, move);
-        if (doMws && (lwb < val) && (val < beta)) {
-            val = searchLambda(&newLine, depth + extension - 1, -beta, -val + 1, move);
+        if (val > alpha) {
+            const int doMws = (score > -_INFINITE + MAX_PLY);
+            const int lwb = max(alpha, score);
+            const int upb = (doMws ? (lwb + 1) : beta);
+            val = searchLambda(&newLine, depth + extension - 1, -upb, -lwb, move);
+            if (doMws && (lwb < val) && (val < beta)) {
+                val = searchLambda(&newLine, depth + extension - 1, -beta, -val + 1, move);
+            }
         }
-
         score = max(score, val);
         takeback(move, oldKey, oldEnpassant, true);
         ASSERT(chessboard[KING_BLACK]);

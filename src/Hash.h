@@ -97,8 +97,6 @@ public:
                     if (currentPly) {
                         switch (GET_FLAGS(hashStruct)) {
                             case Hash::hashfEXACT:
-                                //INC(n_cut_hashE);
-                                //return alpha;//GET_SCORE(hashStruct);
                             case Hash::hashfBETA:
                                 if (GET_SCORE(hashStruct) >= beta) {
                                     INC(n_cut_hashB);
