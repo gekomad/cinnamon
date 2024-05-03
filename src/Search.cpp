@@ -293,7 +293,8 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
             if (board::inCheck1<X(side)>(chessboard)) {
                 return _INFINITE - (mainDepth - depth + 1);
             }
-            return -eval.lazyEval<side>(chessboard) * 2;
+            const auto e = eval.lazyEval<side>(chessboard);
+            return !e ? 0 : e > 0 ? -1 : 1;
         }
     }
     int extension = isIncheckSide;
@@ -390,7 +391,8 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
         if (isIncheckSide) {
             return -_INFINITE + (mainDepth - depth + 1);
         } else {
-            return -eval.lazyEval<side>(chessboard) * 2;
+            const auto e = eval.lazyEval<side>(chessboard);
+            return !e ? 0 : e > 0 ? -1 : 1;
         }
     }
     ASSERT(genList[listId].size > 0);
