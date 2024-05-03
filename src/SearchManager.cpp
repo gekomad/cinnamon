@@ -142,7 +142,7 @@ void SearchManager::updateKiller(const _Tmove &move, const int depth) {
 
 void SearchManager::incHistoryHeuristic(const _Tmove &move, const int depth) {
     for (Search *s:threadPool->getPool()) {
-        s->incHistoryHeuristic(move.pieceFrom, move.to, depth);
+        s->incHistoryHeuristic(move, depth);
     }
 }
 

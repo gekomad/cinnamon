@@ -383,12 +383,12 @@ public:
         }
     }
 
-    __attribute__((always_inline)) void incHistoryHeuristic(const int pieceFrom, const int to, const int depth) {
-        ASSERT_RANGE(pieceFrom, 0, 11)
-        ASSERT_RANGE(to, 0, 63)
+    __attribute__((always_inline)) void incHistoryHeuristic(const _Tmove& move, const int depth) {
+        ASSERT_RANGE(move.pieceFrom, 0, 11)
+        ASSERT_RANGE(move.to, 0, 63)
         if (depth <= 0) return;
-        historyHeuristic[pieceFrom][to] += depth * depth;
-        if (historyHeuristic[pieceFrom][to] >= 32767) {
+        historyHeuristic[move.pieceFrom][move.to] += depth * depth;
+        if (historyHeuristic[move.pieceFrom][move.to] >= 32767) {
             for (int i = 0; i < 12; i++)
                 for (int j = 0; j < 64; j++)
                     historyHeuristic[i][j] /= 64;
