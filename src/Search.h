@@ -36,8 +36,6 @@ class Search : public GenMoves, public Thread<Search> {
 
 public:
 
-    static constexpr int NULL_DIVISOR = 7;
-    static constexpr int NULL_DEPTH = 3;
     static constexpr int VAL_WINDOW = 50;
 #ifndef JS_MODE
     SYZYGY *syzygy = &SYZYGY::getInstance();

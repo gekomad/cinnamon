@@ -315,29 +315,23 @@ int Search::search(const int depth, int alpha, const int beta, _TpvLine *pline, 
     ++numMoves;
     _TpvLine newLine1;
     newLine1.cmove = 0;
-
     /// ********* null move ***********
-    if (!nullSearch && !pvNode && !isIncheckSide) {
-        int nDepth = (depth > 3) ? 1 : 3;
-        if (nDepth == 3) {
-            const u64 pieces = board::getPiecesNoKing<side>(chessboard);
-            if (pieces != chessboard[PAWN_BLACK + side] || bitCount(pieces) > 9)
-                nDepth = 1;
-        }
-        if (depth > nDepth) {
-            nullSearch = true;
-            const int R = NULL_DEPTH + depth / NULL_DIVISOR;
-            int nullScore;
-            if (depth - R - 1 > 0) {
-                nullScore = searchLambda(&newLine1, depth + extension - R - 1, -beta, -beta + 1, nullptr);
-            } else {
-                nullScore = -qsearch<X(side)>(-beta, -beta + 1, -1, 0);
-            }
-            nullSearch = false;
-            if (nullScore >= beta) {
-                INC(nNullMoveCut);
-                return nullScore;
-            }
+    if (!nullSearch && !isIncheckSide && depth > 3) {
+        nullSearch = true;
+        int nullScore;
+        const int R_adpt =
+                2 + ((depth + extension) > (6 + ((bitCount(board::getPiecesNoKing<side>(chessboard)) < 3) ? 2 : 0)));
+        const int newDepth = depth + extension - R_adpt - 1;
+        ASSERT(newDepth);
+//        if (newDepth > 0) {
+        nullScore = searchLambda(&newLine1, newDepth, -beta, -beta + 1, nullptr);
+//        } else {
+//            nullScore = -qsearch<X(side)>(-beta, -beta + 1, -1, 0);
+//        }
+        nullSearch = false;
+        if (nullScore >= beta) {
+            INC(nNullMoveCut);
+            return nullScore;
         }
     }
 
