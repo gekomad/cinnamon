@@ -53,7 +53,7 @@ public:
     } _Thash;
 
     enum : char {
-        hashfALPHA = 0, hashfEXACT = 1, hashfBETA = 2
+        hashfALPHA = 1, hashfBETA = 2, hashfEXACT = 3
     };
 
 #ifdef DEBUG_MODE
@@ -94,23 +94,18 @@ public:
                 hashStruct = data;
                 if (GET_DEPTH(hashStruct) >= depth) {
                     if (currentPly) {
-                        switch (GET_FLAGS(hashStruct)) {
-                            case Hash::hashfEXACT:
-                            case Hash::hashfBETA:
-                                if (GET_SCORE(hashStruct) >= beta) {
-                                    INC(n_cut_hashB);
-                                    return beta;
-                                }
-                                break;
-                            case Hash::hashfALPHA:
-                                if (GET_SCORE(hashStruct) <= alpha) {
-                                    INC(n_cut_hashA);
-                                    return alpha;
-                                }
-                                break;
-                            default:
-                                fatal("Error checkHash")
-                                exit(1);
+                        const auto flag = GET_FLAGS(hashStruct);
+                        if (flag & Hash::hashfBETA) {
+                            if (GET_SCORE(hashStruct) >= beta) {
+                                INC(n_cut_hashB);
+                                return beta; // TODO return GET_SCORE(hashStruct)
+                            }
+                        }
+                        if (flag & Hash::hashfALPHA) {
+                            if (GET_SCORE(hashStruct) <= alpha) {
+                                INC(n_cut_hashA);
+                                return alpha; // TODO return GET_SCORE(hashStruct)
+                            }
                         }
                     }
                 }
@@ -183,8 +178,11 @@ public:
 
 private:
     Hash();
+
     ~Hash();
+
     static void dispose();
+
     static constexpr int BUCKETS = 3;
     static unsigned HASH_SIZE;
 #ifdef JS_MODE
