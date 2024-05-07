@@ -225,13 +225,18 @@ public:
     return;
 #endif
         if ((argc == 2 && !strcmp("bench", argv[1]))) {
+            static const char *fens[] = {
+                    #include "bench.epd"
+
+                    NULL};
             IterativeDeeping it;
-            it.loadFen(STARTPOS);
-            it.loadFen("8/pp6/5p1k/2P3Pp/P1P4K/4q1PP/8/6Q1 b - - 0 35");
-            SearchManager &searchManager = Singleton<SearchManager>::getInstance();
-            searchManager.setMaxTimeMillsec(5000);
-            it.start();
-            it.join();
+            for (int i = 0; fens[i]; i++) {
+                it.loadFen(fens[i]);
+                SearchManager &searchManager = Singleton<SearchManager>::getInstance();
+                searchManager.setMaxTimeMillsec(1000);
+                it.start();
+                it.join();
+            }
             exit(0);
         }
         if (!(argc > 1 && !strcmp("-puzzle_epd", argv[1])))
