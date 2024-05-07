@@ -225,17 +225,13 @@ public:
     return;
 #endif
         if ((argc == 2 && !strcmp("bench", argv[1]))) {
-            cout << "info depth 1 seldepth 1 multipv 1 score cp 46 time 1 nodes 4 nps 2000 tbhits 0 hashfull 0 pv e1g1 \n"
-                    "info depth 2 seldepth 3 multipv 1 score cp 35 time 1 nodes 12 nps 6000 tbhits 0 hashfull 0 pv e1g1 e8g8 \n"
-                    "info depth 3 seldepth 3 multipv 1 score cp 38 time 1 nodes 25 nps 12000 tbhits 0 hashfull 0 pv e1g1 e8g8 a2a3 \n"
-                    "info depth 4 seldepth 3 multipv 1 score cp 38 time 1 nodes 50 nps 25000 tbhits 0 hashfull 0 pv e1g1 e8g8 a2a3 \n"
-                    "info depth 5 seldepth 2 multipv 1 score cp 35 time 1 nodes 101 nps 50000 tbhits 0 hashfull 0 pv e1g1 e8g8 \n"
-                    "info depth 6 seldepth 2 multipv 1 score cp 35 time 1 nodes 217 nps 108000 tbhits 0 hashfull 0 pv e1g1 e8g8 \n"
-                    "info depth 7 seldepth 3 multipv 1 score cp 75 time 2 nodes 372 nps 124000 tbhits 0 hashfull 0 pv e1g1 e8c8 a2a3 \n"
-                    "info depth 8 seldepth 3 multipv 1 score cp 80 time 2 nodes 666 nps 222000 tbhits 0 hashfull 0 pv e1g1 a5a4 a2a3 "
-                    "time  : 4456ms\n"
-                    "nodes : 9122778\n"
-                    "nps   : 2047302";
+            IterativeDeeping it;
+            it.loadFen(STARTPOS);
+            it.loadFen("8/pp6/5p1k/2P3Pp/P1P4K/4q1PP/8/6Q1 b - - 0 35");
+            SearchManager &searchManager = Singleton<SearchManager>::getInstance();
+            searchManager.setMaxTimeMillsec(5000);
+            it.start();
+            it.join();
             exit(0);
         }
         if (!(argc > 1 && !strcmp("-puzzle_epd", argv[1])))
