@@ -244,9 +244,7 @@ public:
             const auto totTime = Time::diffTime(end1, start1) + 1;
 
             printf("===========================\n"
-                   "Total time (ms) : %d\n"
-                   "Nodes searched  : %d\n"
-                   "Nodes/second    : %d\n", totTime, totMoves, totMoves / (totTime / 1000));
+                   "OVERALL:                                         %d nodes      %d nps\n", totMoves, totMoves / (totTime / 1000));
             exit(0);
         }
         if (!(argc > 1 && !strcmp("-puzzle_epd", argv[1])))
