@@ -80,20 +80,21 @@ public:
             const u64 zobristKeyR,
             u64 &hashStruct,
             const bool currentPly) {
-        INC(readHashCount);
-        const Hash::_Thash *hash = &(hashArray[zobristKeyR % HASH_SIZE]);
-        DEBUG(u64 d = 0)
-        hashStruct = 0;
-        bool found = false;
-        for (int i = 0; i < BUCKETS; i++, hash++) {
-            if (found)break;
-            u64 data = hash->data;
-            DEBUG(d |= data)
-            if (zobristKeyR == GET_KEY(hash)) {
-                found = true;
-                hashStruct = data;
-                if (GET_DEPTH(hashStruct) >= depth) {
-                    if (currentPly) {
+        if (currentPly) {
+            INC(readHashCount);
+            const Hash::_Thash *hash = &(hashArray[zobristKeyR % HASH_SIZE]);
+            DEBUG(u64 d = 0)
+            hashStruct = 0;
+            bool found = false;
+            for (int i = 0; i < BUCKETS; i++, hash++) {
+                if (found)break;
+                u64 data = hash->data;
+                DEBUG(d |= data)
+                if (zobristKeyR == GET_KEY(hash)) {
+                    found = true;
+                    hashStruct = data;
+                    if (GET_DEPTH(hashStruct) >= depth) {
+
                         switch (GET_FLAGS(hashStruct)) {
                             case Hash::hashfEXACT:
                             case Hash::hashfBETA:
@@ -112,11 +113,12 @@ public:
                                 fatal("Error checkHash")
                                 exit(1);
                         }
+
                     }
                 }
             }
+            DEBUG(if (d && !found)readCollisions++)
         }
-        DEBUG(if (d && !found)readCollisions++)
         return INT_MAX;
     }
 
@@ -183,8 +185,11 @@ public:
 
 private:
     Hash();
+
     ~Hash();
+
     static void dispose();
+
     static constexpr int BUCKETS = 3;
     static unsigned HASH_SIZE;
 #ifdef JS_MODE
