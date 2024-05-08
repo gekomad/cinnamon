@@ -235,16 +235,17 @@ public:
             const auto start1 = std::chrono::high_resolution_clock::now();
             for (int i = 0; fens[i]; i++) {
                 it.loadFen(fens[i]);
-                searchManager.setMaxTimeMillsec(100);
+                it.setMaxDepth(9);
                 it.run();
-                // int a = searchManager.getTotMoves();
                 totMoves += searchManager.getTotMoves();
             }
             const auto end1 = std::chrono::high_resolution_clock::now();
             const auto totTime = Time::diffTime(end1, start1) + 1;
 
             printf("===========================\n"
-                   "OVERALL:                                         1892937 nodes      %d nps\n", totMoves / (totTime / 1000));
+                   "Total time (ms) : %d\n"
+                   "Nodes searched  : %d\n"
+                   "Nodes/second    : %d\n", totTime, totMoves, totMoves / (totTime / 1000));
             exit(0);
         }
         if (!(argc > 1 && !strcmp("-puzzle_epd", argv[1])))
