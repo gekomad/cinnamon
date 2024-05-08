@@ -1,4 +1,4 @@
- Cinnamon
+Cinnamon
 ==========
 ### UCI Chess Engine
 
