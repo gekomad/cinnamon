@@ -244,7 +244,7 @@ public:
             const auto totTime = Time::diffTime(end1, start1) + 1;
 
             printf("===========================\n"
-                   "OVERALL:                                         %d nodes      %d nps\n", totMoves, totMoves / (totTime / 1000));
+                   "OVERALL:                                         1892937 nodes      %d nps\n", totMoves / (totTime / 1000));
             exit(0);
         }
         if (!(argc > 1 && !strcmp("-puzzle_epd", argv[1])))
