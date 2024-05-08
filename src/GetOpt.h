@@ -235,9 +235,8 @@ public:
             const auto start1 = std::chrono::high_resolution_clock::now();
             for (int i = 0; fens[i]; i++) {
                 it.loadFen(fens[i]);
-                searchManager.setMaxTimeMillsec(100);
+                it.setMaxDepth(9);
                 it.run();
-                // int a = searchManager.getTotMoves();
                 totMoves += searchManager.getTotMoves();
             }
             const auto end1 = std::chrono::high_resolution_clock::now();
