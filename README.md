@@ -1,4 +1,4 @@
- \:wCinnamon
+ Cinnamon
 ==========
 ### UCI Chess Engine
 
