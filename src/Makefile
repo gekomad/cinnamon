@@ -41,9 +41,6 @@ endif
 
 CFLAGS=" -std=c++11 -Wall -fno-stack-protector -fno-rtti -fno-exceptions -fomit-frame-pointer -O3 -Wpedantic -W -DNDEBUG -fsigned-char -funroll-loops "
 
-cinnamon64-ARM:
-	$(MAKE) -j4 ARC="$(ARC) -DHAS_POPCNT -DHAS_BSF" build
-
 help:
 
 	@echo "Makefile for cross-compile Linux/Windows/OSX/ARM/Javascript"

@@ -245,7 +245,7 @@ public:
             printf("===========================\n"
                    "Total time (ms) : %d\n"
                    "Nodes searched  : %d\n"
-                   "Nodes/second    : %d\n", totTime, totMoves, totMoves / (totTime / 1000));
+                   "Nodes/second    : %d\n", totTime, totMoves, (int) ((double) totMoves / (double) totTime * 1000.0));
             exit(0);
         }
         if (!(argc > 1 && !strcmp("-puzzle_epd", argv[1])))
